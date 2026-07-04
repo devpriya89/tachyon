@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700;800&family=Syne:wght@700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-space: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-syne: "Syne", sans-serif;
+
+  --color-yellow-neo: #ffd000;
+  --color-red-neo: #d91429;
+  --color-red-dark: #a10018;
+  --color-ink: #030712;
+  --color-paper: #f3f4f6;
+
+  --color-cyber-cyan: #06b6d4;
+  --color-cyber-pink: #ec4899;
+
+  --animate-marquee: marquee 35s linear infinite;
+  --animate-blink: blink 1.2s step-start infinite;
+
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+body {
+  font-family: var(--font-space);
+  background-color: #030712; /* Deep space-dark base */
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #f3f4f6;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* ==========================================
+   Hyper-Sleek Glassmorphic Bento Console Theme
+   ========================================== */
+
+/* Page sections boundaries and background */
+.min-h-screen, #overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq, footer {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #f3f4f6 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  border-width: 0 !important;
+}
+
+/* Section borders replaced by subtle dividers */
+#overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Redefine card containers to premium glassmorphism panels */
+.cyber-glass, .cyber-glass-interactive {
+  background: rgba(15, 17, 23, 0.65) !important;
+  background-color: rgba(15, 17, 23, 0.65) !important;
+  color: #f3f4f6 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 16px !important; /* Rounded console keys */
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-glass-interactive {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Interactive Cursor Radial Hover Glow */
+.cyber-glass-interactive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.045), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cyber-glass-interactive:hover::before {
+  opacity: 1;
+}
+
+.cyber-glass-interactive:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(99, 102, 241, 0.05) !important;
+}
+
+.cyber-glass-interactive:active {
+  transform: translateY(1px);
+}
+
+/* Nixie clock counters as clean glass dials */
+.grid-cols-4 > div {
+  background: rgba(15, 17, 23, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 12px !important;
+}
+
+.countdown-number {
+  color: #f3f4f6 !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+}
+
+/* Clean up headers & typography */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+  font-family: var(--font-syne) !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+/* Lower opacity tags */
+.text-paper\/40, .text-paper\/50, .text-paper\/60, .text-paper\/70, .text-paper\/85, .text-ink\/60, .text-ink\/65, .text-white\/60, .text-white\/40, .text-paper\/55, .text-paper\/30, .text-paper\/35 {
+  color: rgba(243, 244, 246, 0.6) !important;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glowing text details */
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dynamic Animation Utilities */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(25px, -25px) scale(1.08); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20px, 20px) scale(1.04); }
+}
+
+@keyframes laser-flow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+.animate-float-slow {
+  animation: float-slow 18s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 12s ease-in-out infinite;
+}
+
+.timeline-laser-line {
+  background: linear-gradient(180deg, #6366f1, #06b6d4, #10b981, #6366f1);
+  background-size: 100% 300%;
+  animation: laser-flow 8s linear infinite;
+}
