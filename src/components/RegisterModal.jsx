@@ -83,10 +83,10 @@ export function RegisterModal({
 
     playSound('success', isMuted, volume)
     setTicketData(newTicket)
-    localStorage.setItem('hacklabify_ticket', JSON.stringify(newTicket))
+    localStorage.setItem('Tachyon_ticket', JSON.stringify(newTicket))
 
     // Sync global registrations registry
-    const registrationsStr = localStorage.getItem('hacklabify_registrations')
+    const registrationsStr = localStorage.getItem('Tachyon_registrations')
     let registrations = []
     if (registrationsStr) {
       try {
@@ -96,12 +96,12 @@ export function RegisterModal({
       }
     }
     registrations.push(newTicket)
-    localStorage.setItem('hacklabify_registrations', JSON.stringify(registrations))
+    localStorage.setItem('Tachyon_registrations', JSON.stringify(registrations))
 
     // Google Sheets Webhook Sync
-    const googleSheetUrl = localStorage.getItem('hacklabify_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
-    if (!localStorage.getItem('hacklabify_google_sheet_url')) {
-      localStorage.setItem('hacklabify_google_sheet_url', 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec')
+    const googleSheetUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+    if (!localStorage.getItem('Tachyon_google_sheet_url')) {
+      localStorage.setItem('Tachyon_google_sheet_url', 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec')
     }
 
     fetch(googleSheetUrl, {
@@ -129,19 +129,19 @@ export function RegisterModal({
     if (!confirmed) return
 
     // Remove from global database key
-    const registrationsStr = localStorage.getItem('hacklabify_registrations')
+    const registrationsStr = localStorage.getItem('Tachyon_registrations')
     if (registrationsStr && ticketData) {
       try {
         const registrations = JSON.parse(registrationsStr)
         const updated = registrations.filter(r => r.ticketId !== ticketData.ticketId)
-        localStorage.setItem('hacklabify_registrations', JSON.stringify(updated))
+        localStorage.setItem('Tachyon_registrations', JSON.stringify(updated))
       } catch (e) {
         console.error(e)
       }
     }
 
     setTicketData(null)
-    localStorage.removeItem('hacklabify_ticket')
+    localStorage.removeItem('Tachyon_ticket')
     setStep(1)
     setFormData({
       name: '',
@@ -175,6 +175,7 @@ export function RegisterModal({
 
   // Theme styles helper
   const themeStyles = {
+    nebula: { bg: 'bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500', text: 'text-white' },
     amber: { bg: 'bg-[#ffdf00]', text: 'text-black' },
     crimson: { bg: 'bg-[#ff3b30]', text: 'text-white' },
     acid: { bg: 'bg-[#34c759]', text: 'text-black' },
@@ -184,7 +185,7 @@ export function RegisterModal({
     custom: { bg: 'bg-[var(--color-custom-primary)]', text: 'text-[var(--color-custom-text)]' }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto pt-6 sm:pt-12 select-none text-white">
@@ -359,7 +360,7 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={nextStep}
-                    className={`border-3 border-black ${currentTheme.bg} text-black font-mono font-black text-xs px-5 py-2.5 rounded-none shadow-[3px_3px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-1.5 cursor-pointer uppercase`}
+                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-mono font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all flex items-center gap-1.5 cursor-pointer uppercase active:scale-95`}
                   >
                     Next Step <ArrowRight className="w-4 h-4" />
                   </button>
@@ -370,10 +371,10 @@ export function RegisterModal({
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-syne font-black uppercase text-black leading-none">
+                  <h3 className="text-2xl sm:text-3xl font-syne font-black uppercase text-white leading-none">
                     CUSTOMIZE PROFILE CARD
                   </h3>
-                  <p className="text-xs font-bold text-black/55 mt-1 font-mono">
+                  <p className="text-xs font-bold text-zinc-500 mt-1 font-mono">
                     Choose your avatar representation and verify your skills tags.
                   </p>
                 </div>
@@ -381,47 +382,70 @@ export function RegisterModal({
                 <div className="space-y-6">
                   {/* Avatars */}
                   <div>
-                    <span className="block font-mono text-xs font-bold text-black/60 uppercase mb-2">
+                    <span className="block font-mono text-xs font-bold text-zinc-400 uppercase mb-2">
                       Select Cyber Avatar:
                     </span>
                     <div className="grid grid-cols-2 gap-2">
-                      {AVATARS_OPTIONS.map((av) => (
-                        <button
-                          key={av.id}
-                          type="button"
-                          onClick={() => {
-                            playSound('click', isMuted, volume)
-                            setFormData(prev => ({ ...prev, avatar: av.id }))
-                          }}
-                          className={`border-3 border-black p-2.5 font-mono text-[9.5px] font-black text-center cursor-pointer transition-all rounded-none ${
-                            formData.avatar === av.id
-                              ? 'bg-[#ffdf00] text-black shadow-[2px_2px_0_0_#000] scale-[0.98]'
-                              : 'bg-white text-black shadow-[1.5px_1.5px_0_0_#000] hover:bg-[#fbfaf7]'
-                          }`}
-                        >
-                          {av.name}
-                        </button>
-                      ))}
+                      {AVATARS_OPTIONS.map((av) => {
+                        const thBorderMap = {
+                          amber: 'border-yellow-400 bg-yellow-400/10 text-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.15)]',
+                          crimson: 'border-red-500 bg-red-500/10 text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.15)]',
+                          acid: 'border-green-400 bg-green-400/10 text-green-300 shadow-[0_0_12px_rgba(74,222,128,0.15)]',
+                          void: 'border-purple-500 bg-purple-500/10 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.15)]',
+                          cyberpunk: 'border-cyan-400 bg-cyan-400/10 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]',
+                          dracula: 'border-pink-400 bg-pink-400/10 text-pink-300 shadow-[0_0_12px_rgba(244,114,182,0.15)]',
+                          custom: 'border-[var(--color-custom-primary)]/40 bg-[var(--color-custom-primary)]/10 text-white shadow-[0_0_12px_var(--color-custom-primary)]'
+                        }
+                        const isSelected = formData.avatar === av.id
+                        const activeStyle = thBorderMap[siteTheme] || thBorderMap.amber
+                        return (
+                          <button
+                            key={av.id}
+                            type="button"
+                            onClick={() => {
+                              playSound('click', isMuted, volume)
+                              setFormData(prev => ({ ...prev, avatar: av.id }))
+                            }}
+                            className={`border p-2.5 font-mono text-[9.5px] font-bold text-center cursor-pointer transition-all rounded-xl ${
+                              isSelected
+                                ? `${activeStyle} scale-[0.98]`
+                                : 'border-white/5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            {av.name}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
                   {/* Skill Tags */}
                   <div>
-                    <span className="block font-mono text-xs font-bold text-black/60 uppercase mb-2">
+                    <span className="block font-mono text-xs font-bold text-zinc-400 uppercase mb-2">
                       Verify Skill Tags (Select multiple):
                     </span>
                     <div className="flex flex-wrap gap-2">
                       {AVAILABLE_SKILLS[formData.track].map((skill) => {
                         const isSelected = formData.skills.includes(skill)
+                        const skillSelectedStyle = {
+                          amber: 'border-yellow-400 bg-yellow-400/10 text-yellow-300 shadow-[0_0_10px_rgba(234,179,8,0.15)]',
+                          crimson: 'border-red-500 bg-red-500/10 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.15)]',
+                          acid: 'border-green-400 bg-green-400/10 text-green-300 shadow-[0_0_10px_rgba(74,222,128,0.15)]',
+                          void: 'border-purple-500 bg-purple-500/10 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.15)]',
+                          cyberpunk: 'border-cyan-400 bg-cyan-400/10 text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.15)]',
+                          dracula: 'border-pink-400 bg-pink-400/10 text-pink-300 shadow-[0_0_10px_rgba(244,114,182,0.15)]',
+                          custom: 'border-[var(--color-custom-primary)]/40 bg-[var(--color-custom-primary)]/10 text-white shadow-[0_0_10px_var(--color-custom-primary)]'
+                        }
+                        const activeStyle = skillSelectedStyle[siteTheme] || skillSelectedStyle.amber
                         return (
                           <button
                             key={skill}
                             type="button"
                             onClick={() => toggleSkill(skill)}
-                            className={`px-3 py-1.5 border border-white/15 font-mono text-xs font-bold cursor-pointer rounded-full transition-all ${
+                            className={`px-3 py-1.5 border font-mono text-xs font-bold cursor-pointer rounded-full transition-all ${
                               isSelected
-                                ? 'bg-white text-black shadow-lg scale-[0.98]'
-                                : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
+                                ? `${activeStyle} scale-[0.98]`
+                                : 'border-white/5 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
                             }`}
                           >
                             {skill}
@@ -436,14 +460,14 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="flex items-center gap-1 border-2 border-black bg-white hover:bg-[#f6f5f0] text-black text-xs px-4 py-2 rounded-xl font-black shadow-[2px_2px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
+                    className="flex items-center gap-1 border border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs px-4 py-2.5 rounded-xl font-bold cursor-pointer transition-all active:scale-95"
                   >
                     <ArrowLeft className="w-4 h-4" /> Back
                   </button>
                   <button
                     type="button"
                     onClick={nextStep}
-                    className={`border-2 border-black ${currentTheme.bg} ${currentTheme.text} font-black text-xs px-5 py-2 rounded-xl shadow-[2px_2px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-1.5 cursor-pointer uppercase`}
+                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all flex items-center gap-1.5 cursor-pointer uppercase active:scale-95`}
                   >
                     Next Step <ArrowRight className="w-4 h-4" />
                   </button>
@@ -495,13 +519,13 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="flex items-center gap-1 border-2 border-black bg-white hover:bg-[#f6f5f0] text-black text-xs px-4 py-2 rounded-xl font-black shadow-[2px_2px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer transition-all"
+                    className="flex items-center gap-1 border border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs px-4 py-2.5 rounded-xl font-bold cursor-pointer transition-all active:scale-95"
                   >
                     <ArrowLeft className="w-4 h-4" /> Back
                   </button>
                   <button
                     type="submit"
-                    className={`border-2 border-black ${currentTheme.bg} ${currentTheme.text} font-black text-xs px-5 py-2 rounded-xl shadow-[2px_2px_0_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer uppercase`}
+                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all cursor-pointer uppercase active:scale-95`}
                   >
                     TRANSMIT REGISTRATION
                   </button>
@@ -516,3 +540,4 @@ export function RegisterModal({
   )
 }
 export default RegisterModal
+

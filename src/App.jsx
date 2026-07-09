@@ -14,7 +14,7 @@ import { playSound } from './utils/audio'
 
 export function App() {
   // Themes and Sound options
-  const [siteTheme, setSiteTheme] = useState('cyberpunk')
+  const [siteTheme, setSiteTheme] = useState('nebula')
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(0.4) // default 40% volume
   const [crtPower, setCrtPower] = useState('ON') // ON, OFF, STANDBY
@@ -28,16 +28,16 @@ export function App() {
   // Registration Modal & Ticket states
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [ticketData, setTicketData] = useState(null)
-  const [ticketColorTheme, setTicketColorTheme] = useState('cyberpunk')
+  const [ticketColorTheme, setTicketColorTheme] = useState('nebula')
 
   // Lifted Administrative States
   const [isAdminOpen, setIsAdminOpen] = useState(false)
   const [countdownDate, setCountdownDate] = useState(() => {
-    return localStorage.getItem('hacklabify_countdown_date') || '2026-07-24T00:00:00+05:30'
+    return localStorage.getItem('Tachyon_countdown_date') || '2026-07-24T00:00:00+05:30'
   })
 
   const [timelineNodes, setTimelineNodes] = useState(() => {
-    const saved = localStorage.getItem('hacklabify_timeline')
+    const saved = localStorage.getItem('Tachyon_timeline')
     if (saved) {
       try {
         return JSON.parse(saved)
@@ -95,7 +95,7 @@ export function App() {
   })
 
   const [teamListings, setTeamListings] = useState(() => {
-    const saved = localStorage.getItem('hacklabify_team_listings')
+    const saved = localStorage.getItem('Tachyon_team_listings')
     let loaded = []
     if (saved) {
       try {
@@ -182,7 +182,7 @@ export function App() {
 
   // Dynamic Organizers & Sponsors state lists
   const [organizers, setOrganizers] = useState(() => {
-    const saved = localStorage.getItem('hacklabify_organizers')
+    const saved = localStorage.getItem('Tachyon_organizers')
     if (saved) {
       try {
         return JSON.parse(saved)
@@ -191,14 +191,14 @@ export function App() {
       }
     }
     return [
-      { id: 'org-1', name: 'Kunal Dev', role: 'Core Architect', email: 'kunal@hacklabify.org', instagram: 'kunal_dev', image: '' },
-      { id: 'org-2', name: 'Rhea Sen', role: 'Interface Craft', email: 'rhea@hacklabify.org', instagram: 'rhea_craft', image: '' },
-      { id: 'org-3', name: 'Aman Goel', role: 'Mainframe Moderator', email: 'aman@hacklabify.org', instagram: 'aman_mainframe', image: '' }
+      { id: 'org-1', name: 'Kunal Dev', role: 'Core Architect', email: 'kunal@Tachyon.org', instagram: 'kunal_dev', image: '' },
+      { id: 'org-2', name: 'Rhea Sen', role: 'Interface Craft', email: 'rhea@Tachyon.org', instagram: 'rhea_craft', image: '' },
+      { id: 'org-3', name: 'Aman Goel', role: 'Mainframe Moderator', email: 'aman@Tachyon.org', instagram: 'aman_mainframe', image: '' }
     ]
   })
 
   const [sponsors, setSponsors] = useState(() => {
-    const saved = localStorage.getItem('hacklabify_sponsors')
+    const saved = localStorage.getItem('Tachyon_sponsors')
     if (saved) {
       try {
         return JSON.parse(saved)
@@ -216,7 +216,7 @@ export function App() {
   })
 
   const [themeColors, setThemeColors] = useState(() => {
-    const saved = localStorage.getItem('hacklabify_custom_colors')
+    const saved = localStorage.getItem('Tachyon_custom_colors')
     if (saved) {
       try {
         return JSON.parse(saved)
@@ -239,19 +239,19 @@ export function App() {
 
   // Load ticket and settings from localStorage
   useEffect(() => {
-    const savedTicket = localStorage.getItem('hacklabify_ticket')
+    const savedTicket = localStorage.getItem('tachyon_ticket')
     if (savedTicket) {
       setTicketData(JSON.parse(savedTicket))
     }
-    const savedMute = localStorage.getItem('hacklabify_mute')
+    const savedMute = localStorage.getItem('tachyon_mute')
     if (savedMute) {
       setIsMuted(savedMute === 'true')
     }
-    const savedVolume = localStorage.getItem('hacklabify_volume')
+    const savedVolume = localStorage.getItem('tachyon_volume')
     if (savedVolume) {
       setVolume(parseFloat(savedVolume))
     }
-    const savedTheme = localStorage.getItem('hacklabify_theme')
+    const savedTheme = localStorage.getItem('tachyon_theme')
     if (savedTheme) {
       setSiteTheme(savedTheme)
       setTicketColorTheme(savedTheme)
@@ -260,30 +260,30 @@ export function App() {
 
   // Sync admin state overrides
   useEffect(() => {
-    localStorage.setItem('hacklabify_countdown_date', countdownDate)
+    localStorage.setItem('tachyon_countdown_date', countdownDate)
   }, [countdownDate])
 
   useEffect(() => {
-    localStorage.setItem('hacklabify_timeline', JSON.stringify(timelineNodes))
+    localStorage.setItem('tachyon_timeline', JSON.stringify(timelineNodes))
   }, [timelineNodes])
 
   useEffect(() => {
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(teamListings))
+    localStorage.setItem('tachyon_team_listings', JSON.stringify(teamListings))
   }, [teamListings])
 
   useEffect(() => {
-    localStorage.setItem('hacklabify_organizers', JSON.stringify(organizers))
+    localStorage.setItem('tachyon_organizers', JSON.stringify(organizers))
   }, [organizers])
 
   useEffect(() => {
-    localStorage.setItem('hacklabify_sponsors', JSON.stringify(sponsors))
+    localStorage.setItem('tachyon_sponsors', JSON.stringify(sponsors))
   }, [sponsors])
 
   useEffect(() => {
     Object.entries(themeColors).forEach(([variable, value]) => {
       document.documentElement.style.setProperty(variable, value)
     })
-    localStorage.setItem('hacklabify_custom_colors', JSON.stringify(themeColors))
+    localStorage.setItem('tachyon_custom_colors', JSON.stringify(themeColors))
   }, [themeColors])
 
   // Countdown timer logic using adjustable countdownDate
@@ -334,7 +334,7 @@ export function App() {
   const toggleMute = () => {
     const nextMuted = !isMuted
     setIsMuted(nextMuted)
-    localStorage.setItem('hacklabify_mute', String(nextMuted))
+    localStorage.setItem('tachyon_mute', String(nextMuted))
     if (!nextMuted) {
       playSound('click', false, volume)
     }
@@ -344,12 +344,13 @@ export function App() {
   const changeTheme = (newTheme) => {
     setSiteTheme(newTheme)
     setTicketColorTheme(newTheme)
-    localStorage.setItem('hacklabify_theme', newTheme)
+    localStorage.setItem('tachyon_theme', newTheme)
     playSound('click', isMuted, volume)
   }
 
   // Theme styling configurations
   const themeStyles = {
+    nebula: { bg: 'bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500 shadow-[0_0_15px_rgba(168,85,247,0.25)]', tagText: 'text-white', primaryText: 'text-fuchsia-400' },
     amber: { bg: 'bg-yellow-neo shadow-[0_0_15px_rgba(255,223,0,0.15)]', tagText: 'text-ink', primaryText: 'text-yellow-neo' },
     crimson: { bg: 'bg-red-neo shadow-[0_0_15px_rgba(224,0,36,0.15)]', tagText: 'text-white', primaryText: 'text-red-neo' },
     acid: { bg: 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.15)]', tagText: 'text-ink', primaryText: 'text-green-500' },
@@ -359,7 +360,7 @@ export function App() {
     custom: { bg: 'bg-[var(--color-custom-primary)] shadow-[0_0_15px_var(--color-custom-primary)]', tagText: 'text-[var(--color-custom-text)]', primaryText: 'text-[var(--color-custom-primary)]' }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <>
@@ -415,13 +416,13 @@ export function App() {
         {/* Dynamic Endless Marquee Banner */}
         <div className="overflow-hidden bg-[#0c0d12] border-y border-white/10 py-3.5 select-none flex">
           <div className={`animate-marquee whitespace-nowrap flex gap-12 font-mono font-bold text-xs md:text-sm uppercase ${currentTheme.primaryText} tracking-widest`}>
-            <span>HACKLABIFY V1.0 //</span>
+            <span>TACHYON V1.0 //</span>
             <span>1,50,000 INR TOTAL PRIZE POOL //</span>
             <span>UNDER-18 BUILDER SATELLITE HACKATHON //</span>
             <span>ONLINE QUALIFIER STARTS JULY 24 //</span>
             <span>FORK THE REALM //</span>
             <span>NO SLIDESHOWS - JUST CODE & DESIGN //</span>
-            <span>HACKLABIFY V1.0 //</span>
+            <span>TACHYON V1.0 //</span>
             <span>1,50,000 INR TOTAL PRIZE POOL //</span>
             <span>UNDER-18 BUILDER SATELLITE HACKATHON //</span>
             <span>ONLINE QUALIFIER STARTS JULY 24 //</span>

@@ -1,7 +1,8 @@
 import React from 'react'
 
-export function Logo({ theme = 'cyberpunk' }) {
+export function Logo({ theme = 'nebula' }) {
   const colors = {
+    nebula: '#d946ef',
     amber: '#ffdf00',
     crimson: '#E00024',
     acid: '#22c55e',
@@ -9,7 +10,7 @@ export function Logo({ theme = 'cyberpunk' }) {
     cyberpunk: '#00f0ff',
     dracula: '#bd93f9'
   }
-  const primaryColor = colors[theme] || colors.cyberpunk
+  const primaryColor = colors[theme] || colors.nebula
 
   return (
     <div className="relative group select-none shrink-0">
@@ -29,3 +30,4 @@ export function Logo({ theme = 'cyberpunk' }) {
   )
 }
 export default Logo
+

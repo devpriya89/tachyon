@@ -45,6 +45,7 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
   // Render pixelated avatar generator
   const renderAvatar = (avatarId) => {
     const colors = {
+      nebula: '#d946ef',
       amber: '#f59e0b',
       crimson: '#ef4444',
       acid: '#10b981',
@@ -53,7 +54,7 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
       dracula: '#ec4899',
       custom: 'var(--color-custom-primary)'
     }
-    const c = colors[ticketColorTheme] || colors.cyberpunk
+    const c = colors[ticketColorTheme] || colors.nebula
 
     // Standard retro grid drawings for avatars
     const avatars = {
@@ -85,13 +86,14 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
         {/* Ticket custom color theme selector */}
         <div className="mt-4 flex items-center justify-center gap-2">
           <span className="font-mono text-[9px] font-bold text-zinc-500 uppercase mr-1">PASS HOLOGRAPH:</span>
-          {['amber', 'crimson', 'acid', 'void', 'cyberpunk', 'dracula', 'custom'].map((th) => {
+          {['nebula', 'cyberpunk', 'crimson', 'acid', 'void', 'amber', 'dracula', 'custom'].map((th) => {
             const bgColors = {
+              nebula: 'bg-gradient-to-r from-violet-600 to-fuchsia-500 shadow-[0_0_5px_rgba(168,85,247,0.4)]',
+              cyberpunk: 'bg-cyan-400 shadow-[0_0_5px_rgba(34,211,238,0.3)]',
               amber: 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.3)]',
               crimson: 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.3)]',
               acid: 'bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.3)]',
               void: 'bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.3)]',
-              cyberpunk: 'bg-cyan-400 shadow-[0_0_5px_rgba(34,211,238,0.3)]',
               dracula: 'bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.3)]',
               custom: 'bg-[var(--color-custom-primary)] shadow-[0_0_5px_var(--color-custom-primary)]'
             }
@@ -134,7 +136,7 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
           <div className="border-b border-white/5 pb-4 mb-5 flex justify-between items-center">
             <div>
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
-                HACKLABIFY // TICKET SYSTEM
+                Tachyon // TICKET SYSTEM
               </span>
               <span className="text-[7.5px] text-white/30 block mt-0.5">LAUNCH KEY // SECURITY LEVEL 1</span>
             </div>
@@ -205,7 +207,7 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
             
             <div className="text-right">
               <span className="text-[7.5px] text-zinc-500 block uppercase font-bold">SECURE GATEPASS</span>
-              <span className="text-[9px] font-bold text-zinc-500 tracking-wider">HACKLABIFY. DELHI. 2026</span>
+              <span className="text-[9px] font-bold text-zinc-500 tracking-wider">Tachyon. DELHI. 2026</span>
             </div>
           </div>
 
@@ -238,3 +240,4 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
   )
 }
 export default TicketPass
+

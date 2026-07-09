@@ -54,9 +54,9 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
 
   // Google Sheets Webhook Sync Helper
   const syncJoinToGoogleSheet = async (teamId, memberName, memberEmail, memberRole, memberTrack) => {
-    const googleSheetUrl = localStorage.getItem('hacklabify_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
-    if (!localStorage.getItem('hacklabify_google_sheet_url')) {
-      localStorage.setItem('hacklabify_google_sheet_url', 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec')
+    const googleSheetUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+    if (!localStorage.getItem('Tachyon_google_sheet_url')) {
+      localStorage.setItem('Tachyon_google_sheet_url', 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec')
     }
     
     try {
@@ -103,7 +103,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
       name: postData.name,
       github: ticketData ? ticketData.github : 'guest-' + Date.now(),
       role: postData.role,
-      email: ticketData ? ticketData.email : 'guest@hacklabify.com'
+      email: ticketData ? ticketData.email : 'guest@Tachyon.com'
     }
 
     const newListing = {
@@ -122,7 +122,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
 
     const updated = [newListing, ...listings]
     setListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
     
     // Sync creation to google sheets
     syncJoinToGoogleSheet(newTeamId, creatorMember.name, creatorMember.email, creatorMember.role, postData.track)
@@ -178,7 +178,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
     })
 
     setListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
 
     // Sync member join to google sheets
     syncJoinToGoogleSheet(teamId, newMember.name, newMember.email, newMember.role, team.track)
@@ -208,7 +208,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
     })
 
     setListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
   }
 
   // Disband Team Handler
@@ -218,7 +218,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
     playSound('click', isMuted, volume)
     const updated = listings.filter(t => t.id !== teamId)
     setListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
   }
 
   // Filter listings
@@ -230,6 +230,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
 
   // Theme designs mappings
   const themeStyles = {
+    nebula: { bg: 'bg-violet-500', text: 'text-white' },
     amber: { bg: 'bg-yellow-400', text: 'text-black' },
     crimson: { bg: 'bg-red-500', text: 'text-white' },
     acid: { bg: 'bg-green-400', text: 'text-black' },
@@ -239,7 +240,7 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
     custom: { bg: 'bg-[var(--color-custom-primary)]', text: 'text-[var(--color-custom-text)]' }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <section id="teamfinder" className="py-24 border-b border-white/5 bg-transparent relative max-w-[1400px] mx-auto w-full">
@@ -580,3 +581,4 @@ export function TeamFinder({ siteTheme, isMuted, volume, ticketData, listings, s
   )
 }
 export default TeamFinder
+

@@ -11,6 +11,7 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
 
   // Theme styling configurations
   const themeStyles = {
+    nebula: { bg: 'bg-violet-500', border: 'border-violet-500/20', text: 'text-violet-400' },
     amber: { bg: 'bg-yellow-400', border: 'border-yellow-400/20', text: 'text-yellow-400' },
     crimson: { bg: 'bg-red-500', border: 'border-red-500/20', text: 'text-red-400' },
     acid: { bg: 'bg-green-400', border: 'border-green-400/20', text: 'text-green-400' },
@@ -20,7 +21,7 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
     custom: { bg: 'bg-[var(--color-custom-primary)]', border: 'border-[var(--color-custom-primary)]/20', text: 'text-[var(--color-custom-primary)]' }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -59,7 +60,7 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
   const handleCalendarExport = (step) => {
     playSound('coin', isMuted, volume)
     const event = {
-      title: `Hacklabify: ${step.title}`,
+      title: `Tachyon: ${step.title}`,
       description: step.desc,
       startDateStr: step.startDateStr,
       endDateStr: step.endDateStr,
@@ -275,3 +276,4 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
   )
 }
 export default TimelineSection
+

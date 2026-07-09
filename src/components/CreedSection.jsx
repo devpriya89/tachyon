@@ -5,6 +5,7 @@ export function CreedSection({ siteTheme, isMuted, volume, setIsRegisterModalOpe
   
   // Theme highlights mapping for glass quotes
   const themeStyles = {
+    nebula: { accent: 'border-violet-500 bg-violet-500/5 text-zinc-200' },
     amber: { accent: 'border-yellow-400 bg-yellow-400/5 text-zinc-200' },
     crimson: { accent: 'border-red-500 bg-red-500/5 text-zinc-200' },
     acid: { accent: 'border-green-400 bg-green-400/5 text-zinc-200' },
@@ -14,7 +15,7 @@ export function CreedSection({ siteTheme, isMuted, volume, setIsRegisterModalOpe
     custom: { accent: 'border-[var(--color-custom-primary)] bg-[var(--color-custom-primary)]/5 text-zinc-200' }
   }
 
-  const activeStyle = themeStyles[siteTheme] || themeStyles.amber
+  const activeStyle = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <section id="about" className="py-24 px-4 md:px-10 bg-transparent border-b border-white/5 max-w-[1400px] mx-auto w-full">
@@ -61,3 +62,4 @@ export function CreedSection({ siteTheme, isMuted, volume, setIsRegisterModalOpe
   )
 }
 export default CreedSection
+

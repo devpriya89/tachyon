@@ -6,6 +6,15 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
   
   // theme configs
   const themeStyles = {
+    nebula: {
+      bg: 'bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white',
+      text: 'text-white',
+      timerBorder: 'border-white/10',
+      accentHex: '#d946ef',
+      textAccent: 'text-fuchsia-400',
+      hoverBg: 'hover:bg-fuchsia-500 hover:text-white',
+      hoverNumber: 'group-hover:text-white'
+    },
     amber: {
       bg: 'bg-yellow-400 text-black',
       text: 'text-black',
@@ -28,8 +37,8 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
       bg: 'bg-green-400 text-black',
       text: 'text-black',
       timerBorder: 'border-white/10',
-      accentHex: '#34c759',
-      textAccent: 'text-green-400',
+      accentHex: '#10b981',
+      textAccent: 'text-emerald-450',
       hoverBg: 'hover:bg-green-400 hover:text-black',
       hoverNumber: 'group-hover:text-black'
     },
@@ -37,7 +46,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
       bg: 'bg-purple-600 text-white',
       text: 'text-white',
       timerBorder: 'border-white/10',
-      accentHex: '#af52de',
+      accentHex: '#8b5cf6',
       textAccent: 'text-purple-400',
       hoverBg: 'hover:bg-purple-600 hover:text-white',
       hoverNumber: 'group-hover:text-white'
@@ -46,7 +55,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
       bg: 'bg-cyan-400 text-black',
       text: 'text-black',
       timerBorder: 'border-white/10',
-      accentHex: '#00f0ff',
+      accentHex: '#06b6d4',
       textAccent: 'text-cyan-400',
       hoverBg: 'hover:bg-cyan-400 hover:text-black',
       hoverNumber: 'group-hover:text-black'
@@ -55,13 +64,13 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
       bg: 'bg-pink-400 text-black',
       text: 'text-black',
       timerBorder: 'border-white/10',
-      accentHex: '#ff79c6',
+      accentHex: '#ec4899',
       textAccent: 'text-pink-400',
       hoverBg: 'hover:bg-pink-400 hover:text-black',
       hoverNumber: 'group-hover:text-black'
     },
     custom: {
-      bg: 'bg-[var(--color-custom-primary)]',
+      bg: 'bg-[var(--color-custom-primary)] text-[var(--color-custom-text)]',
       text: 'text-[var(--color-custom-text)]',
       timerBorder: 'border-white/10',
       accentHex: 'var(--color-custom-primary)',
@@ -71,7 +80,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
     }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <section
@@ -94,10 +103,10 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
         <div className="mb-12 md:mb-16 relative select-none">
           {/* Neon Glow text backdrop */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl sm:text-8xl md:text-9xl font-syne font-black uppercase text-white/5 blur-sm pointer-events-none select-none tracking-tighter leading-none w-full">
-            HACKLABIFY
+            Tachyon
           </div>
           <h1 className="text-6xl sm:text-8xl md:text-9xl font-syne font-black uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400 tracking-tighter leading-none relative z-10">
-            HACKLABIFY
+            Tachyon
           </h1>
           <div className="absolute -bottom-6 sm:-bottom-8 left-1/2 -translate-x-1/2 bg-zinc-900 border border-white/15 px-5 py-1.5 md:px-6 md:py-2 rotate-[-2deg] z-20 shadow-2xl rounded-full hover:rotate-[2deg] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer">
             <span className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase leading-none tracking-widest text-zinc-300">
@@ -124,7 +133,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
           </button>
           
           <a
-            href="https://discord.gg/hacklabify"
+            href="https://discord.gg/Tachyon"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => playSound('click', isMuted, volume)}
@@ -201,3 +210,4 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
   )
 }
 export default Hero
+

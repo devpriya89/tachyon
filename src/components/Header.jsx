@@ -20,6 +20,7 @@ export function Header({
 
   // theme classes helper
   const themeStyles = {
+    nebula: { bg: 'bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500', text: 'text-white', activeTab: 'bg-white/10 text-white' },
     amber: { bg: 'bg-gradient-to-r from-amber-400 to-yellow-400', text: 'text-black', activeTab: 'bg-white/10 text-white' },
     crimson: { bg: 'bg-gradient-to-r from-red-600 to-red-500', text: 'text-white', activeTab: 'bg-white/10 text-white' },
     acid: { bg: 'bg-gradient-to-r from-green-500 to-emerald-400', text: 'text-black', activeTab: 'bg-white/10 text-white' },
@@ -29,7 +30,7 @@ export function Header({
     custom: { bg: 'bg-[var(--color-custom-primary)]', text: 'text-[var(--color-custom-text)]', activeTab: 'bg-white/10 text-white' }
   }
 
-  const currentTheme = themeStyles[siteTheme] || themeStyles.amber
+  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
 
   return (
     <header className="sticky top-0 z-[80] w-full flex justify-center py-4 bg-transparent select-none">
@@ -46,7 +47,7 @@ export function Header({
         >
           <Logo theme={siteTheme} />
           <div className="flex flex-col text-left">
-            <span className="font-mono font-bold text-xs tracking-wider group-hover:text-cyan-400 transition-colors">HACKLABIFY</span>
+            <span className="font-mono font-bold text-xs tracking-wider group-hover:text-cyan-400 transition-colors">Tachyon</span>
             <span className="font-mono text-[8px] text-white/30 tracking-widest hidden sm:inline-block">V1.0</span>
           </div>
         </div>
@@ -127,7 +128,7 @@ export function Header({
                   onChange={(e) => {
                     const newVol = parseFloat(e.target.value)
                     setVolume(newVol)
-                    localStorage.setItem('hacklabify_volume', String(newVol))
+                    localStorage.setItem('Tachyon_volume', String(newVol))
                   }}
                   className="w-full accent-white cursor-pointer h-1 bg-white/15 outline-none rounded-lg"
                 />
@@ -137,13 +138,14 @@ export function Header({
 
           {/* Theme selector */}
           <div className="hidden xl:flex border border-white/5 bg-zinc-950/40 p-1.5 items-center gap-1.5 rounded-full shadow-md">
-            {['amber', 'crimson', 'acid', 'void', 'cyberpunk', 'dracula', 'custom'].map((th) => {
+            {['nebula', 'cyberpunk', 'crimson', 'acid', 'void', 'amber', 'dracula', 'custom'].map((th) => {
               const thMap = {
+                nebula: 'bg-gradient-to-r from-violet-600 to-fuchsia-500 shadow-[0_0_5px_rgba(168,85,247,0.4)]',
+                cyberpunk: 'bg-cyan-400 shadow-[0_0_5px_rgba(34,211,238,0.3)]',
                 amber: 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.3)]',
                 crimson: 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.3)]',
                 acid: 'bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.3)]',
                 void: 'bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.3)]',
-                cyberpunk: 'bg-cyan-400 shadow-[0_0_5px_rgba(34,211,238,0.3)]',
                 dracula: 'bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.3)]',
                 custom: 'bg-[var(--color-custom-primary)] shadow-[0_0_5px_var(--color-custom-primary)]'
               }
@@ -221,3 +223,4 @@ export function Header({
   )
 }
 export default Header
+

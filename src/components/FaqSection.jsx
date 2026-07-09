@@ -17,7 +17,7 @@ export function FaqSection({ isMuted, volume }) {
   const FAQ_DATA = [
     {
       question: 'Who is eligible to participate?',
-      answer: 'Any student or individual under the age of 18 (born after August 2008) is welcome to register! Whether you are a builder, hacker, or designer, Hacklabify is open to you.'
+      answer: 'Any student or individual under the age of 18 (born after August 2008) is welcome to register! Whether you are a builder, hacker, or designer, Tachyon is open to you.'
     },
     {
       question: 'Is it a team or solo event?',
@@ -25,7 +25,7 @@ export function FaqSection({ isMuted, volume }) {
     },
     {
       question: 'What is the cost of attendance?',
-      answer: 'Hacklabify is 100% free! We cover event passes, workshops, meals, drinks, stickers, and swags for all offline finalists. You only need to handle your own travel to the Delhi venue.'
+      answer: 'Tachyon is 100% free! We cover event passes, workshops, meals, drinks, stickers, and swags for all offline finalists. You only need to handle your own travel to the Delhi venue.'
     },
     {
       question: 'How does the hybrid format work?',
@@ -87,3 +87,4 @@ export function FaqSection({ isMuted, volume }) {
   )
 }
 export default FaqSection
+

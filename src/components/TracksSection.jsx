@@ -265,7 +265,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
 
     ctx.font = 'bold 11px monospace'
     ctx.fillStyle = '#ffffff'
-    ctx.fillText('HACKLABIFY TECH CORE PROFILE', 44, 28)
+    ctx.fillText('Tachyon TECH CORE PROFILE', 44, 28)
     ctx.font = 'bold 8.5px monospace'
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
     ctx.fillText('DIAGNOSTIC STATUS // STACK_ACTIVE', 44, 42)
@@ -694,7 +694,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
 
                 <div className="border-b border-white/5 pb-3 mb-4 flex justify-between items-center mt-1">
                   <span className="font-black text-indigo-400 uppercase tracking-wider text-[9.5px]">
-                    HACKLABIFY TECH CORE PROFILE
+                    Tachyon TECH CORE PROFILE
                   </span>
                   <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
                 </div>
@@ -744,3 +744,4 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
   )
 }
 export default TracksSection
+

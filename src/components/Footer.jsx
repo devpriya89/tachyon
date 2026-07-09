@@ -52,7 +52,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
         <div className="flex items-center gap-3">
           <Logo theme={siteTheme} />
           <div className="flex flex-col text-left select-none">
-            <span className="font-bold text-sm tracking-wider text-white">HACKLABIFY // 2026</span>
+            <span className="font-bold text-sm tracking-wider text-white">Tachyon // 2026</span>
             <span className="text-[10px] text-zinc-500">Craft. Code. Create.</span>
           </div>
         </div>
@@ -93,7 +93,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
         {/* Social Links */}
         <div className="flex flex-wrap gap-4 text-zinc-500 font-mono text-xs">
           <a
-            href="https://github.com/hacklabify"
+            href="https://github.com/Tachyon"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => playSound('click', isMuted, volume)}
@@ -103,7 +103,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
           </a>
           <span className="select-none text-zinc-700">//</span>
           <a
-            href="https://discord.gg/hacklabify"
+            href="https://discord.gg/Tachyon"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => playSound('click', isMuted, volume)}
@@ -113,7 +113,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
           </a>
           <span className="select-none text-zinc-700">//</span>
           <a
-            href="mailto:info@hacklabify.org"
+            href="mailto:info@Tachyon.org"
             onClick={() => playSound('click', isMuted, volume)}
             className="hover:text-white flex items-center gap-1 transition-colors font-bold uppercase text-[10px]"
           >
@@ -154,3 +154,4 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
   )
 }
 export default Footer
+

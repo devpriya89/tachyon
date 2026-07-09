@@ -19,7 +19,7 @@ export const downloadSVG = (ticket, theme) => {
       <line x1="45" y1="15" x2="45" y2="335" stroke="#cccccc" stroke-dasharray="6,6" stroke-width="2"/>
       <line x1="555" y1="15" x2="555" y2="335" stroke="#cccccc" stroke-dasharray="6,6" stroke-width="2"/>
       
-      <text x="65" y="65" font-family="Arial, sans-serif" font-weight="900" font-size="24" fill="${color.dark}">HACKLABIFY V1.0</text>
+      <text x="65" y="65" font-family="Arial, sans-serif" font-weight="900" font-size="24" fill="${color.dark}">Tachyon V1.0</text>
       <text x="65" y="85" font-size="10" font-weight="bold" fill="#777777">DELHI SATELLITE HACKATHON // U18</text>
       
       <rect x="420" y="45" width="120" height="24" fill="${color.main}" stroke="${color.border}" stroke-width="1.5"/>
@@ -83,8 +83,9 @@ export const downloadSVG = (ticket, theme) => {
   const element = document.createElement('a')
   const file = new Blob([svgContent], { type: 'image/svg+xml' })
   element.href = URL.createObjectURL(file)
-  element.download = `hacklabify-ticket-${ticket.ticketId}.svg`
+  element.download = `Tachyon-ticket-${ticket.ticketId}.svg`
   document.body.appendChild(element)
   element.click()
   document.body.removeChild(element)
 }
+

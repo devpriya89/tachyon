@@ -18,12 +18,12 @@ export const downloadICS = (event) => {
   const dtStart = formatDate(startDateStr)
   const dtEnd = formatDate(endDateStr)
   const dtStamp = formatDate(new Date())
-  const uid = `${Date.now()}@hacklabify.org`
+  const uid = `${Date.now()}@Tachyon.org`
 
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Hacklabify//Hacklabify Calendar v1.0//EN',
+    'PRODID:-//Tachyon//Tachyon Calendar v1.0//EN',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${dtStamp}`,
@@ -44,3 +44,4 @@ export const downloadICS = (event) => {
   element.click()
   document.body.removeChild(element)
 }
+

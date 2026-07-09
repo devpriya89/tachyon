@@ -6,7 +6,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
   const [adminPrompt, setAdminPrompt] = useState(false)
   const [terminalHistory, setTerminalHistory] = useState([
     { type: 'output', text: '==================================================' },
-    { type: 'output', text: '  HACKLABIFY INTERACTIVE SH SESSION // CODENAME: DL' },
+    { type: 'output', text: '  Tachyon INTERACTIVE SH SESSION // CODENAME: DL' },
     { type: 'output', text: '==================================================' },
     { type: 'output', text: 'MUTE STATUS: OFF. SOUND SYNTHESIZER: LOADED.' },
     { type: 'output', text: 'Type "help" to see available terminal logs.' },
@@ -33,7 +33,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
     food: { x: 5, y: 3 },
     dir: { x: 1, y: 0 },
     score: 0,
-    highScore: parseInt(localStorage.getItem('hacklabify_snake_high') || '0', 10),
+    highScore: parseInt(localStorage.getItem('Tachyon_snake_high') || '0', 10),
     gameOver: false
   })
 
@@ -88,7 +88,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
             
             // Save high score if necessary
             if (prev.score > prev.highScore) {
-              localStorage.setItem('hacklabify_snake_high', String(prev.score))
+              localStorage.setItem('Tachyon_snake_high', String(prev.score))
             }
 
             // Append game over screen to terminal logs
@@ -111,7 +111,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
               playSound('gameover', isMuted, volume)
               
               if (prev.score > prev.highScore) {
-                localStorage.setItem('hacklabify_snake_high', String(prev.score))
+                localStorage.setItem('Tachyon_snake_high', String(prev.score))
               }
 
               setTimeout(() => {
@@ -265,7 +265,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
     const trimmedInput = terminalInput.trim()
     if (!trimmedInput) return
 
-    const newHistory = [...terminalHistory, { type: 'input', text: `guest@hacklabify:~$ ${terminalInput}` }]
+    const newHistory = [...terminalHistory, { type: 'input', text: `guest@Tachyon:~$ ${terminalInput}` }]
     setTerminalInput('')
 
     // 0. If Admin passcode prompt is active
@@ -358,7 +358,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
       case 'about':
         playSound('click', isMuted, volume)
         output = [
-          { type: 'output', text: 'Hacklabify V1.0 is an under-18 student hackathon. We believe in' },
+          { type: 'output', text: 'Tachyon V1.0 is an under-18 student hackathon. We believe in' },
           { type: 'output', text: 'rewarding craftsmanship over hype. No slides, just execution.' }
         ]
         break
@@ -401,7 +401,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
           food: { x: 5, y: 3 },
           dir: { x: 1, y: 0 },
           score: 0,
-          highScore: parseInt(localStorage.getItem('hacklabify_snake_high') || '0', 10),
+          highScore: parseInt(localStorage.getItem('Tachyon_snake_high') || '0', 10),
           gameOver: false
         })
         output = [
@@ -452,6 +452,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
 
   // Theme-specific execute button configurations
   const executeBtnStyles = {
+    nebula: 'bg-indigo-500 text-white hover:bg-indigo-400',
     amber: 'bg-yellow-400 text-black hover:bg-yellow-300',
     crimson: 'bg-red-500 text-white hover:bg-red-400',
     acid: 'bg-green-400 text-black hover:bg-green-300',
@@ -460,7 +461,19 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
     dracula: 'bg-pink-400 text-black hover:bg-pink-350',
     custom: 'bg-[var(--color-custom-primary)] text-[var(--color-custom-text)]'
   }
-  const currentBtn = executeBtnStyles[siteTheme] || executeBtnStyles.amber
+  const currentBtn = executeBtnStyles[siteTheme] || executeBtnStyles.nebula
+
+  const terminalTextStyles = {
+    nebula: { text: 'text-fuchsia-400', boldText: 'text-fuchsia-350', inputPrompt: 'text-violet-400' },
+    amber: { text: 'text-yellow-400', boldText: 'text-yellow-350', inputPrompt: 'text-yellow-500' },
+    crimson: { text: 'text-red-400', boldText: 'text-red-350', inputPrompt: 'text-red-500' },
+    acid: { text: 'text-green-400', boldText: 'text-green-350', inputPrompt: 'text-green-500' },
+    void: { text: 'text-purple-400', boldText: 'text-purple-350', inputPrompt: 'text-purple-500' },
+    cyberpunk: { text: 'text-cyan-400', boldText: 'text-cyan-350', inputPrompt: 'text-cyan-500' },
+    dracula: { text: 'text-pink-400', boldText: 'text-pink-350', inputPrompt: 'text-pink-500' },
+    custom: { text: 'text-[var(--color-custom-primary)]', boldText: 'text-[var(--color-custom-primary)]', inputPrompt: 'text-[var(--color-custom-primary)]' }
+  }
+  const termColor = terminalTextStyles[siteTheme] || terminalTextStyles.nebula
 
   return (
     <div className="flex-1 flex flex-col h-[400px] md:h-[480px] border border-white/10 bg-zinc-950/65 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden relative crt-overlay select-text">
@@ -484,7 +497,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
       </div>
 
       {/* Logs output */}
-      <div className="flex-1 p-4 overflow-y-auto font-mono text-xs md:text-sm text-green-400 space-y-2.5 z-10 relative terminal-logs">
+      <div className={`flex-1 p-4 overflow-y-auto font-mono text-xs md:text-sm ${termColor.text} space-y-2.5 z-10 relative terminal-logs`}>
         
         {/* Render Snake Board if active */}
         {snakeGame.active ? (
@@ -494,7 +507,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
               <span>HIGH SCORE: {snakeGame.highScore}</span>
             </div>
             {renderSnakeBoard().map((line, i) => (
-              <div key={i} className="leading-none whitespace-pre font-mono font-bold select-none text-emerald-400">
+              <div key={i} className={`leading-none whitespace-pre font-mono font-bold select-none ${termColor.boldText}`}>
                 {line}
               </div>
             ))}
@@ -507,7 +520,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
         ) : (
           /* Render normal history */
           terminalHistory.map((line, idx) => (
-            <div key={idx} className={line.type === 'error' ? 'text-red-400' : line.type === 'input' ? 'text-yellow-400 font-bold' : 'text-emerald-400'}>
+            <div key={idx} className={line.type === 'error' ? 'text-red-400' : line.type === 'input' ? `${termColor.inputPrompt} font-bold` : `${termColor.text}`}>
               {line.text}
             </div>
           ))
@@ -518,8 +531,8 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
 
       {/* Command Input Form */}
       <form onSubmit={handleTerminalSubmit} className="flex border-t border-white/5 bg-zinc-950/80 px-4 py-3 shrink-0 items-center z-10">
-        <span className="font-mono text-xs md:text-sm font-black text-yellow-400 select-none mr-2 shrink-0">
-          <span className="hidden sm:inline">guest@hacklabify:</span>~$
+        <span className={`font-mono text-xs md:text-sm font-black ${termColor.inputPrompt} select-none mr-2 shrink-0`}>
+          <span className="hidden sm:inline">guest@Tachyon:</span>~$
         </span>
         <input
           type="text"
@@ -538,7 +551,7 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
               ? 'Type guess (e.g. "guess 1234")...'
               : 'Type command (e.g. "help", "snake")...'
           }
-          className="flex-1 bg-transparent border-0 outline-none text-emerald-400 font-mono text-xs md:text-sm focus:ring-0 p-0"
+          className={`flex-1 bg-transparent border-0 outline-none ${termColor.text} font-mono text-xs md:text-sm focus:ring-0 p-0`}
           autoComplete="off"
           autoCapitalize="off"
           spellCheck="false"
@@ -555,3 +568,4 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
   )
 }
 export default TerminalCLI
+

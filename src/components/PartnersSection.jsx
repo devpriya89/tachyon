@@ -79,7 +79,7 @@ export function PartnersSection({ siteTheme: _siteTheme, organizers = [], sponso
             SUPPORTING CORES
           </h2>
           <p className="mt-4 text-sm font-bold text-zinc-500 max-w-md mx-auto leading-relaxed font-mono">
-            Hacklabify is powered by a network of local Delhi system moderators, creators, and technology infrastructure hosts.
+            Tachyon is powered by a network of local Delhi system moderators, creators, and technology infrastructure hosts.
           </p>
         </div>
 
@@ -117,17 +117,17 @@ export function PartnersSection({ siteTheme: _siteTheme, organizers = [], sponso
                     {/* Hover overlay with dynamic contact details */}
                     <div className="absolute inset-0 bg-zinc-950/90 border border-white/10 flex flex-col justify-center items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl p-2.5 text-center backdrop-blur-md">
                       <a
-                        href={`mailto:${org.email || 'info@hacklabify.org'}`}
+                        href={`mailto:${org.email || 'info@Tachyon.org'}`}
                         onClick={(e) => {
                           playSound('click', isMuted, volume)
                           e.stopPropagation()
                         }}
                         className="text-zinc-300 font-mono text-[9.5px] font-bold hover:text-cyan-400 flex items-center gap-1.5 tracking-wider truncate max-w-full"
                       >
-                        <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400 hover:text-cyan-450" /> {org.email || 'info@hacklabify.org'}
+                        <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400 hover:text-cyan-450" /> {org.email || 'info@Tachyon.org'}
                       </a>
                       <a
-                        href={`https://instagram.com/${org.instagram || 'hacklabify'}`}
+                        href={`https://instagram.com/${org.instagram || 'Tachyon'}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => {
@@ -136,7 +136,7 @@ export function PartnersSection({ siteTheme: _siteTheme, organizers = [], sponso
                         }}
                         className="text-zinc-300 font-mono text-[9.5px] font-bold hover:text-indigo-400 flex items-center gap-1.5 tracking-wider truncate max-w-full"
                       >
-                        <Instagram className="w-3.5 h-3.5 shrink-0 text-zinc-400 hover:text-indigo-455" /> @{org.instagram || 'hacklabify'}
+                        <Instagram className="w-3.5 h-3.5 shrink-0 text-zinc-400 hover:text-indigo-455" /> @{org.instagram || 'Tachyon'}
                       </a>
                     </div>
                   </div>
@@ -240,3 +240,4 @@ export function PartnersSection({ siteTheme: _siteTheme, organizers = [], sponso
   )
 }
 export default PartnersSection
+

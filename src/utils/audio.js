@@ -86,3 +86,4 @@ export const playSound = (type, isMuted = false, volumeLevel = 0.5) => {
     console.error('Audio Synth failure:', err)
   }
 }
+

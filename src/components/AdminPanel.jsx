@@ -22,7 +22,7 @@ export function AdminPanel({
   const [activeTab, setActiveTab] = useState('milestones')
   
   const [googleSheetUrl, setGoogleSheetUrl] = useState(() => {
-    return localStorage.getItem('hacklabify_google_sheet_url') || ''
+    return localStorage.getItem('Tachyon_google_sheet_url') || ''
   })
   
   // Registration list state
@@ -57,7 +57,7 @@ export function AdminPanel({
 
   // Load registrations on mount
   useEffect(() => {
-    const saved = localStorage.getItem('hacklabify_registrations')
+    const saved = localStorage.getItem('Tachyon_registrations')
     if (saved) {
       try {
         setRegistrations(JSON.parse(saved))
@@ -72,7 +72,7 @@ export function AdminPanel({
     playSound('error', isMuted, volume)
     const updated = teamListings.filter(item => item.id !== id)
     setTeamListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
   }
 
   // Add custom team listing
@@ -98,7 +98,7 @@ export function AdminPanel({
 
     const updated = [item, ...teamListings]
     setTeamListings(updated)
-    localStorage.setItem('hacklabify_team_listings', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
 
     setNewTeam({
       name: '',
@@ -115,14 +115,14 @@ export function AdminPanel({
     playSound('power-off', isMuted, volume)
     const updated = registrations.filter(r => r.ticketId !== ticketId)
     setRegistrations(updated)
-    localStorage.setItem('hacklabify_registrations', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_registrations', JSON.stringify(updated))
 
     // If the revoked ticket matches the active visitor's ticket, clear it
-    const activeTicket = localStorage.getItem('hacklabify_ticket')
+    const activeTicket = localStorage.getItem('Tachyon_ticket')
     if (activeTicket) {
       const parsed = JSON.parse(activeTicket)
       if (parsed.ticketId === ticketId) {
-        localStorage.removeItem('hacklabify_ticket')
+        localStorage.removeItem('Tachyon_ticket')
         window.location.reload()
       }
     }
@@ -162,7 +162,7 @@ export function AdminPanel({
     playSound('success', isMuted, volume)
     const updated = [...organizers, { id: 'org-' + Date.now(), ...newOrg }]
     setOrganizers(updated)
-    localStorage.setItem('hacklabify_organizers', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_organizers', JSON.stringify(updated))
     setNewOrg({ name: '', role: '', email: '', instagram: '', image: '' })
   }
 
@@ -171,7 +171,7 @@ export function AdminPanel({
     playSound('error', isMuted, volume)
     const updated = organizers.filter(org => org.id !== id)
     setOrganizers(updated)
-    localStorage.setItem('hacklabify_organizers', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_organizers', JSON.stringify(updated))
   }
 
   // Add Custom Sponsor Handler
@@ -185,7 +185,7 @@ export function AdminPanel({
     playSound('success', isMuted, volume)
     const updated = [...sponsors, { id: 'sp-' + Date.now(), ...newSponsor }]
     setSponsors(updated)
-    localStorage.setItem('hacklabify_sponsors', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_sponsors', JSON.stringify(updated))
     setNewSponsor({ name: '', tier: 'core', website: '', logo: '' })
   }
 
@@ -194,7 +194,7 @@ export function AdminPanel({
     playSound('error', isMuted, volume)
     const updated = sponsors.filter(sp => sp.id !== id)
     setSponsors(updated)
-    localStorage.setItem('hacklabify_sponsors', JSON.stringify(updated))
+    localStorage.setItem('Tachyon_sponsors', JSON.stringify(updated))
   }
 
   return (
@@ -294,7 +294,7 @@ export function AdminPanel({
                     value={googleSheetUrl}
                     onChange={(e) => {
                       setGoogleSheetUrl(e.target.value)
-                      localStorage.setItem('hacklabify_google_sheet_url', e.target.value)
+                      localStorage.setItem('Tachyon_google_sheet_url', e.target.value)
                     }}
                     placeholder="https://script.google.com/macros/s/XXXXX/exec"
                     className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-xl outline-none focus:border-white transition-all shadow-inner"
@@ -900,3 +900,4 @@ export function AdminPanel({
   )
 }
 export default AdminPanel
+
