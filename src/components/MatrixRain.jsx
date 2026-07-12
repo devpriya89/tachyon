@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 
-export function MatrixRain({ theme = 'nebula' }) {
+export function MatrixRain({ theme = 'takumi' }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export function MatrixRain({ theme = 'nebula' }) {
 
     // Map theme to matrix rain color
     const themeColors = {
+      takumi: '#C2452D',
       nebula: '#d946ef',
       amber: '#ffdf00',
       crimson: '#E00024',
@@ -31,7 +32,7 @@ export function MatrixRain({ theme = 'nebula' }) {
       dracula: '#50fa7b',
       custom: 'var(--color-custom-primary)'
     }
-    const color = themeColors[theme] || themeColors.nebula
+    const color = themeColors[theme] || themeColors.takumi
 
     const draw = () => {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.06)'
@@ -66,4 +67,3 @@ export function MatrixRain({ theme = 'nebula' }) {
   return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-20 z-0" />
 }
 export default MatrixRain
-

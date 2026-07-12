@@ -1,33 +1,17 @@
 import React from 'react'
 
-export function Logo({ theme = 'nebula' }) {
-  const colors = {
-    nebula: '#d946ef',
-    amber: '#ffdf00',
-    crimson: '#E00024',
-    acid: '#22c55e',
-    void: '#9333ea',
-    cyberpunk: '#00f0ff',
-    dracula: '#bd93f9'
-  }
-  const primaryColor = colors[theme] || colors.nebula
-
+export function Logo({ theme = 'takumi' }) {
   return (
-    <div className="relative group select-none shrink-0">
-      {/* Shifting background shadow */}
-      <div className="absolute inset-0 bg-black translate-x-[2.5px] translate-y-[2.5px] group-hover:translate-x-[4px] group-hover:translate-y-[4px] transition-transform"></div>
-      
-      {/* Main logo block */}
-      <div className="relative border-2.5 border-black bg-zinc-950 p-[3px] flex items-center justify-center w-9 h-9 active:translate-x-[1px] active:translate-y-[1px] transition-transform">
+    <div className="relative select-none shrink-0">
+      {/* Main logo block — brutalist flat */}
+      <div className="relative border border-white/10 bg-transparent p-[2px] flex items-center justify-center w-8 h-8">
         <div 
-          className="w-full h-full flex items-center justify-center font-syne font-black text-base text-black transition-colors"
-          style={{ backgroundColor: primaryColor }}
+          className="w-full h-full flex items-center justify-center font-bold text-xs text-[#F8F7F4] select-none font-sans"
         >
-          H
+          創
         </div>
       </div>
     </div>
   )
 }
 export default Logo
-

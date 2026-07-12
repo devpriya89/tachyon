@@ -17,12 +17,16 @@ export function AdminPanel({
   organizers,
   setOrganizers,
   sponsors,
-  setSponsors
+  setSponsors,
+  whatsappLink,
+  setWhatsappLink,
+  faqList,
+  setFaqList
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
   
   const [googleSheetUrl, setGoogleSheetUrl] = useState(() => {
-    return localStorage.getItem('Tachyon_google_sheet_url') || ''
+    return localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
   })
   
   // Registration list state
@@ -54,6 +58,11 @@ export function AdminPanel({
     website: '',
     logo: ''
   })
+
+  // FAQ Manager helper states
+  const [newFaq, setNewFaq] = useState({ question: '', answer: '' })
+  const [editingFaqIdx, setEditingFaqIdx] = useState(null)
+  const [editFaqData, setEditFaqData] = useState({ question: '', answer: '' })
 
   // Load registrations on mount
   useEffect(() => {
@@ -99,64 +108,15 @@ export function AdminPanel({
     const updated = [item, ...teamListings]
     setTeamListings(updated)
     localStorage.setItem('Tachyon_team_listings', JSON.stringify(updated))
-
-    setNewTeam({
-      name: '',
-      role: 'developer',
-      track: 'ai',
-      skills: '',
-      pitch: '',
-      discord: ''
-    })
-  }
-
-  // Revoke ticket registration pass
-  const handleRevokePass = (ticketId) => {
-    playSound('power-off', isMuted, volume)
-    const updated = registrations.filter(r => r.ticketId !== ticketId)
-    setRegistrations(updated)
-    localStorage.setItem('Tachyon_registrations', JSON.stringify(updated))
-
-    // If the revoked ticket matches the active visitor's ticket, clear it
-    const activeTicket = localStorage.getItem('Tachyon_ticket')
-    if (activeTicket) {
-      const parsed = JSON.parse(activeTicket)
-      if (parsed.ticketId === ticketId) {
-        localStorage.removeItem('Tachyon_ticket')
-        window.location.reload()
-      }
-    }
-  }
-
-  // Update specific color variable
-  const handleColorChange = (variable, hexValue) => {
-    const updated = { ...themeColors, [variable]: hexValue }
-    setThemeColors(updated)
-  }
-
-  // Reset colors to factory values
-  const resetColors = () => {
-    playSound('click', isMuted, volume)
-    const defaults = {
-      '--color-yellow-neo': '#ffd000',
-      '--color-red-neo': '#d91429',
-      '--color-cyber-cyan': '#06b6d4',
-      '--color-drac-purple': '#bd93f9',
-      '--color-ink': '#030712',
-      '--color-paper': '#f3f4f6',
-      '--color-custom-primary': '#ff00ff',
-      '--color-custom-bg': '#121212',
-      '--color-custom-text': '#ffffff'
-    }
-    setThemeColors(defaults)
+    setNewTeam({ name: '', role: 'developer', track: 'ai', skills: '', pitch: '', discord: '' })
   }
 
   // Add Custom Organizer Handler
   const handleAddOrgSubmit = (e) => {
     e.preventDefault()
-    if (!newOrg.name || !newOrg.role) {
+    if (!newOrg.name || !newOrg.role || !newOrg.email) {
       playSound('error', isMuted, volume)
-      alert('Name and Role are required fields.')
+      alert('Fill in Organizer Name, Role, and Email.')
       return
     }
     playSound('success', isMuted, volume)
@@ -197,17 +157,54 @@ export function AdminPanel({
     localStorage.setItem('Tachyon_sponsors', JSON.stringify(updated))
   }
 
+  // Add FAQ handler
+  const handleAddFaqSubmit = (e) => {
+    e.preventDefault()
+    if (!newFaq.question || !newFaq.answer) {
+      playSound('error', isMuted, volume)
+      alert('Fill in both the Question and the Answer fields.')
+      return
+    }
+    playSound('success', isMuted, volume)
+    const updated = [...faqList, newFaq]
+    setFaqList(updated)
+    setNewFaq({ question: '', answer: '' })
+  }
+
+  // Delete FAQ handler
+  const handleDeleteFaq = (idx) => {
+    if (window.confirm('Delete this FAQ permanently?')) {
+      playSound('error', isMuted, volume)
+      const updated = faqList.filter((_, i) => i !== idx)
+      setFaqList(updated)
+    }
+  }
+
+  // Save edited FAQ handler
+  const handleSaveEditFaq = (idx) => {
+    if (!editFaqData.question || !editFaqData.answer) {
+      playSound('error', isMuted, volume)
+      alert('Question and Answer cannot be blank.')
+      return
+    }
+    playSound('success', isMuted, volume)
+    const updated = [...faqList]
+    updated[idx] = editFaqData
+    setFaqList(updated)
+    setEditingFaqIdx(null)
+  }
+
   return (
     <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 bg-black/85 backdrop-blur-lg overflow-y-auto pt-6 sm:pt-10 select-none text-white">
       
       {/* Admin Panel container */}
-      <div className="relative w-full max-w-4xl border border-white/10 bg-zinc-950/90 text-white p-6 md:p-8 shadow-2xl my-4 sm:my-8 max-h-[90vh] overflow-y-auto rounded-3xl backdrop-blur-xl">
+      <div className="relative w-full max-w-4xl border border-white/10 bg-[#0A0A08] text-white p-6 md:p-8 shadow-2xl my-4 sm:my-8 max-h-[90vh] overflow-y-auto rounded-none backdrop-blur-none">
         
         {/* Panel Header */}
         <div className="relative z-10 flex justify-between items-center border-b border-white/5 pb-4 mb-6">
           <div className="text-left">
-            <div className="inline-flex items-center gap-1.5 border border-yellow-500/20 bg-yellow-500/5 text-yellow-400 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-lg shadow-md select-none">
-              <span className="w-2 h-2 bg-[#22c55e] rounded-full inline-block animate-pulse"></span>
+            <div className="inline-flex items-center gap-1.5 border border-red-500/20 bg-red-500/5 text-[#C2452D] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-none select-none">
+              <span className="w-2 h-2 bg-[#C2452D] rounded-full inline-block animate-pulse"></span>
               SECURE ADMIN SESSION // LEVEL 0
             </div>
             <h2 className="text-2xl sm:text-3xl font-syne font-black uppercase text-white mt-1.5 font-mono">
@@ -220,7 +217,7 @@ export function AdminPanel({
               playSound('click', isMuted, volume)
               setIsAdminOpen(false)
             }}
-            className="border border-white/10 bg-white/5 p-2 hover:bg-red-500/20 hover:text-red-400 text-zinc-400 rounded-lg cursor-pointer active:scale-95 transition-all"
+            className="border border-white/10 bg-white/5 p-2 hover:bg-[#C2452D]/20 hover:text-white text-zinc-400 rounded-none cursor-pointer active:scale-95 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -232,6 +229,7 @@ export function AdminPanel({
             { id: 'milestones', label: 'Milestones & Dates', icon: Calendar },
             { id: 'teammates', label: 'Matchmaking Lobby', icon: Users },
             { id: 'crewsponsors', label: 'Crews & Sponsors', icon: Sparkles },
+            { id: 'faqs', label: 'FAQ Manager', icon: MessageSquare },
             { id: 'themes', label: 'Theme Editor', icon: Sliders },
             { id: 'registrants', label: 'Registrant Registry', icon: FileText }
           ].map(tab => {
@@ -243,9 +241,9 @@ export function AdminPanel({
                   playSound('click', isMuted, volume)
                   setActiveTab(tab.id)
                 }}
-                className={`flex items-center gap-1.5 border px-3 py-2 transition-all cursor-pointer rounded-xl font-mono font-bold ${
+                className={`flex items-center gap-1.5 border px-3 py-2 transition-all cursor-pointer rounded-none font-mono font-bold ${
                   activeTab === tab.id 
-                    ? 'bg-white text-black border-white shadow-md scale-[1.01]' 
+                    ? 'bg-[#F8F7F4] text-[#0A0A08] border-white shadow-none scale-[1.01]' 
                     : 'bg-white/5 text-zinc-400 border-white/5 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -262,7 +260,7 @@ export function AdminPanel({
           {/* TAB 1: MILESTONES & DATES */}
           {activeTab === 'milestones' && (
             <div className="space-y-6">
-              <div className="border border-white/5 bg-white/5 p-5 rounded-2xl text-left">
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left">
                 <span className="block font-bold text-white uppercase mb-1">⏰ CountDown Target Milestone</span>
                 <p className="text-[10px] text-zinc-400 mb-3">Adjust the date for the Hero Section digital countdown clocks.</p>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -271,21 +269,47 @@ export function AdminPanel({
                     value={countdownDate}
                     onChange={(e) => setCountdownDate(e.target.value)}
                     placeholder="e.g. 2026-07-24T00:00:00+05:30"
-                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-xl outline-none focus:border-white transition-all shadow-inner"
+                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-none outline-none focus:border-white transition-all shadow-none"
                   />
                   <button
                     onClick={() => {
                       playSound('success', isMuted, volume)
                       alert('Target date updated successfully!')
                     }}
-                    className="border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-xl active:scale-95 transition-all cursor-pointer"
+                    className="border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] px-4 py-2 font-bold uppercase rounded-none active:scale-95 transition-all cursor-pointer"
                   >
                     SYNC TIMER
                   </button>
                 </div>
               </div>
 
-              <div className="border border-white/5 bg-white/5 p-5 rounded-2xl text-left">
+              {/* WhatsApp Community Link Setting Block */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left">
+                <span className="block font-bold text-white uppercase mb-1">💬 WhatsApp Community Link</span>
+                <p className="text-[10px] text-zinc-400 mb-3">Paste your WhatsApp Community link for the main landing page button.</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    value={whatsappLink}
+                    onChange={(e) => {
+                      setWhatsappLink(e.target.value)
+                    }}
+                    placeholder="https://chat.whatsapp.com/XXXXX"
+                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-none outline-none focus:border-white transition-all shadow-none"
+                  />
+                  <button
+                    onClick={() => {
+                      playSound('success', isMuted, volume)
+                      alert('WhatsApp Community URL updated and saved!')
+                    }}
+                    className="border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] px-4 py-2 font-bold uppercase rounded-none active:scale-95 transition-all cursor-pointer"
+                  >
+                    SAVE LINK
+                  </button>
+                </div>
+              </div>
+
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left">
                 <span className="block font-bold text-white uppercase mb-1">📊 Google Sheets Sync Webhook URL</span>
                 <p className="text-[10px] text-zinc-400 mb-3">Paste your Google Apps Script Web App URL to sync registration and matchmaking data in real time.</p>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -297,14 +321,14 @@ export function AdminPanel({
                       localStorage.setItem('Tachyon_google_sheet_url', e.target.value)
                     }}
                     placeholder="https://script.google.com/macros/s/XXXXX/exec"
-                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-xl outline-none focus:border-white transition-all shadow-inner"
+                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-none outline-none focus:border-white transition-all shadow-none"
                   />
                   <button
                     onClick={() => {
                       playSound('success', isMuted, volume)
                       alert('Google Sheets webhook URL updated and saved!')
                     }}
-                    className="border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-xl active:scale-95 transition-all cursor-pointer"
+                    className="border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] px-4 py-2 font-bold uppercase rounded-none active:scale-95 transition-all cursor-pointer"
                   >
                     SAVE URL
                   </button>
@@ -315,9 +339,9 @@ export function AdminPanel({
                 <span className="block font-bold text-white uppercase mb-3 text-left">📅 Schedule Nodes Settings</span>
                 <div className="space-y-4">
                   {timelineNodes.map((node, index) => (
-                    <div key={index} className="border border-white/5 bg-zinc-900/30 p-4.5 rounded-2xl space-y-3 text-left">
+                    <div key={index} className="border border-white/5 bg-zinc-900/30 p-4.5 rounded-none space-y-3 text-left">
                       <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <span className="font-bold text-indigo-400">Phase {node.phase}</span>
+                        <span className="font-bold text-[#C2452D]">Phase {node.phase}</span>
                         <select
                           value={node.status}
                           onChange={(e) => {
@@ -325,7 +349,7 @@ export function AdminPanel({
                             updated[index].status = e.target.value
                             setTimelineNodes(updated)
                           }}
-                          className="bg-zinc-950/60 border border-white/5 px-2 py-0.5 text-[10px] font-bold uppercase outline-none text-white rounded-lg cursor-pointer"
+                          className="bg-zinc-950/60 border border-white/5 px-2 py-0.5 text-[10px] font-bold uppercase outline-none text-white rounded-none cursor-pointer"
                         >
                           <option value="ACTIVE">ACTIVE</option>
                           <option value="UPCOMING">UPCOMING</option>
@@ -344,11 +368,11 @@ export function AdminPanel({
                               updated[index].title = e.target.value
                               setTimelineNodes(updated)
                             }}
-                            className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
+                            className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                           />
                         </div>
                         <div>
-                          <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Date Display Label</label>
+                          <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Milestone Date Info</label>
                           <input
                             type="text"
                             value={node.date}
@@ -357,22 +381,22 @@ export function AdminPanel({
                               updated[index].date = e.target.value
                               setTimelineNodes(updated)
                             }}
-                            className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
+                            className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Milestone Description</label>
+                        <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Detailed Description</label>
                         <textarea
-                          rows={2}
+                          rows="2"
                           value={node.desc}
                           onChange={(e) => {
                             const updated = [...timelineNodes]
                             updated[index].desc = e.target.value
                             setTimelineNodes(updated)
                           }}
-                          className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none text-[10px] leading-tight resize-none rounded-lg text-white"
+                          className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all resize-none"
                         />
                       </div>
                     </div>
@@ -382,115 +406,110 @@ export function AdminPanel({
             </div>
           )}
 
-          {/* TAB 2: TEAMMATCHMAKING BOARD MODERATOR */}
+          {/* TAB 2: TEAM LISTINGS */}
           {activeTab === 'teammates' && (
             <div className="space-y-6">
               
-              {/* Insert Team Listing */}
-              <form onSubmit={handleAddListingSubmit} className="border border-white/5 bg-white/5 p-5 rounded-2xl space-y-3 text-left">
-                <span className="block font-bold text-white uppercase mb-1">➕ Inject Mock Builder Listing</span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Form to insert custom matchmaking listing */}
+              <form onSubmit={handleAddListingSubmit} className="border border-white/5 bg-white/5 p-5 rounded-none space-y-4 text-left">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">➕ Add Custom Teammate Listing</span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Full Name *</label>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Creator Name (Required)</label>
                     <input
                       type="text"
-                      required
                       value={newTeam.name}
                       onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-                      className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
+                      placeholder="e.g. Priyanshu Sen"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Target Role *</label>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Primary Role</label>
                     <select
                       value={newTeam.role}
                       onChange={(e) => setNewTeam({ ...newTeam, role: e.target.value })}
-                      className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white cursor-pointer"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white cursor-pointer"
                     >
                       <option value="developer">Developer</option>
                       <option value="designer">Designer</option>
                       <option value="generalist">Generalist</option>
-                      <option value="researcher">Researcher</option>
                     </select>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Target Track *</label>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Track Target</label>
                     <select
                       value={newTeam.track}
                       onChange={(e) => setNewTeam({ ...newTeam, track: e.target.value })}
-                      className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white cursor-pointer"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white cursor-pointer"
                     >
-                      <option value="ai">AI</option>
-                      <option value="cyber">CYBER</option>
-                      <option value="game">GAME</option>
-                      <option value="web">WEB</option>
+                      <option value="ai">AI Track</option>
+                      <option value="cyber">Cyber Track</option>
+                      <option value="game">Game Track</option>
+                      <option value="web">Web Track</option>
                     </select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Discord Handle *</label>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Skills (Comma separated)</label>
                     <input
                       type="text"
-                      required
-                      placeholder="e.g. user#1234"
-                      value={newTeam.discord}
-                      onChange={(e) => setNewTeam({ ...newTeam, discord: e.target.value })}
-                      className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Skills (separated by commas)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. React, Rust, Go"
                       value={newTeam.skills}
                       onChange={(e) => setNewTeam({ ...newTeam, skills: e.target.value })}
-                      className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
+                      placeholder="e.g. React, Rust, Go"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Builder Pitch *</label>
-                  <textarea
-                    rows={2}
-                    required
-                    value={newTeam.pitch}
-                    onChange={(e) => setNewTeam({ ...newTeam, pitch: e.target.value })}
-                    className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none text-[10px] resize-none rounded-lg text-white"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Discord Tag (Required)</label>
+                    <input
+                      type="text"
+                      value={newTeam.discord}
+                      onChange={(e) => setNewTeam({ ...newTeam, discord: e.target.value })}
+                      placeholder="e.g. name#1234"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Pitch / Idea summary (Required)</label>
+                    <input
+                      type="text"
+                      value={newTeam.pitch}
+                      onChange={(e) => setNewTeam({ ...newTeam, pitch: e.target.value })}
+                      placeholder="What are you building?"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-lg active:scale-95 transition-all cursor-pointer"
+                  className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-xs"
                 >
-                  ADD BUILDER TO MATCHMAKING LOBBY
+                  ADD TEAM CONSOLE ENTRY
                 </button>
               </form>
 
-              {/* Active Listings Moderator */}
-              <div className="text-left">
-                <span className="block font-bold text-white uppercase mb-2">📋 Active Listings Moderator ({teamListings.length})</span>
-                <div className="max-h-60 overflow-y-auto space-y-2 border border-white/5 p-2 bg-zinc-950/40 rounded-2xl scrollbar-none">
+              {/* Team list table */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left">
+                <span className="block font-bold text-white uppercase mb-4 border-b border-white/5 pb-2">📂 Matchmaking Lobby Database ({teamListings.length} listings)</span>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                   {teamListings.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center border border-white/5 p-3.5 bg-zinc-900/30 hover:bg-zinc-900/40 rounded-xl transition-colors">
-                      <div className="space-y-1 select-text">
-                        <div className="flex gap-2 items-center">
-                          <span className="font-bold text-white">{item.name}</span>
-                          <span className="text-[8px] px-1 border border-white/10 bg-white/5 rounded text-zinc-350">{item.role.toUpperCase()}</span>
-                          <span className="text-[8px] font-bold text-indigo-400">{item.track.toUpperCase()}</span>
-                        </div>
-                        <div className="text-[10px] text-zinc-400 leading-tight">{item.pitch}</div>
-                        <div className="text-[9px] text-zinc-500 font-bold flex items-center gap-1">
-                          <MessageSquare className="w-3 h-3 text-zinc-550" /> Discord: {item.discord}
-                        </div>
+                    <div key={item.id} className="flex justify-between items-center border border-white/5 bg-zinc-900/40 p-3 rounded-none">
+                      <div>
+                        <span className="font-bold text-zinc-200 block text-xs">{item.teamName || `${item.name}'s Squad`} ({item.track.toUpperCase()})</span>
+                        <span className="text-[10px] text-zinc-500 block truncate max-w-lg">Pitch: {item.pitch}</span>
+                        <span className="text-[9px] text-[#C2452D] block mt-1">Creator: {item.name} | discord: {item.discord}</span>
                       </div>
                       <button
                         onClick={() => handleDeleteListing(item.id)}
-                        className="border border-red-500/10 bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20 cursor-pointer rounded-xl active:scale-90 transition-colors shrink-0"
+                        className="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 border border-red-500/20 rounded-none transition-colors duration-150 active:scale-95"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -504,400 +523,422 @@ export function AdminPanel({
 
           {/* TAB 3: CREWS & SPONSORS */}
           {activeTab === 'crewsponsors' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start text-left">
+            <div className="space-y-6">
               
-              {/* Operators Moderator */}
-              <div className="space-y-4">
-                <div className="border border-white/5 bg-white/5 p-4.5 rounded-2xl space-y-3">
-                  <span className="block font-bold text-white uppercase mb-1">👤 Inject Platform Operator</span>
-                  <form onSubmit={handleAddOrgSubmit} className="space-y-3">
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={newOrg.name}
-                        onChange={(e) => setNewOrg({ ...newOrg, name: e.target.value })}
-                        placeholder="e.g. Kunal Dev"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Operator Role *</label>
-                      <input
-                        type="text"
-                        required
-                        value={newOrg.role}
-                        onChange={(e) => setNewOrg({ ...newOrg, role: e.target.value })}
-                        placeholder="e.g. Core Architect"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Email Address</label>
-                        <input
-                          type="email"
-                          value={newOrg.email}
-                          onChange={(e) => setNewOrg({ ...newOrg, email: e.target.value })}
-                          placeholder="e.g. kunal@domain.com"
-                          className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-mono outline-none rounded-lg text-[10px] text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Instagram ID</label>
-                        <input
-                          type="text"
-                          value={newOrg.instagram}
-                          onChange={(e) => setNewOrg({ ...newOrg, instagram: e.target.value })}
-                          placeholder="e.g. kunal_dev"
-                          className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-mono outline-none rounded-lg text-[10px] text-white"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Picture Link (Optional URL)</label>
-                      <input
-                        type="text"
-                        value={newOrg.image}
-                        onChange={(e) => setNewOrg({ ...newOrg, image: e.target.value })}
-                        placeholder="e.g. https://domain.com/pic.jpg"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-mono outline-none rounded-lg text-[10px] text-white"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-lg active:scale-95 transition-all cursor-pointer"
-                    >
-                      ADD OPERATOR
-                    </button>
-                  </form>
-                </div>
+              {/* Organizers section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Add organizer form */}
+                <form onSubmit={handleAddOrgSubmit} className="border border-white/5 bg-white/5 p-5 rounded-none space-y-4 text-left">
+                  <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">➕ Add Custom Crew Organizer</span>
+                  
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      value={newOrg.name}
+                      onChange={(e) => setNewOrg({ ...newOrg, name: e.target.value })}
+                      placeholder="e.g. Aman Sharma"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <span className="block font-bold text-white uppercase">[ Crew List ({organizers.length}) ]</span>
-                  <div className="max-h-60 overflow-y-auto space-y-2 border border-white/5 p-2 bg-zinc-950/40 rounded-2xl scrollbar-none">
-                    {organizers.map((org) => (
-                      <div key={org.id} className="flex justify-between items-center border border-white/5 p-2.5 bg-zinc-900/30 hover:bg-zinc-900/40 rounded-xl transition-colors">
-                        <div className="font-mono text-left">
-                          <span className="block font-bold text-white">{org.name}</span>
-                          <span className="block text-[8px] font-bold text-indigo-400 uppercase mt-0.5">{org.role}</span>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Operational Role</label>
+                    <input
+                      type="text"
+                      value={newOrg.role}
+                      onChange={(e) => setNewOrg({ ...newOrg, role: e.target.value })}
+                      placeholder="e.g. Mainframe Moderator"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Email Coordinates</label>
+                    <input
+                      type="email"
+                      value={newOrg.email}
+                      onChange={(e) => setNewOrg({ ...newOrg, email: e.target.value })}
+                      placeholder="e.g. aman@Tachyon.org"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Instagram handle</label>
+                    <input
+                      type="text"
+                      value={newOrg.instagram}
+                      onChange={(e) => setNewOrg({ ...newOrg, instagram: e.target.value })}
+                      placeholder="e.g. aman_mainframe"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-xs"
+                  >
+                    ADD CREW MEMBER
+                  </button>
+                </form>
+
+                {/* Organizer list */}
+                <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left flex flex-col justify-between">
+                  <div>
+                    <span className="block font-bold text-white uppercase mb-4 border-b border-white/5 pb-2">📂 Active Crew Directory ({organizers.length})</span>
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                      {organizers.map((org) => (
+                        <div key={org.id} className="flex justify-between items-center border border-white/5 bg-zinc-900/40 p-2.5 rounded-none">
+                          <div>
+                            <span className="font-bold text-zinc-200 block text-xs">{org.name}</span>
+                            <span className="text-[9.5px] text-[#C2452D] block">{org.role} | {org.email}</span>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteOrg(org.id)}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 border border-red-500/20 rounded-none transition-colors duration-150 active:scale-95 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => handleDeleteOrg(org.id)}
-                          className="border border-red-500/10 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 cursor-pointer rounded-lg active:scale-90 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
+
               </div>
 
-              {/* Sponsors Moderator */}
-              <div className="space-y-4">
-                <div className="border border-white/5 bg-white/5 p-4.5 rounded-2xl space-y-3">
-                  <span className="block font-bold text-white uppercase mb-1">🏢 Inject Mainframe Sponsor</span>
-                  <form onSubmit={handleAddSponsorSubmit} className="space-y-3">
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Company Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={newSponsor.name}
-                        onChange={(e) => setNewSponsor({ ...newSponsor, name: e.target.value })}
-                        placeholder="e.g. Vercel"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Sponsorship Tier *</label>
-                      <select
-                        value={newSponsor.tier}
-                        onChange={(e) => setNewSponsor({ ...newSponsor, tier: e.target.value })}
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-bold outline-none rounded-lg text-white cursor-pointer"
-                      >
-                        <option value="core">Core Processor (Gold)</option>
-                        <option value="subprocessor">Sub-Processor (Silver)</option>
-                        <option value="peripheral">Peripheral Node (Bronze)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Website URL</label>
-                      <input
-                        type="text"
-                        value={newSponsor.website}
-                        onChange={(e) => setNewSponsor({ ...newSponsor, website: e.target.value })}
-                        placeholder="e.g. https://vercel.com"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-mono outline-none rounded-lg text-[10px] text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Logo Link (Optional URL)</label>
-                      <input
-                        type="text"
-                        value={newSponsor.logo}
-                        onChange={(e) => setNewSponsor({ ...newSponsor, logo: e.target.value })}
-                        placeholder="e.g. https://logo.com/logo.png"
-                        className="w-full bg-zinc-950/60 border border-white/5 p-1.5 font-mono outline-none rounded-lg text-[10px] text-white"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-lg active:scale-95 transition-all cursor-pointer"
-                    >
-                      ADD SPONSOR
-                    </button>
-                  </form>
-                </div>
+              {/* Sponsors Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/5 pt-6">
+                
+                {/* Add Sponsor Form */}
+                <form onSubmit={handleAddSponsorSubmit} className="border border-white/5 bg-white/5 p-5 rounded-none space-y-4 text-left">
+                  <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">➕ Add Custom Sponsor Core</span>
+                  
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Company name</label>
+                    <input
+                      type="text"
+                      value={newSponsor.name}
+                      onChange={(e) => setNewSponsor({ ...newSponsor, name: e.target.value })}
+                      placeholder="e.g. AWS Delhi Node"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <span className="block font-bold text-white uppercase">[ Sponsors List ({sponsors.length}) ]</span>
-                  <div className="max-h-60 overflow-y-auto space-y-2 border border-white/5 p-2 bg-zinc-950/40 rounded-2xl scrollbar-none">
-                    {sponsors.map((sp) => (
-                      <div key={sp.id} className="flex justify-between items-center border border-white/5 p-2.5 bg-zinc-900/30 hover:bg-zinc-900/40 rounded-xl transition-colors">
-                        <div className="font-mono text-left">
-                          <span className="block font-bold text-white">{sp.name}</span>
-                          <span className="block text-[8px] font-bold text-cyan-400 uppercase mt-0.5">{sp.tier}</span>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Sponsorship tier</label>
+                    <select
+                      value={newSponsor.tier}
+                      onChange={(e) => setNewSponsor({ ...newSponsor, tier: e.target.value })}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white cursor-pointer"
+                    >
+                      <option value="core">Core Sponsor</option>
+                      <option value="subprocessor">Subprocessor Node</option>
+                      <option value="peripheral">Peripheral Sponsor</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Website URL</label>
+                    <input
+                      type="text"
+                      value={newSponsor.website}
+                      onChange={(e) => setNewSponsor({ ...newSponsor, website: e.target.value })}
+                      placeholder="https://aws.amazon.com"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-xs"
+                  >
+                    ADD SPONSOR ENTRY
+                  </button>
+                </form>
+
+                {/* Sponsor list */}
+                <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left flex flex-col justify-between">
+                  <div>
+                    <span className="block font-bold text-white uppercase mb-4 border-b border-white/5 pb-2">📂 Active Sponsor Core Nodes ({sponsors.length})</span>
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                      {sponsors.map((sp) => (
+                        <div key={sp.id} className="flex justify-between items-center border border-white/5 bg-zinc-900/40 p-2.5 rounded-none">
+                          <div>
+                            <span className="font-bold text-zinc-200 block text-xs">{sp.name}</span>
+                            <span className="text-[9px] text-[#C2452D] uppercase block">{sp.tier} | {sp.website}</span>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteSponsor(sp.id)}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 border border-red-500/20 rounded-none transition-colors duration-150 active:scale-95 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => handleDeleteSponsor(sp.id)}
-                          className="border border-red-500/10 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 cursor-pointer rounded-lg active:scale-90 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
+
               </div>
 
             </div>
           )}
 
-          {/* TAB 4: THEME EDITOR & COLOR BUILDERS */}
+          {/* TAB 4: FAQ MANAGER */}
+          {activeTab === 'faqs' && (
+            <div className="space-y-6 text-left">
+              {/* Form to insert custom FAQ */}
+              <form onSubmit={handleAddFaqSubmit} className="border border-white/5 bg-white/5 p-5 rounded-none space-y-4">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">➕ Add New FAQ Entry</span>
+                
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Question Text</label>
+                  <input
+                    type="text"
+                    value={newFaq.question}
+                    onChange={(e) => setNewFaq({ ...newFaq, question: e.target.value })}
+                    placeholder="e.g. Can I use AI tools in my submissions?"
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Answer Text</label>
+                  <textarea
+                    rows="3"
+                    value={newFaq.answer}
+                    onChange={(e) => setNewFaq({ ...newFaq, answer: e.target.value })}
+                    placeholder="Write detailed answer explanation..."
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-xs"
+                >
+                  ADD FAQ ENTRY
+                </button>
+              </form>
+
+              {/* FAQ List manager */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none">
+                <span className="block font-bold text-white uppercase mb-4 border-b border-white/5 pb-2">📂 Active FAQ Database ({faqList.length} items)</span>
+                <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2">
+                  {faqList.map((faq, idx) => {
+                    const isEditing = editingFaqIdx === idx
+                    return (
+                      <div key={idx} className="border border-white/5 bg-zinc-900/40 p-4.5 rounded-none space-y-3">
+                        {isEditing ? (
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-[8px] font-bold text-zinc-500 uppercase mb-1">Edit Question</label>
+                              <input
+                                type="text"
+                                value={editFaqData.question}
+                                onChange={(e) => setEditFaqData({ ...editFaqData, question: e.target.value })}
+                                className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[8px] font-bold text-zinc-500 uppercase mb-1">Edit Answer</label>
+                              <textarea
+                                rows="3"
+                                value={editFaqData.answer}
+                                onChange={(e) => setEditFaqData({ ...editFaqData, answer: e.target.value })}
+                                className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all resize-none"
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleSaveEditFaq(idx)}
+                                className="bg-[#10b981]/20 hover:bg-[#10b981]/30 text-[#10b981] px-3 py-1.5 border border-[#10b981]/30 rounded-none text-[9px] font-bold uppercase transition-colors cursor-pointer"
+                              >
+                                SAVE CHANGES
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingFaqIdx(null)}
+                                className="bg-white/5 hover:bg-white/10 text-zinc-400 px-3 py-1.5 border border-white/5 rounded-none text-[9px] font-bold uppercase transition-colors cursor-pointer"
+                              >
+                                CANCEL
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex justify-between items-start gap-4">
+                            <div className="flex-1 space-y-1">
+                              <strong className="text-zinc-200 block text-xs font-mono select-all">Q: {faq.question}</strong>
+                              <p className="text-[10.5px] text-zinc-500 leading-relaxed font-mono select-all">A: {faq.answer}</p>
+                            </div>
+                            <div className="flex gap-2 shrink-0 select-none">
+                              <button
+                                onClick={() => handleStartEditFaq(idx)}
+                                className="border border-white/8 bg-white/5 text-zinc-400 hover:text-white px-3.5 py-1.5 rounded-none font-mono text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                              >
+                                EDIT
+                              </button>
+                              <button
+                                onClick={() => handleDeleteFaq(idx)}
+                                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 p-2 border border-red-500/20 rounded-none transition-colors duration-150 active:scale-95 cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: THEME EDITOR */}
           {activeTab === 'themes' && (
             <div className="space-y-6 text-left">
-              
-              <div className="border border-white/5 bg-white/5 p-5 rounded-2xl space-y-4">
-                <span className="block font-bold text-white uppercase mb-1">🎨 Customize Palette Variables</span>
-                <p className="text-[10px] text-zinc-400 mb-2">Adjust the Hex color values dynamically inside your active session.</p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {/* Amber primary */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-yellow-neo'] || '#ffd000'}
-                      onChange={(e) => handleColorChange('--color-yellow-neo', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">AMBER ACCENT</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-yellow-neo']}</span>
-                    </div>
-                  </div>
+              <div className="border border-white/5 bg-white/5 p-6 rounded-none space-y-4">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">🎨 Custom Colors override</span>
+                <p className="text-[10px] text-zinc-400">
+                  Override CSS variables to tweak the Takumi Delhi theme accents globally.
+                </p>
 
-                  {/* Crimson primary */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Ink Color (Dark background)</label>
                     <input
-                      type="color"
-                      value={themeColors['--color-red-neo'] || '#d91429'}
-                      onChange={(e) => handleColorChange('--color-red-neo', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
+                      type="text"
+                      value={themeColors['--color-ink']}
+                      onChange={(e) => {
+                        const updated = { ...themeColors, '--color-ink': e.target.value }
+                        setThemeColors(updated)
+                      }}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                     />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">CRIMSON ACCENT</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-red-neo']}</span>
-                    </div>
                   </div>
-
-                  {/* Cyber-Cyan */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Paper Color (Light Text & Primary CTAs)</label>
                     <input
-                      type="color"
-                      value={themeColors['--color-cyber-cyan'] || '#06b6d4'}
-                      onChange={(e) => handleColorChange('--color-cyber-cyan', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
+                      type="text"
+                      value={themeColors['--color-paper']}
+                      onChange={(e) => {
+                        const updated = { ...themeColors, '--color-paper': e.target.value }
+                        setThemeColors(updated)
+                      }}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                     />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">CYBER CYAN</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-cyber-cyan']}</span>
-                    </div>
                   </div>
+                </div>
 
-                  {/* Dracula Purple */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Terracotta Accent Color</label>
                     <input
-                      type="color"
-                      value={themeColors['--color-drac-purple'] || '#bd93f9'}
-                      onChange={(e) => handleColorChange('--color-drac-purple', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
+                      type="text"
+                      value={themeColors['--color-yellow-neo']}
+                      onChange={(e) => {
+                        const updated = {
+                          ...themeColors,
+                          '--color-yellow-neo': e.target.value,
+                          '--color-custom-primary': e.target.value
+                        }
+                        setThemeColors(updated)
+                      }}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
                     />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">DRACULA PURPLE</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-drac-purple']}</span>
-                    </div>
                   </div>
-
-                  {/* Global Dark (Ink) */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-ink'] || '#030712'}
-                      onChange={(e) => handleColorChange('--color-ink', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">GLOBAL DARK (INK)</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-ink']}</span>
-                    </div>
-                  </div>
-
-                  {/* Global Light (Paper) */}
-                  <div className="flex items-center gap-3 bg-zinc-950/40 p-3 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-paper'] || '#f3f4f6'}
-                      onChange={(e) => handleColorChange('--color-paper', e.target.value)}
-                      className="w-10 h-10 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">GLOBAL LIGHT (PAPER)</span>
-                      <span className="font-bold text-[10px] uppercase text-white">{themeColors['--color-paper']}</span>
-                    </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        playSound('success', isMuted, volume)
+                        const defaults = {
+                          '--color-yellow-neo': '#F8F7F4',
+                          '--color-red-neo': '#C2452D',
+                          '--color-cyber-cyan': '#F8F7F4',
+                          '--color-drac-purple': '#bd93f9',
+                          '--color-ink': '#0A0A08',
+                          '--color-paper': '#F8F7F4',
+                          '--color-custom-primary': '#F8F7F4',
+                          '--color-custom-bg': '#0A0A08',
+                          '--color-custom-text': '#F8F7F4'
+                        }
+                        setThemeColors(defaults)
+                      }}
+                      className="w-full border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 py-2.5 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-[10px]"
+                    >
+                      RESET SYSTEM DEFAULT TAKUMI ACCENTS
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Custom Theme Tab */}
-              <div className="border border-white/5 bg-indigo-500/5 p-5 rounded-2xl space-y-3">
-                <div className="flex justify-between items-center border-b border-white/5 pb-2 mb-1">
-                  <span className="block font-bold text-white uppercase">🛠️ Configure Slot: CUSTOM Theme</span>
-                  <span className="text-[9px] font-bold border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 px-2 py-0.5 rounded">
-                    SLOT 07
-                  </span>
-                </div>
-                <p className="text-[10px] text-zinc-400 mb-2">Edits to this slot take effect instantly when the "custom" theme is selected in the navbar.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="flex items-center gap-2 bg-zinc-950/40 p-2.5 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-custom-primary'] || '#ff00ff'}
-                      onChange={(e) => handleColorChange('--color-custom-primary', e.target.value)}
-                      className="w-8 h-8 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">PRIMARY</span>
-                      <span className="font-bold text-[9px] uppercase text-white">{themeColors['--color-custom-primary']}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 bg-zinc-950/40 p-2.5 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-custom-bg'] || '#121212'}
-                      onChange={(e) => handleColorChange('--color-custom-bg', e.target.value)}
-                      className="w-8 h-8 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">BACKGROUND</span>
-                      <span className="font-bold text-[9px] uppercase text-white">{themeColors['--color-custom-bg']}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-zinc-950/40 p-2.5 border border-white/5 rounded-xl">
-                    <input
-                      type="color"
-                      value={themeColors['--color-custom-text'] || '#ffffff'}
-                      onChange={(e) => handleColorChange('--color-custom-text', e.target.value)}
-                      className="w-8 h-8 border border-white/10 cursor-pointer bg-transparent outline-none rounded-lg"
-                    />
-                    <div>
-                      <span className="block text-[8px] font-bold text-zinc-500">TEXT COLOR</span>
-                      <span className="font-bold text-[9px] uppercase text-white">{themeColors['--color-custom-text']}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  onClick={resetColors}
-                  className="border border-white/10 bg-white hover:bg-zinc-150 text-black px-4 py-2 font-bold uppercase rounded-xl active:scale-95 transition-all cursor-pointer"
-                >
-                  RESET COLORS
-                </button>
-              </div>
-
             </div>
           )}
 
-          {/* TAB 5: REGISTRANTS */}
+          {/* TAB 6: REGISTRANTS DATABASE */}
           {activeTab === 'registrants' && (
             <div className="space-y-6 text-left">
-              
-              <div>
-                <span className="block font-bold text-white uppercase mb-2">🎫 Registration Pass Registry ({registrations.length})</span>
-                <p className="text-[10px] text-zinc-400 mb-3">All generated tickets are logged below. Revoking a pass will clear the registration record.</p>
-                
-                <div className="max-h-96 overflow-x-auto border border-white/5 bg-zinc-950/40 rounded-2xl scrollbar-none">
-                  <table className="w-full text-left font-mono text-[10px] min-w-[700px]">
-                    <thead>
-                      <tr className="bg-zinc-900/60 text-zinc-300 border-b border-white/5 uppercase font-bold text-[9px]">
-                        <th className="p-3.5">Ticket ID</th>
-                        <th className="p-3.5">Avatar</th>
-                        <th className="p-3.5">Name</th>
-                        <th className="p-3.5">Email</th>
-                        <th className="p-3.5">Domain</th>
-                        <th className="p-3.5">Role</th>
-                        <th className="p-3.5">Github</th>
-                        <th className="p-3.5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5 select-text">
-                      {registrations.length === 0 ? (
-                        <tr>
-                          <td colSpan="8" className="p-6 text-center text-zinc-500 font-bold uppercase select-none">
-                            No passes have been generated in the registration registry.
-                          </td>
-                        </tr>
-                      ) : (
-                        registrations.map((user) => (
-                          <tr key={user.ticketId} className="hover:bg-white/5 transition-colors text-zinc-300 font-bold">
-                            <td className="p-3.5 text-indigo-400 tracking-wider font-mono">{user.ticketId}</td>
-                            <td className="p-3.5 uppercase">{user.avatar}</td>
-                            <td className="p-3.5 uppercase">{user.name}</td>
-                            <td className="p-3.5 break-all">{user.email}</td>
-                            <td className="p-3.5"><span className="px-2 py-0.5 border border-yellow-500/20 bg-yellow-500/5 text-yellow-400 text-[8px] font-bold rounded-lg">{user.track.toUpperCase()}</span></td>
-                            <td className="p-3.5 uppercase">{user.role}</td>
-                            <td className="p-3.5 font-bold text-zinc-400">@{user.github || 'none'}</td>
-                            <td className="p-3.5 text-right select-none">
-                              <button
-                                onClick={() => handleRevokePass(user.ticketId)}
-                                className="border border-red-500/10 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 text-red-400 cursor-pointer rounded-lg active:scale-95 transition-colors"
-                              >
-                                REVOKE
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none">
+                <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+                  <span className="font-bold text-white uppercase">📋 Registered builder registry ({registrations.length} profiles)</span>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Delete all registrations permanently?')) {
+                        playSound('error', isMuted, volume)
+                        setRegistrations([])
+                        localStorage.removeItem('Tachyon_registrations')
+                      }
+                    }}
+                    className="text-red-400 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 border border-red-500/20 rounded-none text-[9px] font-bold uppercase transition-colors"
+                  >
+                    WIPE DATABASE
+                  </button>
+                </div>
+
+                <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2">
+                  {registrations.length === 0 ? (
+                    <span className="text-zinc-500 text-[10px]">No builders registered yet. Sync webhook is active.</span>
+                  ) : (
+                    registrations.map((reg, index) => (
+                      <div key={index} className="border border-white/5 bg-zinc-900/40 p-3 rounded-none relative">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+                          <div>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Name</span>
+                            <span className="text-zinc-200 font-bold">{reg.fullName}</span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Email</span>
+                            <span className="text-zinc-200 select-all truncate block">{reg.email}</span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Discord</span>
+                            <span className="text-zinc-200 select-all truncate block">{reg.discord}</span>
+                          </div>
+                          <div>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Pass type</span>
+                            <span className="text-[#C2452D] font-bold uppercase tracking-wider">{reg.passType}</span>
+                          </div>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-white/5 text-[9px] text-zinc-500 flex gap-4">
+                          <span>GITHUB: <strong className="text-zinc-400 select-all">{reg.githubUsername}</strong></span>
+                          <span>CITY: <strong className="text-zinc-400 uppercase">{reg.city || 'Delhi'}</strong></span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-
             </div>
           )}
 
         </div>
 
       </div>
-
     </div>
   )
 }
 export default AdminPanel
-

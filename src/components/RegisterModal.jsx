@@ -128,6 +128,22 @@ export function RegisterModal({
     const confirmed = window.confirm('WARNING: Revoking your ticket will delete your local profile and registration. Proceed?')
     if (!confirmed) return
 
+    // Google Sheets Webhook Sync (Deregister)
+    if (ticketData) {
+      const googleSheetUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      fetch(googleSheetUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'deregister',
+          ticketId: ticketData.ticketId
+        })
+      }).catch(err => console.error("Google sheets deregistration sync failed:", err))
+    }
+
     // Remove from global database key
     const registrationsStr = localStorage.getItem('Tachyon_registrations')
     if (registrationsStr && ticketData) {
@@ -173,25 +189,11 @@ export function RegisterModal({
     setStep(prev => prev - 1)
   }
 
-  // Theme styles helper
-  const themeStyles = {
-    nebula: { bg: 'bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500', text: 'text-white' },
-    amber: { bg: 'bg-[#ffdf00]', text: 'text-black' },
-    crimson: { bg: 'bg-[#ff3b30]', text: 'text-white' },
-    acid: { bg: 'bg-[#34c759]', text: 'text-black' },
-    void: { bg: 'bg-[#af52de]', text: 'text-white' },
-    cyberpunk: { bg: 'bg-[#00f0ff]', text: 'text-black' },
-    dracula: { bg: 'bg-[#ff79c6]', text: 'text-black' },
-    custom: { bg: 'bg-[var(--color-custom-primary)]', text: 'text-[var(--color-custom-text)]' }
-  }
-
-  const currentTheme = themeStyles[siteTheme] || themeStyles.nebula
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto pt-6 sm:pt-12 select-none text-white">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-black/80 overflow-y-auto pt-6 sm:pt-12 select-none text-[#F8F7F4]">
       
       {/* Form Container */}
-      <div className="relative w-full max-w-lg border border-white/10 bg-zinc-900/90 text-white p-6 md:p-8 shadow-2xl my-4 max-h-[90vh] overflow-y-auto rounded-3xl backdrop-blur-lg">
+      <div className="relative w-full max-w-lg border border-white/8 bg-[#0A0A08] text-[#F8F7F4] p-6 md:p-8 my-4 max-h-[90vh] overflow-y-auto rounded-none">
         
         {/* Close Button */}
         <button
@@ -199,19 +201,19 @@ export function RegisterModal({
             playSound('click', isMuted, volume)
             setIsRegisterModalOpen(false)
           }}
-          className="absolute top-4 right-4 border border-white/15 bg-white/5 p-1.5 rounded-lg text-white hover:bg-white/10 shadow-md active:translate-y-[0.5px] transition-all cursor-pointer"
+          className="absolute top-4 right-4 text-white/20 hover:text-white/50 font-mono text-lg leading-none transition-colors cursor-pointer p-1"
         >
-          <X className="w-4 h-4" />
+          ✕
         </button>
 
         {/* Wizard Progress header */}
         {!ticketData && (
-          <div className="flex items-center gap-2 mb-6 font-mono text-[9px] font-bold text-zinc-500 select-none">
-            <span className={step === 1 ? 'text-indigo-400' : ''}>01 CORE DATA</span>
-            <span>//</span>
-            <span className={step === 2 ? 'text-indigo-400' : ''}>02 PROFILE BUILDER</span>
-            <span>//</span>
-            <span className={step === 3 ? 'text-indigo-400' : ''}>03 SUBMISSION GATE</span>
+          <div className="flex items-center gap-2 mb-6 font-mono text-[9px] text-white/20 select-none uppercase tracking-[0.2em]">
+            <span className={step === 1 ? 'text-[#F8F7F4]/60' : ''}>SYS:01 CORE</span>
+            <span className="text-white/10">—</span>
+            <span className={step === 2 ? 'text-[#F8F7F4]/60' : ''}>SYS:02 PROFILE</span>
+            <span className="text-white/10">—</span>
+            <span className={step === 3 ? 'text-[#F8F7F4]/60' : ''}>SYS:03 SUBMIT</span>
           </div>
         )}
 
@@ -229,15 +231,15 @@ export function RegisterModal({
             <div className="pt-4 border-t border-white/5 flex justify-between gap-4 font-mono text-xs select-none">
               <button
                 onClick={() => setIsRegisterModalOpen(false)}
-                className="flex-1 border border-white/10 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl font-bold shadow-md active:translate-y-[0.5px] transition-all cursor-pointer text-center"
+                className="flex-1 border border-white/8 bg-white/[0.02] hover:bg-white/[0.05] text-[#F8F7F4]/50 hover:text-[#F8F7F4]/80 px-4 py-2.5 rounded-none font-mono text-xs uppercase tracking-[0.2em] transition-colors cursor-pointer text-center"
               >
-                CLOSE TERMINAL
+                CLOSE
               </button>
               <button
                 onClick={handleDeregister}
-                className="border border-white/10 bg-red-600/20 text-red-400 hover:bg-red-600/40 px-4 py-2.5 rounded-xl font-bold shadow-md active:translate-y-[0.5px] transition-all cursor-pointer"
+                className="border border-[#C2452D]/20 bg-transparent text-[#C2452D]/60 hover:text-[#C2452D] hover:border-[#C2452D]/40 px-4 py-2.5 rounded-none font-mono text-xs uppercase tracking-[0.2em] transition-colors cursor-pointer"
               >
-                REVOKE CARD
+                REVOKE
               </button>
             </div>
           </div>
@@ -247,18 +249,18 @@ export function RegisterModal({
             {step === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-syne font-bold uppercase text-white leading-none">
+                  <h3 className="text-lg font-syne font-black uppercase text-[#F8F7F4] leading-none tracking-wide">
                     REGISTRATION PORT
                   </h3>
-                  <p className="text-xs font-bold text-zinc-500 mt-1 font-mono">
-                    Identify your terminal interface node details.
+                  <p className="text-[9px] text-white/30 mt-2 font-mono uppercase tracking-[0.2em]">
+                    NODE: Terminal interface identification
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <div className="flex flex-col">
-                    <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                      <User className="w-3.5 h-3.5 text-zinc-400" /> Developer Full Name *
+                    <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                      <User className="w-3 h-3 text-white/20" /> FIELD:NAME *
                     </label>
                     <input
                       type="text"
@@ -267,13 +269,13 @@ export function RegisterModal({
                       value={formData.name}
                       onChange={handleFormChange}
                       placeholder="e.g. Arjun Sharma"
-                      className="bg-zinc-950/60 border border-white/5 p-2.5 rounded-xl text-white font-mono text-xs outline-none focus:border-white transition-all shadow-inner w-full"
+                      className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
                     />
                   </div>
 
                   <div className="flex flex-col">
-                    <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                      <Mail className="w-3.5 h-3.5 text-zinc-400" /> Terminal Email Address *
+                    <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                      <Mail className="w-3 h-3 text-white/20" /> FIELD:EMAIL *
                     </label>
                     <input
                       type="email"
@@ -282,14 +284,14 @@ export function RegisterModal({
                       value={formData.email}
                       onChange={handleFormChange}
                       placeholder="e.g. hacker@domain.com"
-                      className="bg-zinc-950/60 border border-white/5 p-2.5 rounded-xl text-white font-mono text-xs outline-none focus:border-white transition-all shadow-inner w-full"
+                      className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="flex flex-col">
-                      <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                        <Github className="w-3.5 h-3.5 text-zinc-400" /> Github Nickname *
+                      <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                        <Github className="w-3 h-3 text-white/20" /> FIELD:GITHUB *
                       </label>
                       <input
                         type="text"
@@ -298,13 +300,13 @@ export function RegisterModal({
                         value={formData.github}
                         onChange={handleFormChange}
                         placeholder="e.g. sharma_arjun"
-                        className="bg-zinc-950/60 border border-white/5 p-2.5 rounded-xl text-white font-mono text-xs outline-none focus:border-white transition-all shadow-inner w-full"
+                        className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
                       />
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                        Team Name (Optional)
+                      <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                        FIELD:TEAM (OPT)
                       </label>
                       <input
                         type="text"
@@ -312,21 +314,21 @@ export function RegisterModal({
                         value={formData.teamName}
                         onChange={handleFormChange}
                         placeholder="Leave blank for solo"
-                        className="bg-zinc-950/60 border border-white/5 p-2.5 rounded-xl text-white font-mono text-xs outline-none focus:border-white transition-all shadow-inner w-full"
+                        className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="flex flex-col">
-                      <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                        <Layers className="w-3.5 h-3.5 text-zinc-400" /> Builder Role *
+                      <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                        <Layers className="w-3 h-3 text-white/20" /> FIELD:ROLE *
                       </label>
                       <select
                         name="role"
                         value={formData.role}
                         onChange={handleFormChange}
-                        className="bg-zinc-950/60 border border-white/10 text-white rounded-xl p-2.5 font-mono text-xs outline-none focus:border-white cursor-pointer shadow-md w-full"
+                        className="bg-[#0A0A08] border-b border-white/8 text-white/60 rounded-none py-2 font-mono text-xs outline-none focus:border-white/20 cursor-pointer w-full appearance-none"
                       >
                         <option value="developer">Developer // Architect</option>
                         <option value="designer">Designer // UI-UX Craft</option>
@@ -336,8 +338,8 @@ export function RegisterModal({
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="font-mono text-xs font-bold uppercase text-zinc-400 mb-1.5 flex items-center gap-1.5 select-none">
-                        <Compass className="w-3.5 h-3.5 text-zinc-400" /> Target Domain *
+                      <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
+                        <Compass className="w-3 h-3 text-white/20" /> FIELD:DOMAIN *
                       </label>
                       <select
                         name="track"
@@ -345,7 +347,7 @@ export function RegisterModal({
                         onChange={(e) => {
                           setFormData(prev => ({ ...prev, track: e.target.value, skills: [] }))
                         }}
-                        className="bg-zinc-950/60 border border-white/10 text-white rounded-xl p-2.5 font-mono text-xs outline-none focus:border-white cursor-pointer shadow-md w-full"
+                        className="bg-[#0A0A08] border-b border-white/8 text-white/60 rounded-none py-2 font-mono text-xs outline-none focus:border-white/20 cursor-pointer w-full appearance-none"
                       >
                         <option value="ai">AI & Intelligent Agents</option>
                         <option value="cyber">Cybersecurity & Exploits</option>
@@ -360,9 +362,9 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={nextStep}
-                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-mono font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all flex items-center gap-1.5 cursor-pointer uppercase active:scale-95`}
+                    className="bg-[#F8F7F4] text-[#0A0A08] font-mono text-xs px-5 py-2.5 rounded-none uppercase tracking-[0.2em] transition-opacity hover:opacity-80 flex items-center gap-1.5 cursor-pointer"
                   >
-                    Next Step <ArrowRight className="w-4 h-4" />
+                    Next <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -371,33 +373,23 @@ export function RegisterModal({
             {step === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-syne font-black uppercase text-white leading-none">
-                    CUSTOMIZE PROFILE CARD
+                  <h3 className="text-lg font-syne font-black uppercase text-[#F8F7F4] leading-none tracking-wide">
+                    PROFILE CONFIGURATION
                   </h3>
-                  <p className="text-xs font-bold text-zinc-500 mt-1 font-mono">
-                    Choose your avatar representation and verify your skills tags.
+                  <p className="text-[9px] text-white/30 mt-2 font-mono uppercase tracking-[0.2em]">
+                    NODE: Avatar selection & skill verification
                   </p>
                 </div>
 
                 <div className="space-y-6">
                   {/* Avatars */}
                   <div>
-                    <span className="block font-mono text-xs font-bold text-zinc-400 uppercase mb-2">
-                      Select Cyber Avatar:
+                    <span className="block font-mono text-[9px] uppercase text-white/30 mb-3 tracking-[0.2em]">
+                      PROTOCOL: SELECT AVATAR
                     </span>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-px bg-white/5">
                       {AVATARS_OPTIONS.map((av) => {
-                        const thBorderMap = {
-                          amber: 'border-yellow-400 bg-yellow-400/10 text-yellow-300 shadow-[0_0_12px_rgba(234,179,8,0.15)]',
-                          crimson: 'border-red-500 bg-red-500/10 text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.15)]',
-                          acid: 'border-green-400 bg-green-400/10 text-green-300 shadow-[0_0_12px_rgba(74,222,128,0.15)]',
-                          void: 'border-purple-500 bg-purple-500/10 text-purple-300 shadow-[0_0_12px_rgba(168,85,247,0.15)]',
-                          cyberpunk: 'border-cyan-400 bg-cyan-400/10 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]',
-                          dracula: 'border-pink-400 bg-pink-400/10 text-pink-300 shadow-[0_0_12px_rgba(244,114,182,0.15)]',
-                          custom: 'border-[var(--color-custom-primary)]/40 bg-[var(--color-custom-primary)]/10 text-white shadow-[0_0_12px_var(--color-custom-primary)]'
-                        }
                         const isSelected = formData.avatar === av.id
-                        const activeStyle = thBorderMap[siteTheme] || thBorderMap.amber
                         return (
                           <button
                             key={av.id}
@@ -406,10 +398,10 @@ export function RegisterModal({
                               playSound('click', isMuted, volume)
                               setFormData(prev => ({ ...prev, avatar: av.id }))
                             }}
-                            className={`border p-2.5 font-mono text-[9.5px] font-bold text-center cursor-pointer transition-all rounded-xl ${
+                            className={`p-3 font-mono text-[9px] text-center cursor-pointer transition-colors rounded-none uppercase tracking-[0.15em] ${
                               isSelected
-                                ? `${activeStyle} scale-[0.98]`
-                                : 'border-white/5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white'
+                                ? 'bg-white/[0.06] text-[#F8F7F4]/80 border border-white/15'
+                                : 'bg-[#0A0A08] border border-transparent text-white/25 hover:text-white/40 hover:bg-white/[0.02]'
                             }`}
                           >
                             {av.name}
@@ -421,31 +413,21 @@ export function RegisterModal({
 
                   {/* Skill Tags */}
                   <div>
-                    <span className="block font-mono text-xs font-bold text-zinc-400 uppercase mb-2">
-                      Verify Skill Tags (Select multiple):
+                    <span className="block font-mono text-[9px] uppercase text-white/30 mb-3 tracking-[0.2em]">
+                      PROTOCOL: VERIFY SKILLS
                     </span>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {AVAILABLE_SKILLS[formData.track].map((skill) => {
                         const isSelected = formData.skills.includes(skill)
-                        const skillSelectedStyle = {
-                          amber: 'border-yellow-400 bg-yellow-400/10 text-yellow-300 shadow-[0_0_10px_rgba(234,179,8,0.15)]',
-                          crimson: 'border-red-500 bg-red-500/10 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.15)]',
-                          acid: 'border-green-400 bg-green-400/10 text-green-300 shadow-[0_0_10px_rgba(74,222,128,0.15)]',
-                          void: 'border-purple-500 bg-purple-500/10 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.15)]',
-                          cyberpunk: 'border-cyan-400 bg-cyan-400/10 text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.15)]',
-                          dracula: 'border-pink-400 bg-pink-400/10 text-pink-300 shadow-[0_0_10px_rgba(244,114,182,0.15)]',
-                          custom: 'border-[var(--color-custom-primary)]/40 bg-[var(--color-custom-primary)]/10 text-white shadow-[0_0_10px_var(--color-custom-primary)]'
-                        }
-                        const activeStyle = skillSelectedStyle[siteTheme] || skillSelectedStyle.amber
                         return (
                           <button
                             key={skill}
                             type="button"
                             onClick={() => toggleSkill(skill)}
-                            className={`px-3 py-1.5 border font-mono text-xs font-bold cursor-pointer rounded-full transition-all ${
+                            className={`px-3 py-1.5 border font-mono text-[10px] cursor-pointer rounded-none transition-colors uppercase tracking-[0.1em] ${
                               isSelected
-                                ? `${activeStyle} scale-[0.98]`
-                                : 'border-white/5 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
+                                ? 'border-white/15 bg-white/[0.06] text-[#F8F7F4]/70'
+                                : 'border-white/5 bg-transparent text-white/20 hover:text-white/40 hover:border-white/10'
                             }`}
                           >
                             {skill}
@@ -460,16 +442,16 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="flex items-center gap-1 border border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs px-4 py-2.5 rounded-xl font-bold cursor-pointer transition-all active:scale-95"
+                    className="flex items-center gap-1 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/40 hover:text-white/60 text-xs px-4 py-2.5 rounded-none cursor-pointer transition-colors uppercase tracking-[0.15em]"
                   >
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-3.5 h-3.5" /> Back
                   </button>
                   <button
                     type="button"
                     onClick={nextStep}
-                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all flex items-center gap-1.5 cursor-pointer uppercase active:scale-95`}
+                    className="bg-[#F8F7F4] text-[#0A0A08] font-mono text-xs px-5 py-2.5 rounded-none uppercase tracking-[0.2em] transition-opacity hover:opacity-80 flex items-center gap-1.5 cursor-pointer"
                   >
-                    Next Step <ArrowRight className="w-4 h-4" />
+                    Next <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -478,38 +460,38 @@ export function RegisterModal({
             {step === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-syne font-bold uppercase text-white leading-none">
-                    BUILDERS CONDUCT GATE
+                  <h3 className="text-lg font-syne font-black uppercase text-[#F8F7F4] leading-none tracking-wide">
+                    CONDUCT GATE
                   </h3>
-                  <p className="text-xs font-bold text-zinc-500 mt-1 font-mono">
-                    Review rules of engagement before forking the mainframe.
+                  <p className="text-[9px] text-white/30 mt-2 font-mono uppercase tracking-[0.2em]">
+                    NODE: Review protocol before submission
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   {/* Warning notice */}
-                  <div className="border border-yellow-500/20 bg-yellow-500/5 p-4 rounded-xl text-yellow-300 font-mono text-xs leading-relaxed shadow-lg">
-                    <span className="font-bold flex items-center gap-1.5 uppercase mb-1">
-                      <AlertTriangle className="w-4 h-4 shrink-0 text-yellow-400" /> Security Protocol
+                  <div className="border border-[#C2452D]/15 bg-[#C2452D]/[0.03] p-4 rounded-none font-mono text-[9px] text-[#C2452D]/60 leading-relaxed">
+                    <span className="font-bold flex items-center gap-1.5 uppercase mb-1.5 text-[#C2452D]/70 tracking-[0.15em]">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> ALERT: PROTOCOL
                     </span>
                     Slide presentations are strictly prohibited. Teams failing to deploy working binaries by the submission limit are automatically disqualified. Build core software.
                   </div>
 
-                  <div className="border border-white/5 bg-white/5 p-4 rounded-xl font-mono text-xs text-zinc-300 space-y-2 shadow-md">
-                    <p className="font-bold text-white border-b border-white/5 pb-1">RULES OF CONDUCT:</p>
+                  <div className="border border-white/5 bg-white/[0.02] p-4 rounded-none font-mono text-[9px] text-white/30 space-y-2">
+                    <p className="text-white/50 border-b border-white/5 pb-1.5 uppercase tracking-[0.15em]">RULES OF CONDUCT:</p>
                     <p>1. Open repositories must be updated throughout development cycles.</p>
-                    <p>2. UI/UX styling must be customized - do not rely on standard templates.</p>
-                    <p>3. Do not exploit third-party templates - write logic from scratch.</p>
+                    <p>2. UI/UX styling must be customized — do not rely on standard templates.</p>
+                    <p>3. Do not exploit third-party templates — write logic from scratch.</p>
                   </div>
 
-                  <label className="flex items-start gap-2.5 font-mono text-xs text-zinc-400 font-bold cursor-pointer py-2">
+                  <label className="flex items-start gap-2.5 font-mono text-[9px] text-white/30 cursor-pointer py-2 uppercase tracking-[0.1em]">
                     <input
                       type="checkbox"
                       name="agree"
                       required
                       checked={formData.agree}
                       onChange={handleFormChange}
-                      className="mt-1 cursor-pointer accent-indigo-500"
+                      className="mt-0.5 cursor-pointer accent-[#F8F7F4]"
                     />
                     <span>I understand the terms and agree to deploy working code.</span>
                   </label>
@@ -519,15 +501,15 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="flex items-center gap-1 border border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs px-4 py-2.5 rounded-xl font-bold cursor-pointer transition-all active:scale-95"
+                    className="flex items-center gap-1 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/40 hover:text-white/60 text-xs px-4 py-2.5 rounded-none cursor-pointer transition-colors uppercase tracking-[0.15em]"
                   >
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-3.5 h-3.5" /> Back
                   </button>
                   <button
                     type="submit"
-                    className={`border border-white/10 ${currentTheme.bg} ${currentTheme.text} font-bold text-xs px-5 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] transition-all cursor-pointer uppercase active:scale-95`}
+                    className="bg-[#F8F7F4] text-[#0A0A08] font-mono text-xs px-5 py-2.5 rounded-none uppercase tracking-[0.2em] transition-opacity hover:opacity-80 cursor-pointer"
                   >
-                    TRANSMIT REGISTRATION
+                    TRANSMIT
                   </button>
                 </div>
               </div>
@@ -540,4 +522,3 @@ export function RegisterModal({
   )
 }
 export default RegisterModal
-

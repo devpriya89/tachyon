@@ -12,18 +12,11 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
     const x = e.clientX - rect.left - rect.width / 2
     const y = e.clientY - rect.top - rect.height / 2
     
-    // Scale rotation to max 12 degrees
-    const degX = -(y / (rect.height / 2)) * 12
-    const degY = (x / (rect.width / 2)) * 12
-    
-    // Calculate holographic light glare coordinates
-    const glareX = (x / (rect.width / 2)) * 40
-    const glareY = (y / (rect.height / 2)) * 40
+    const degX = -(y / (rect.height / 2)) * 4
+    const degY = (x / (rect.width / 2)) * 4
     
     setTiltStyle({
       transform: `perspective(1000px) rotateX(${degX}deg) rotateY(${degY}deg)`,
-      glareX,
-      glareY,
       transition: 'transform 0.05s ease-out'
     })
   }
@@ -31,8 +24,6 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
   const handleMouseLeave = () => {
     setTiltStyle({
       transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
-      glareX: 0,
-      glareY: 0,
       transition: 'transform 0.35s ease-out'
     })
   }
@@ -44,19 +35,6 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
 
   // Render pixelated avatar generator
   const renderAvatar = (avatarId) => {
-    const colors = {
-      nebula: '#d946ef',
-      amber: '#f59e0b',
-      crimson: '#ef4444',
-      acid: '#10b981',
-      void: '#8b5cf6',
-      cyberpunk: '#06b6d4',
-      dracula: '#ec4899',
-      custom: 'var(--color-custom-primary)'
-    }
-    const c = colors[ticketColorTheme] || colors.nebula
-
-    // Standard retro grid drawings for avatars
     const avatars = {
       cyber: 'M2,2 H6 V4 H2 Z M8,2 H12 V4 H8 Z M2,6 H12 V8 H2 Z M4,10 H10 V12 H4 Z',
       agent: 'M4,2 H10 V4 H4 Z M2,4 H12 V8 H2 Z M4,8 H10 V10 H4 Z M5,10 H9 V12 H5 Z',
@@ -67,35 +45,36 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
     const path = avatars[avatarId] || avatars.cyber
 
     return (
-      <svg className="w-12 h-12 border border-white/10 bg-white/5 p-1.5 shrink-0 rounded-2xl shadow-lg" viewBox="0 0 14 14" fill={c}>
+      <svg className="w-11 h-11 border border-white/5 bg-white/[0.02] p-1.5 shrink-0 rounded-none" viewBox="0 0 14 14" fill="#F8F7F4" fillOpacity="0.3">
         <path d={path} />
       </svg>
     )
   }
 
   return (
-    <div className="mt-4 text-white w-full">
+    <div className="mt-4 text-[#F8F7F4] w-full">
       <div className="text-center mb-6 print:hidden">
-        <div className="inline-flex items-center justify-center p-3 border border-white/10 bg-green-500/10 text-green-400 shadow-xl rounded-2xl mb-4">
-          <Check className="w-6 h-6 font-bold animate-pulse" />
+        <div className="inline-flex items-center justify-center p-3 border border-white/8 bg-white/[0.02] text-[#F8F7F4] rounded-none mb-4">
+          <Check className="w-5 h-5" />
         </div>
-        <h3 className="text-2xl sm:text-3xl font-syne font-black uppercase text-white tracking-wider">
-          PLATFORM REGISTRY SYNCED!
+        <h3 className="text-sm font-syne font-black uppercase text-white tracking-widest">
+          SYS: REGISTRY SYNCED
         </h3>
+        <span className="font-mono text-[8px] text-white/20 tracking-[0.3em] mt-1 block">NODE:VERIFIED — PROTOCOL ACTIVE</span>
         
         {/* Ticket custom color theme selector */}
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <span className="font-mono text-[9px] font-bold text-zinc-500 uppercase mr-1">PASS HOLOGRAPH:</span>
+        <div className="mt-5 flex items-center justify-center gap-2">
+          <span className="font-mono text-[9px] text-white/25 uppercase tracking-[0.15em] mr-1">PASS_THEME:</span>
           {['nebula', 'cyberpunk', 'crimson', 'acid', 'void', 'amber', 'dracula', 'custom'].map((th) => {
             const bgColors = {
-              nebula: 'bg-gradient-to-r from-violet-600 to-fuchsia-500 shadow-[0_0_5px_rgba(168,85,247,0.4)]',
-              cyberpunk: 'bg-cyan-400 shadow-[0_0_5px_rgba(34,211,238,0.3)]',
-              amber: 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.3)]',
-              crimson: 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.3)]',
-              acid: 'bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.3)]',
-              void: 'bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.3)]',
-              dracula: 'bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.3)]',
-              custom: 'bg-[var(--color-custom-primary)] shadow-[0_0_5px_var(--color-custom-primary)]'
+              nebula: 'bg-white/20',
+              cyberpunk: 'bg-white/25',
+              amber: 'bg-white/20',
+              crimson: 'bg-white/20',
+              acid: 'bg-white/20',
+              void: 'bg-white/20',
+              dracula: 'bg-white/20',
+              custom: 'bg-white/15'
             }
             return (
               <button
@@ -104,9 +83,9 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
                   playSound('click', isMuted, volume)
                   setTicketColorTheme(th)
                 }}
-                className={`w-5 h-5 rounded-full border border-white/10 cursor-pointer ${bgColors[th]} ${
-                  ticketColorTheme === th ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-zinc-950' : 'opacity-65 hover:scale-105 hover:opacity-100'
-                } transition-all`}
+                className={`w-4 h-4 rounded-none border cursor-pointer ${bgColors[th]} ${
+                  ticketColorTheme === th ? 'border-white/40 scale-110' : 'border-white/8 opacity-50 hover:opacity-80'
+                } transition-opacity`}
                 title={`Change pass theme to ${th}`}
               />
             )
@@ -115,81 +94,74 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
       </div>
 
       {/* Fluid container */}
-      <div className="w-full flex justify-center perspective-1000 print:p-0">
+      <div className="w-full flex justify-center print:p-0">
         
-        {/* VIP Holographic visa pass card */}
+        {/* Pass card — brutalist flat */}
         <div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={tiltStyle}
-          className="mt-6 w-full max-w-[420px] border border-white/10 bg-gradient-to-br from-zinc-900/60 to-zinc-950/80 text-white p-5 md:p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative font-mono text-left select-none overflow-hidden transform-style-3d scanline-card backdrop-blur-lg"
+          className="mt-4 w-full max-w-[420px] border border-white/8 bg-[#0A0A08] text-[#F8F7F4] p-5 md:p-6 rounded-none relative font-mono text-left select-none overflow-hidden"
         >
-          {/* Holographic Light Glare Overlay */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-60 pointer-events-none z-20 mix-blend-overlay transition-opacity duration-300"
-            style={{
-              background: `radial-gradient(circle 200px at ${50 + (tiltStyle.glareX || 0)}% ${50 + (tiltStyle.glareY || 0)}%, rgba(255, 255, 255, 0.12), transparent 70%)`
-            }}
-          />
 
           {/* Top header strip */}
           <div className="border-b border-white/5 pb-4 mb-5 flex justify-between items-center">
             <div>
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
-                Tachyon // TICKET SYSTEM
+              <span className="text-sm font-syne font-black text-white uppercase tracking-widest block">
+                PASS:001
               </span>
-              <span className="text-[7.5px] text-white/30 block mt-0.5">LAUNCH KEY // SECURITY LEVEL 1</span>
+              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em] block mt-1">TACHYON // TICKET SYSTEM</span>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block animate-pulse shadow-[0_0_6px_#22c55e]"></span>
-              <span className="text-[8px] font-bold text-zinc-300">ACTIVE</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1 h-1 bg-white/30 rounded-none inline-block"></span>
+              <span className="font-mono text-[8px] text-white/35 uppercase tracking-[0.15em]">ACTIVE</span>
             </div>
           </div>
 
           {/* Badge Profile section */}
-          <div className="border border-white/10 bg-white/5 rounded-2xl p-4 flex items-center justify-between gap-4 mb-5 shadow-md">
+          <div className="border border-white/5 bg-white/[0.02] rounded-none p-4 flex items-center justify-between gap-4 mb-5">
             <div className="flex items-center gap-3">
               {renderAvatar(ticketData.avatar || 'cyber')}
               <div>
-                <span className="text-[8.5px] text-zinc-500 block leading-none font-bold uppercase">BUILDER IDENTIFIER</span>
-                <span className="text-sm font-bold text-white block uppercase truncate tracking-wider mt-1.5">
+                <span className="font-mono text-[9px] text-white/35 block leading-none uppercase tracking-[0.15em]">BUILDER IDENTIFIER</span>
+                <span className="font-mono text-sm text-white/80 block uppercase truncate tracking-wider mt-1.5">
                   {ticketData.name || 'Anonymous'}
                 </span>
-                <span className="text-[8px] border border-white/10 bg-white/5 px-2 py-0.5 rounded-lg text-zinc-300 inline-block mt-1 font-bold shadow-sm">
+                <span className="font-mono text-[8px] border border-white/8 bg-white/[0.03] px-2 py-0.5 rounded-none text-white/40 inline-block mt-1 uppercase tracking-[0.15em]">
                   {ticketData.role ? ticketData.role.toUpperCase() : 'DEVELOPER'}
                 </span>
               </div>
             </div>
             
             <div className="text-right">
-              <span className="text-[7.5px] text-zinc-500 block font-bold uppercase">TICKET ID</span>
-              <span className="text-xs font-bold text-zinc-300 block tracking-widest mt-1 select-text">
+              <span className="font-mono text-[9px] text-white/35 block uppercase tracking-[0.15em]">TICKET ID</span>
+              <span className="font-mono text-[8px] text-white/15 block tracking-[0.3em] mt-1 select-text">
                 {ticketData.ticketId || '#0000'}
               </span>
             </div>
           </div>
 
           {/* Dynamic properties table */}
-          <div className="border border-white/10 bg-zinc-900/40 rounded-2xl p-4 space-y-3 shadow-md">
+          <div className="border border-white/5 bg-white/[0.02] rounded-none p-4 space-y-3">
             
-            <div className="flex justify-between items-center border-b border-white/5 pb-2 text-[10px]">
-              <span className="text-[8px] text-zinc-500 font-bold uppercase">Builder Handle</span>
-              <span className="text-zinc-300 font-bold uppercase select-all">@{ticketData.github || 'none'}</span>
+            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Builder Handle</span>
+              <span className="font-mono text-[9px] text-white/50 uppercase select-all">@{ticketData.github || 'none'}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-white/5 pb-2 text-[10px]">
-              <span className="text-[8px] text-zinc-500 font-bold uppercase">Assigned Core Domain</span>
-              <span className="text-zinc-300 font-bold uppercase">{ticketData.track ? ticketData.track.toUpperCase() : 'AI'}</span>
+            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Core Domain</span>
+              <span className="font-mono text-[9px] text-white/50 uppercase">{ticketData.track ? ticketData.track.toUpperCase() : 'AI'}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-white/5 pb-2 text-[10px]">
-              <span className="text-[8px] text-zinc-500 font-bold uppercase">Assigned Seat Slot</span>
-              <span className="text-indigo-400 font-bold tracking-widest uppercase">SLOT-{ticketData.seatNumber || '00'}</span>
+            <div className="flex justify-between items-center border-b border-white/5 pb-2">
+              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Seat Slot</span>
+              <span className="font-mono text-[9px] text-white/50 uppercase tracking-widest">SLOT-{ticketData.seatNumber || '00'}</span>
             </div>
 
-            <div className="flex justify-between items-center text-[10px]">
-              <span className="text-[8px] text-zinc-500 font-bold uppercase">Visitor Email</span>
-              <span className="text-zinc-400 font-normal select-all break-all text-right max-w-[200px] truncate leading-none">
+            <div className="flex justify-between items-center">
+              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Visitor Email</span>
+              <span className="font-mono text-[9px] text-white/40 select-all break-all text-right max-w-[200px] truncate leading-none">
                 {ticketData.email || 'guest@domain.com'}
               </span>
             </div>
@@ -198,16 +170,16 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
 
           {/* Bottom barcode segment */}
           <div className="border-t border-white/5 pt-4 mt-5 flex justify-between items-center">
-            {/* Holographic barcode stamp */}
-            <div className="flex items-center gap-[2.5px] opacity-40 select-none">
+            {/* Barcode stamp */}
+            <div className="flex items-center gap-[2.5px] opacity-20 select-none">
               {[4, 12, 6, 16, 2, 10, 4, 14, 2, 8, 4, 16, 8, 2, 12].map((height, idx) => (
-                <span key={idx} className="w-[1.5px] bg-white block" style={{ height: `${height}px` }}></span>
+                <span key={idx} className="w-[1.5px] bg-white/40 block" style={{ height: `${height}px` }}></span>
               ))}
             </div>
             
             <div className="text-right">
-              <span className="text-[7.5px] text-zinc-500 block uppercase font-bold">SECURE GATEPASS</span>
-              <span className="text-[9px] font-bold text-zinc-500 tracking-wider">Tachyon. DELHI. 2026</span>
+              <span className="font-mono text-[8px] text-white/15 block uppercase tracking-[0.3em]">NODE:VERIFIED</span>
+              <span className="font-mono text-[9px] text-white/25 tracking-[0.15em]">TACHYON. DELHI. 2026</span>
             </div>
           </div>
 
@@ -220,9 +192,9 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
         
         <button
           onClick={handlePrintTicket}
-          className="flex items-center gap-1.5 border border-white/10 bg-white/5 hover:bg-white/10 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-full shadow-lg active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-1.5 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/30 font-mono text-[9px] uppercase tracking-[0.15em] px-4 py-2.5 rounded-none active:scale-95 transition-opacity cursor-pointer"
         >
-          <Printer className="w-4 h-4 text-zinc-300" /> Print VIP Card
+          <Printer className="w-3.5 h-3.5 text-white/25" /> PRINT PASS
         </button>
 
         <button
@@ -230,9 +202,9 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
             playSound('click', isMuted, volume)
             downloadSVG(ticketData, ticketColorTheme)
           }}
-          className="flex items-center gap-1.5 border border-white/10 bg-white/5 hover:bg-white/10 text-white font-mono font-bold text-xs px-4 py-2.5 rounded-full shadow-lg active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-1.5 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/30 font-mono text-[9px] uppercase tracking-[0.15em] px-4 py-2.5 rounded-none active:scale-95 transition-opacity cursor-pointer"
         >
-          <Download className="w-4 h-4 text-zinc-300" /> Download SVG Badge
+          <Download className="w-3.5 h-3.5 text-white/25" /> DOWNLOAD SVG
         </button>
 
       </div>
@@ -240,4 +212,3 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
   )
 }
 export default TicketPass
-

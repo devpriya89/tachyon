@@ -6,17 +6,18 @@
   --font-mono: "JetBrains Mono", monospace;
   --font-syne: "Syne", sans-serif;
 
-  --color-yellow-neo: #ffd000;
-  --color-red-neo: #d91429;
-  --color-red-dark: #a10018;
-  --color-ink: #030712;
-  --color-paper: #f3f4f6;
+  --color-yellow-neo: #F8F7F4;
+  --color-red-neo: #C2452D;
+  --color-red-dark: #8B2E1A;
+  --color-ink: #0A0A08;
+  --color-paper: #F8F7F4;
 
-  --color-cyber-cyan: #06b6d4;
-  --color-cyber-pink: #ec4899;
+  --color-cyber-cyan: #F8F7F4;
+  --color-cyber-pink: #C2452D;
+  --color-drac-purple: #bd93f9;
 
-  --animate-marquee: marquee 35s linear infinite;
-  --animate-blink: blink 1.2s step-start infinite;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-blink: blink 1s step-start infinite;
 
   @keyframes marquee {
     0% { transform: translateX(0%); }
@@ -27,61 +28,79 @@
   }
 }
 
-/* Custom Sleek Scrollbar */
+/* =========================================
+   TAKUMI DELHI — PRECISION CRAFT SYSTEM
+   Brutalist · Monochromatic · Terminal
+   ========================================= */
+
+/* Minimal Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #030712;
+  background: #0A0A08;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
-  border-radius: 9999px;
+  background: rgba(248, 247, 244, 0.08);
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: rgba(248, 247, 244, 0.15);
 }
 
 body {
-  font-family: var(--font-space);
-  background-color: #030712; /* Deep space-dark base */
-  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 24px 24px;
-  color: #f3f4f6;
+  font-family: var(--font-mono);
+  background-color: var(--color-ink);
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(248, 247, 244, 0.015) 0%, transparent 70%),
+    radial-gradient(rgba(248, 247, 244, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
+  background-position: center;
+  color: var(--color-paper);
   overflow-x: hidden;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ==========================================
-   Hyper-Sleek Glassmorphic Bento Console Theme
-   ========================================== */
+/* Subtle CRT scanline overlay - premium hardware feel */
+body::before {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(248, 247, 244, 0) 50%, rgba(10, 10, 8, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.06;
+}
 
-/* Page sections boundaries and background */
+/* ---- SECTION RESETS ---- */
 .min-h-screen, #overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq, footer {
   background-color: transparent !important;
   background-image: none !important;
-  color: #f3f4f6 !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--color-paper) !important;
+  border-color: rgba(248, 247, 244, 0.05) !important;
   border-width: 0 !important;
 }
 
-/* Section borders replaced by subtle dividers */
 #overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: 1px solid rgba(248, 247, 244, 0.05) !important;
 }
 
-/* Redefine card containers to premium glassmorphism panels */
+/* ---- FLAT CARD SYSTEM ---- */
 .cyber-glass, .cyber-glass-interactive {
-  background: rgba(15, 17, 23, 0.65) !important;
-  background-color: rgba(15, 17, 23, 0.65) !important;
-  color: #f3f4f6 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6) !important;
-  border-radius: 16px !important; /* Rounded console keys */
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(248, 247, 244, 0.015) !important;
+  background-color: rgba(248, 247, 244, 0.015) !important;
+  color: var(--color-paper) !important;
+  border: 1px solid rgba(248, 247, 244, 0.05) !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cyber-glass-interactive {
@@ -89,84 +108,67 @@ body {
   overflow: hidden;
 }
 
-/* Interactive Cursor Radial Hover Glow */
-.cyber-glass-interactive::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.045), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.cyber-glass-interactive:hover::before {
-  opacity: 1;
-}
-
 .cyber-glass-interactive:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(99, 102, 241, 0.05) !important;
+  transform: translateY(-1px);
+  border-color: rgba(194, 69, 45, 0.35) !important;
+  background: rgba(248, 247, 244, 0.03) !important;
+  box-shadow: none !important;
 }
 
 .cyber-glass-interactive:active {
-  transform: translateY(1px);
+  transform: none;
 }
 
-/* Nixie clock counters as clean glass dials */
+/* ---- COUNTDOWN DIALS ---- */
 .grid-cols-4 > div {
-  background: rgba(15, 17, 23, 0.7) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 12px !important;
+  background: rgba(248, 247, 244, 0.01) !important;
+  border: 1px solid rgba(248, 247, 244, 0.04) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .countdown-number {
-  color: #f3f4f6 !important;
-  font-weight: 900 !important;
+  color: var(--color-paper) !important;
+  font-weight: 800 !important;
   text-shadow: none !important;
+  font-family: var(--font-mono) !important;
 }
 
-/* Clean up headers & typography */
+/* ---- TYPOGRAPHY ---- */
 h1, h2, h3, h4, h5, h6 {
-  color: #ffffff !important;
+  color: var(--color-paper) !important;
   font-family: var(--font-syne) !important;
   font-weight: 800 !important;
   text-shadow: none !important;
+  letter-spacing: -0.02em;
 }
 
-/* Lower opacity tags */
-.text-paper\/40, .text-paper\/50, .text-paper\/60, .text-paper\/70, .text-paper\/85, .text-ink\/60, .text-ink\/65, .text-white\/60, .text-white\/40, .text-paper\/55, .text-paper\/30, .text-paper\/35 {
-  color: rgba(243, 244, 246, 0.6) !important;
+.text-paper\/40, .text-paper\/50, .text-paper\/60, .text-paper\/70, .text-paper\/85,
+.text-ink\/60, .text-ink\/65, .text-white\/60, .text-white\/40,
+.text-paper\/55, .text-paper\/30, .text-paper\/35 {
+  color: rgba(248, 247, 244, 0.35) !important;
 }
 
-/* Hide scrollbar utility */
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+/* ---- SCROLLBAR HIDE ---- */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Glowing text details */
+/* ---- TEXT GRADIENT (muted) ---- */
 .text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  background: linear-gradient(135deg, #F8F7F4 0%, #999890 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Dynamic Animation Utilities */
+/* ---- ANIMATIONS (minimal) ---- */
 @keyframes float-slow {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(25px, -25px) scale(1.08); }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -2px); }
 }
 
 @keyframes float-medium {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-20px, 20px) scale(1.04); }
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-2px, 2px); }
 }
 
 @keyframes laser-flow {
@@ -174,16 +176,63 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 0% 100%; }
 }
 
+@keyframes text-glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-1px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(1px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+
 .animate-float-slow {
-  animation: float-slow 18s ease-in-out infinite;
+  animation: float-slow 20s ease-in-out infinite;
 }
 
 .animate-float-medium {
-  animation: float-medium 12s ease-in-out infinite;
+  animation: float-medium 15s ease-in-out infinite;
 }
 
 .timeline-laser-line {
-  background: linear-gradient(180deg, #6366f1, #06b6d4, #10b981, #6366f1);
+  background: linear-gradient(180deg, rgba(248,247,244,0.1), rgba(248,247,244,0.02), rgba(248,247,244,0.1));
   background-size: 100% 300%;
-  animation: laser-flow 8s linear infinite;
+  animation: laser-flow 10s linear infinite;
+}
+
+.hover-glitch:hover {
+  animation: text-glitch 0.2s linear infinite;
+}
+
+/* ---- GLOBAL OVERRIDES ---- */
+* {
+  text-shadow: none !important;
+}
+
+/* Kill all neon/glow box-shadows globally */
+button, a, div, section, article, aside, main, nav, header, footer, span {
+  text-shadow: none;
+}
+
+/* Override rounded-full on cards to sharp */
+.rounded-3xl { border-radius: 0px !important; }
+.rounded-2xl { border-radius: 0px !important; }
+.rounded-xl { border-radius: 0px !important; }
+
+/* Restore rounded-full for pills and avatars */
+.rounded-full { border-radius: 9999px !important; }
+
+/* Selection color */
+::selection {
+  background: rgba(194, 69, 45, 0.35);
+  color: #F8F7F4;
+}
+
+/* Hide default cursor on desktop for custom pointer overlay */
+@media (min-width: 768px) {
+  html, body {
+    cursor: none !important;
+  }
+  a, button, input, select, textarea, [role="button"], span, div {
+    cursor: none !important;
+  }
 }
