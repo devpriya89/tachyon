@@ -54,6 +54,100 @@ export function App() {
     return localStorage.getItem('Tachyon_twitter_link') || 'https://twitter.com/Tachyon'
   })
 
+  // Tracks Configurations list state
+  const [tracksList, setTracksList] = useState(() => {
+    const saved = localStorage.getItem('Tachyon_tracks')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return [
+      {
+        id: 'ai',
+        title: 'AI & Intelligent Agents',
+        tagLine: 'BUILD AUTONOMOUS ENTITIES AND SMART WORKFLOWS',
+        prize: '50,000 INR Pool',
+        details: 'Create intelligent systems that go beyond simple chat interfaces. Build autonomous agents, LLM-powered tools, code generation scrapers, or sensory processing apps.',
+        ideas: [
+          'An AI agent that crawls GitHub repos, reads code, and opens PRs with unit test fixes.',
+          'A local-first browser extension that synthesizes research papers as you read.',
+          'An autonomous developer assistant that learns your keyboard shortcuts.'
+        ],
+        techs: ['Python', 'HuggingFace', 'PyTorch', 'LangChain', 'OpenAI API', 'VectorDBs'],
+        criteria: 'Autonomy, latency optimization, safety bounds, and practical API orchestration.',
+        blueprintSpecs: {
+          memory: 'Context memory buffer state',
+          tools: 'Autonomous tools executor agent',
+          fallback: 'Offline local-first processing',
+          ui: 'Diagnostic telemetry dashboard'
+        }
+      },
+      {
+        id: 'cyber',
+        title: 'Cybersecurity & Exploits',
+        tagLine: 'OFFENSIVE SCRIPTS, DEFENSIVE SHIELDS, AND CTF TECH',
+        prize: '40,000 INR Pool',
+        details: 'Push the limits of digital systems. Build penetration testing automation, network analysis tools, cryptography visualizers, or custom system monitors.',
+        ideas: [
+          'A web-based visual network package mapper parsing Wireshark logs in real-time.',
+          'A local open-port mapping tool equipped with clean diagnostic logs dashboard.',
+          'An educational CTF platform modeling real hardware-level stack overflows.'
+        ],
+        techs: ['Rust', 'Go', 'Python', 'Wireshark API', 'Scapy', 'CTF Cryptography'],
+        criteria: 'Exploit accuracy, security defense resilience, log visual diagnostics, and script speed.',
+        blueprintSpecs: {
+          interceptor: 'Network packets logs collector',
+          scanner: 'Diagnostic port mapper engine',
+          payload: 'Custom hex-payload compiler',
+          ui: 'Security telemetry board'
+        }
+      },
+      {
+        id: 'game',
+        title: 'Retro & Immersive Game Dev',
+        tagLine: 'ENGINES, KEYBOARD ARCADES, AND HARDWARE INTERFACES',
+        prize: '30,000 INR Pool',
+        details: 'Craft retro arcade games, physics sandbox simulations, or multiplayer keyboard arenas. Challenge standard engine frameworks and prioritize pure gameplay.',
+        ideas: [
+          'A local co-op arcade game with responsive custom keyboard mapping controls.',
+          'A low-level retro canvas game engine written entirely in pure TypeScript.',
+          'A space physics simulator charting real-time gravitational node pulls.'
+        ],
+        techs: ['Phaser.js', 'Godot Engine', 'TypeScript', 'Aseprite Pixel Art', 'Chiptune Synthesizer'],
+        criteria: 'Input response speed, physics consistency, retro art design, and pure gameplay fun factor.',
+        blueprintSpecs: {
+          controller: 'Custom keyboard mapper controls',
+          particles: 'Pixel particle emitter sandbox',
+          score: 'High-score local storage registry',
+          soundtrack: 'Built-in chiptune driver'
+        }
+      },
+      {
+        id: 'web',
+        title: 'Web & Forked Platforms',
+        tagLine: 'OFFLINE-FIRST WEBS, LOCAL P2PS, AND SERVERLESS LOGS',
+        prize: '30,000 INR Pool',
+        details: 'Construct WebRTC P2P networks, decentralized chat systems, offline-first client tools, or high-performance browser databases.',
+        ideas: [
+          'A secure peer-to-peer browser chat platform functioning entirely client-side.',
+          'A reactive offline-first builder tool featuring automatic local storage syncing.',
+          'A dashboard widget monitoring system clock anomalies across multiple nodes.'
+        ],
+        techs: ['WebRTC', 'IndexedDB', 'SQLite WASM', 'Next.js', 'WebSockets', 'Service Workers'],
+        criteria: 'Offline resilience, peer signalling stability, speed indexing metrics, and sync reliability.',
+        blueprintSpecs: {
+          offline: 'Service Workers local cache core',
+          peer: 'P2P WebRTC signalling gateway',
+          sync: 'Automatic local-to-sheets database sync',
+          logger: 'Fader volume/system state logger'
+        }
+      }
+    ]
+  })
+
   // FAQ list state
   const [faqList, setFaqList] = useState(() => {
     const saved = localStorage.getItem('Tachyon_faqs')
@@ -531,6 +625,10 @@ export function App() {
   }, [faqList])
 
   useEffect(() => {
+    localStorage.setItem('Tachyon_tracks', JSON.stringify(tracksList))
+  }, [tracksList])
+
+  useEffect(() => {
     Object.entries(themeColors).forEach(([variable, value]) => {
       document.documentElement.style.setProperty(variable, value)
     })
@@ -801,6 +899,7 @@ export function App() {
           siteTheme={siteTheme}
           isMuted={isMuted}
           volume={volume}
+          tracksList={tracksList}
         />
 
         {/* Roadmap Stepper & ICS Downloader */}
@@ -886,6 +985,8 @@ export function App() {
             setInstagramLink={setInstagramLink}
             twitterLink={twitterLink}
             setTwitterLink={setTwitterLink}
+            tracksList={tracksList}
+            setTracksList={setTracksList}
           />
         )}
 

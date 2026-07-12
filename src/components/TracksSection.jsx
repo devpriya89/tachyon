@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Cpu, Shield, Gamepad, Globe, Code, Download, CheckSquare, Square } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
-export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
+export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksList = [] }) {
   const [selectedTrackTab, setSelectedTrackTab] = useState('ALL')
   const [cardName, setCardName] = useState('')
   const [selectedTechs, setSelectedTechs] = useState([])
@@ -15,153 +15,13 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
     web: { offline: false, peer: false, sync: false, logger: false }
   })
 
+  // Derive TRACKS_DATA from the dynamic tracksList props
   const TRACKS_DATA = {
-    ALL: [
-      {
-        id: 'ai',
-        icon: Cpu,
-        title: 'AI & Intelligent Agents',
-        tagLine: 'BUILD AUTONOMOUS ENTITIES AND SMART WORKFLOWS',
-        prize: '50,000 INR Pool',
-        details: 'Create intelligent systems that go beyond simple chat interfaces. Build autonomous agents, LLM-powered tools, code generation scrapers, or sensory processing apps.',
-        ideas: [
-          'An AI agent that crawls GitHub repos, reads code, and opens PRs with unit test fixes.',
-          'A local-first browser extension that synthesizes research papers as you read.',
-          'An autonomous developer assistant that learns your keyboard shortcuts.'
-        ]
-      },
-      {
-        id: 'cyber',
-        icon: Shield,
-        title: 'Cybersecurity & Exploits',
-        tagLine: 'OFFENSIVE SCRIPTS, DEFENSIVE SHIELDS, AND CTF TECH',
-        prize: '40,000 INR Pool',
-        details: 'Push the limits of digital systems. Build penetration testing automation, network analysis tools, cryptography visualizers, or custom system monitors.',
-        ideas: [
-          'A web-based visual network package mapper parsing Wireshark logs in real-time.',
-          'A local open-port mapping tool equipped with clean diagnostic logs dashboard.',
-          'An educational CTF platform modeling real hardware-level stack overflows.'
-        ]
-      },
-      {
-        id: 'game',
-        icon: Gamepad,
-        title: 'Retro & Immersive Game Dev',
-        tagLine: 'ENGINES, KEYBOARD ARCADES, AND HARDWARE INTERFACES',
-        prize: '30,000 INR Pool',
-        details: 'Craft retro arcade games, physics sandbox simulations, or multiplayer keyboard arenas. Challenge standard engine frameworks and prioritize pure gameplay.',
-        ideas: [
-          'A local co-op arcade game with responsive custom keyboard mapping controls.',
-          'A low-level retro canvas game engine written entirely in pure TypeScript.',
-          'A space physics simulator charting real-time gravitational node pulls.'
-        ]
-      },
-      {
-        id: 'web',
-        icon: Globe,
-        title: 'Web & Forked Platforms',
-        tagLine: 'OFFLINE-FIRST WEBS, LOCAL P2PS, AND SERVERLESS LOGS',
-        prize: '30,000 INR Pool',
-        details: 'Construct WebRTC P2P networks, decentralized chat systems, offline-first client tools, or high-performance browser databases.',
-        ideas: [
-          'A secure peer-to-peer browser chat platform functioning entirely client-side.',
-          'A reactive offline-first builder tool featuring automatic local storage syncing.',
-          'A dashboard widget monitoring system clock anomalies across multiple nodes.'
-        ]
-      }
-    ],
-    AI: [
-      {
-        id: 'ai',
-        icon: Cpu,
-        title: 'AI & Intelligent Agents',
-        tagLine: 'BUILD AUTONOMOUS ENTITIES AND SMART WORKFLOWS',
-        prize: '50,000 INR Pool',
-        details: 'Create intelligent systems that go beyond simple chat interfaces. Build autonomous agents, LLM-powered tools, code generation scrapers, or sensory processing apps.',
-        ideas: [
-          'An AI agent that crawls GitHub repos, reads code, and opens PRs with unit test fixes.',
-          'A local-first browser extension that synthesizes research papers as you read.',
-          'An autonomous developer assistant that learns your keyboard shortcuts.'
-        ],
-        techs: ['Python', 'HuggingFace', 'PyTorch', 'LangChain', 'OpenAI API', 'VectorDBs'],
-        criteria: 'Autonomy, latency optimization, safety bounds, and practical API orchestration.',
-        blueprintSpecs: {
-          memory: 'Context memory buffer state',
-          tools: 'Autonomous tools executor agent',
-          fallback: 'Offline local-first processing',
-          ui: 'Diagnostic telemetry dashboard'
-        }
-      }
-    ],
-    CYBER: [
-      {
-        id: 'cyber',
-        icon: Shield,
-        title: 'Cybersecurity & Exploits',
-        tagLine: 'OFFENSIVE SCRIPTS, DEFENSIVE SHIELDS, AND CTF TECH',
-        prize: '40,000 INR Pool',
-        details: 'Push the limits of digital systems. Build penetration testing automation, network analysis tools, cryptography visualizers, or custom system monitors.',
-        ideas: [
-          'A web-based visual network package mapper parsing Wireshark logs in real-time.',
-          'A local open-port mapping tool equipped with clean diagnostic logs dashboard.',
-          'An educational CTF platform modeling real hardware-level stack overflows.'
-        ],
-        techs: ['Rust', 'Go', 'Python', 'Wireshark API', 'Scapy', 'CTF Cryptography'],
-        criteria: 'Exploit accuracy, security defense resilience, log visual diagnostics, and script speed.',
-        blueprintSpecs: {
-          interceptor: 'Network packets logs collector',
-          scanner: 'Diagnostic port mapper engine',
-          payload: 'Custom hex-payload compiler',
-          ui: 'Security telemetry board'
-        }
-      }
-    ],
-    GAME: [
-      {
-        id: 'game',
-        icon: Gamepad,
-        title: 'Retro & Immersive Game Dev',
-        tagLine: 'ENGINES, KEYBOARD ARCADES, AND HARDWARE INTERFACES',
-        prize: '30,000 INR Pool',
-        details: 'Craft retro arcade games, physics sandbox simulations, or multiplayer keyboard arenas. Challenge standard engine frameworks and prioritize pure gameplay.',
-        ideas: [
-          'A local co-op arcade game with responsive custom keyboard mapping controls.',
-          'A low-level retro canvas game engine written entirely in pure TypeScript.',
-          'A space physics simulator charting real-time gravitational node pulls.'
-        ],
-        techs: ['Phaser.js', 'Godot Engine', 'TypeScript', 'Aseprite Pixel Art', 'Chiptune Synthesizer'],
-        criteria: 'Input response speed, physics consistency, retro art design, and pure gameplay fun factor.',
-        blueprintSpecs: {
-          controller: 'Custom keyboard mapper controls',
-          particles: 'Pixel particle emitter sandbox',
-          score: 'High-score local storage registry',
-          soundtrack: 'Built-in chiptune driver'
-        }
-      }
-    ],
-    WEB: [
-      {
-        id: 'web',
-        icon: Globe,
-        title: 'Web & Forked Platforms',
-        tagLine: 'OFFLINE-FIRST WEBS, LOCAL P2PS, AND SERVERLESS LOGS',
-        prize: '30,000 INR Pool',
-        details: 'Construct WebRTC P2P networks, decentralized chat systems, offline-first client tools, or high-performance browser databases.',
-        ideas: [
-          'A secure peer-to-peer browser chat platform functioning entirely client-side.',
-          'A reactive offline-first builder tool featuring automatic local storage syncing.',
-          'A dashboard widget monitoring system clock anomalies across multiple nodes.'
-        ],
-        techs: ['WebRTC', 'IndexedDB', 'SQLite WASM', 'Next.js', 'WebSockets', 'Service Workers'],
-        criteria: 'Offline resilience, peer signalling stability, speed indexing metrics, and sync reliability.',
-        blueprintSpecs: {
-          offline: 'Service Workers local cache core',
-          peer: 'P2P WebRTC signalling gateway',
-          sync: 'Automatic local-to-sheets database sync',
-          logger: 'Fader volume/system state logger'
-        }
-      }
-    ]
+    ALL: tracksList,
+    AI: tracksList.filter(t => t.id === 'ai'),
+    CYBER: tracksList.filter(t => t.id === 'cyber'),
+    GAME: tracksList.filter(t => t.id === 'game'),
+    WEB: tracksList.filter(t => t.id === 'web')
   }
 
   const TECH_STACK_OPTIONS = [
@@ -267,7 +127,17 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
     link.click()
   }
 
-  const activeTracksList = TRACKS_DATA[selectedTrackTab]
+  const getIcon = (id) => {
+    switch (id) {
+      case 'ai': return Cpu
+      case 'cyber': return Shield
+      case 'game': return Gamepad
+      case 'web': return Globe
+      default: return Code
+    }
+  }
+
+  const activeTracksList = TRACKS_DATA[selectedTrackTab] || []
 
   const trackIndexMap = { ai: '01', cyber: '02', game: '03', web: '04' }
 
@@ -346,7 +216,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
         {selectedTrackTab === 'ALL' ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[1px] bg-white/5 mb-20">
             {activeTracksList.map((track) => {
-              const IconComp = track.icon
+              const IconComp = getIcon(track.id)
               const idx = trackIndexMap[track.id] || '00'
               const cMap = trackColors[track.id] || { text: 'text-white/20', bgLight: 'bg-white/[0.02]', borderLight: 'border-white/5', badge: 'border-white/8 text-white/30', hoverBorder: '' }
               
@@ -370,7 +240,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
                     </div>
 
                     <h3 className="font-syne font-bold text-sm text-[#F8F7F4] uppercase mb-2">
-                      {track.title}
+                       {track.title}
                     </h3>
                     
                     <p className="font-mono text-[8px] text-white/20 uppercase mb-4 tracking-[0.2em]">
@@ -390,7 +260,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
                       PROTOCOL:BUILD_CONCEPTS
                     </span>
                     <ul className="space-y-2 font-mono text-[10px] text-white/30 leading-relaxed">
-                      {track.ideas.map((idea, ideaIdx) => (
+                      {track.ideas && track.ideas.map((idea, ideaIdx) => (
                         <li key={ideaIdx} className="flex gap-2">
                           <span className={`${cMap.text} shrink-0`}>—</span>
                           <span>{idea}</span>
@@ -407,7 +277,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-[1px] bg-white/5 mb-20">
             
             {activeTracksList.map((track) => {
-              const IconComp = track.icon
+              const IconComp = getIcon(track.id)
               const idx = trackIndexMap[track.id] || '00'
               const trackChecklist = blueprintChecklist[track.id] || {}
               const cMap = trackColors[track.id] || { text: 'text-white/20', bgLight: 'bg-white/[0.02]', borderLight: 'border-white/5', badge: 'border-white/8 text-white/30', hoverBorder: '' }
@@ -450,7 +320,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
                         PROTOCOL:BUILD_CONCEPTS
                       </span>
                       <ul className="space-y-2 font-mono text-[10px] text-white/30 leading-relaxed">
-                        {track.ideas.map((idea, ideaIdx) => (
+                        {track.ideas && track.ideas.map((idea, ideaIdx) => (
                           <li key={ideaIdx} className="flex gap-2">
                             <span className={`${cMap.text} shrink-0`}>—</span>
                             <span>{idea}</span>
@@ -512,7 +382,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-[1px] bg-white/5 select-none">
-                          {Object.entries(track.blueprintSpecs).map(([key, label]) => {
+                          {track.blueprintSpecs && Object.entries(track.blueprintSpecs).map(([key, label]) => {
                             const isChecked = trackChecklist[key]
 
                             return (

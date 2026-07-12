@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { X, Calendar, Users, Sliders, FileText, Trash2, MessageSquare, Sparkles } from 'lucide-react'
+import { X, Calendar, Users, Sliders, FileText, Trash2, MessageSquare, Sparkles, Code, Cpu } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
 export function AdminPanel({
@@ -25,7 +25,9 @@ export function AdminPanel({
   instagramLink,
   setInstagramLink,
   twitterLink,
-  setTwitterLink
+  setTwitterLink,
+  tracksList,
+  setTracksList
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
   
@@ -68,6 +70,19 @@ export function AdminPanel({
   const [editingFaqIdx, setEditingFaqIdx] = useState(null)
   const [editFaqData, setEditFaqData] = useState({ question: '', answer: '' })
 
+  // Tracks Editor active track selection
+  const [selectedTrackId, setSelectedTrackId] = useState('ai')
+  const [trackEditForm, setTrackEditForm] = useState({
+    title: '',
+    tagLine: '',
+    prize: '',
+    details: '',
+    criteria: '',
+    techs: '',
+    ideas: '',
+    blueprintSpecs: {}
+  })
+
   // Load registrations on mount
   useEffect(() => {
     const saved = localStorage.getItem('Tachyon_registrations')
@@ -79,6 +94,23 @@ export function AdminPanel({
       }
     }
   }, [])
+
+  // Sync track edits form state when active selection changes
+  useEffect(() => {
+    const currentTrack = tracksList.find(t => t.id === selectedTrackId)
+    if (currentTrack) {
+      setTrackEditForm({
+        title: currentTrack.title || '',
+        tagLine: currentTrack.tagLine || '',
+        prize: currentTrack.prize || '',
+        details: currentTrack.details || '',
+        criteria: currentTrack.criteria || '',
+        techs: currentTrack.techs ? currentTrack.techs.join(', ') : '',
+        ideas: currentTrack.ideas ? currentTrack.ideas.join('\n') : '',
+        blueprintSpecs: currentTrack.blueprintSpecs || {}
+      })
+    }
+  }, [selectedTrackId, tracksList])
 
   // Delete a listing
   const handleDeleteListing = (id) => {
@@ -198,6 +230,39 @@ export function AdminPanel({
     setEditingFaqIdx(null)
   }
 
+  // Save edited track handler
+  const handleSaveTrackEdit = (e) => {
+    e.preventDefault()
+    if (!trackEditForm.title || !trackEditForm.prize || !trackEditForm.details) {
+      playSound('error', isMuted, volume)
+      alert('Title, Prize Pool, and Details are required!')
+      return
+    }
+
+    playSound('success', isMuted, volume)
+    const updated = tracksList.map(t => {
+      if (t.id === selectedTrackId) {
+        return {
+          ...t,
+          title: trackEditForm.title,
+          tagLine: trackEditForm.tagLine,
+          prize: trackEditForm.prize,
+          details: trackEditForm.details,
+          criteria: trackEditForm.criteria,
+          techs: trackEditForm.techs.split(',').map(s => s.trim()).filter(Boolean),
+          ideas: trackEditForm.ideas.split('\n').map(s => s.trim()).filter(Boolean),
+          blueprintSpecs: {
+            ...t.blueprintSpecs,
+            ...trackEditForm.blueprintSpecs
+          }
+        }
+      }
+      return t
+    })
+    setTracksList(updated)
+    alert(`Track '${selectedTrackId.toUpperCase()}' configurations synchronized successfully!`)
+  }
+
   return (
     <div className="fixed inset-0 z-[120] flex items-start justify-center p-4 bg-black/85 backdrop-blur-lg overflow-y-auto pt-6 sm:pt-10 select-none text-white">
       
@@ -232,6 +297,7 @@ export function AdminPanel({
           {[
             { id: 'milestones', label: 'Milestones & Dates', icon: Calendar },
             { id: 'teammates', label: 'Matchmaking Lobby', icon: Users },
+            { id: 'tracks', label: 'Track Configs', icon: Code },
             { id: 'crewsponsors', label: 'Crews & Sponsors', icon: Sparkles },
             { id: 'faqs', label: 'FAQ Manager', icon: MessageSquare },
             { id: 'themes', label: 'Theme Editor', icon: Sliders },
@@ -563,7 +629,150 @@ export function AdminPanel({
             </div>
           )}
 
-          {/* TAB 3: CREWS & SPONSORS */}
+          {/* TAB 3: TRACK CONFIGS */}
+          {activeTab === 'tracks' && (
+            <div className="space-y-6 text-left">
+              {/* Track Selector Buttons */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none">
+                <span className="block font-bold text-white uppercase mb-3">📂 Select Track to Edit</span>
+                <div className="flex flex-wrap gap-2">
+                  {['ai', 'cyber', 'game', 'web'].map(tId => (
+                    <button
+                      key={tId}
+                      onClick={() => {
+                        playSound('click', isMuted, volume)
+                        setSelectedTrackId(tId)
+                      }}
+                      className={`px-4 py-2 border font-mono font-bold uppercase transition-all rounded-none cursor-pointer ${
+                        selectedTrackId === tId
+                          ? 'bg-[#F8F7F4] text-[#0A0A08] border-white'
+                          : 'bg-white/5 text-zinc-400 border-white/5 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {tId.toUpperCase()} TRACK
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Edit Track configurations form */}
+              <form onSubmit={handleSaveTrackEdit} className="border border-white/5 bg-white/5 p-5 rounded-none space-y-4">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">
+                  📝 Edit Parameters: {selectedTrackId.toUpperCase()}
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Track Title</label>
+                    <input
+                      type="text"
+                      value={trackEditForm.title}
+                      onChange={(e) => setTrackEditForm({ ...trackEditForm, title: e.target.value })}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Prize Pool label</label>
+                    <input
+                      type="text"
+                      value={trackEditForm.prize}
+                      onChange={(e) => setTrackEditForm({ ...trackEditForm, prize: e.target.value })}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Tagline banner</label>
+                  <input
+                    type="text"
+                    value={trackEditForm.tagLine}
+                    onChange={(e) => setTrackEditForm({ ...trackEditForm, tagLine: e.target.value })}
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Details description</label>
+                  <textarea
+                    rows="3"
+                    value={trackEditForm.details}
+                    onChange={(e) => setTrackEditForm({ ...trackEditForm, details: e.target.value })}
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Evaluation Criteria details</label>
+                  <input
+                    type="text"
+                    value={trackEditForm.criteria}
+                    onChange={(e) => setTrackEditForm({ ...trackEditForm, criteria: e.target.value })}
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Target technologies (Comma separated)</label>
+                    <input
+                      type="text"
+                      value={trackEditForm.techs}
+                      onChange={(e) => setTrackEditForm({ ...trackEditForm, techs: e.target.value })}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Build Concept Ideas (One per line)</label>
+                    <textarea
+                      rows="3"
+                      value={trackEditForm.ideas}
+                      onChange={(e) => setTrackEditForm({ ...trackEditForm, ideas: e.target.value })}
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Blueprint builder checklist items */}
+                <div className="border border-white/5 bg-zinc-950/30 p-4 space-y-4">
+                  <span className="block font-bold text-white uppercase text-[9px] border-b border-white/5 pb-2">
+                    🛠️ Blueprint Checklist Spec Items (Labels)
+                  </span>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.keys(trackEditForm.blueprintSpecs).map((specKey) => (
+                      <div key={specKey}>
+                        <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">
+                          Node spec: {specKey.toUpperCase()}
+                        </label>
+                        <input
+                          type="text"
+                          value={trackEditForm.blueprintSpecs[specKey] || ''}
+                          onChange={(e) => {
+                            const updatedSpecs = {
+                              ...trackEditForm.blueprintSpecs,
+                              [specKey]: e.target.value
+                            }
+                            setTrackEditForm({ ...trackEditForm, blueprintSpecs: updatedSpecs })
+                          }}
+                          className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-xs"
+                >
+                  SAVE TRACK OVERRIDES
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* TAB 4: CREWS & SPONSORS */}
           {activeTab === 'crewsponsors' && (
             <div className="space-y-6">
               
@@ -729,7 +938,7 @@ export function AdminPanel({
             </div>
           )}
 
-          {/* TAB 4: FAQ MANAGER */}
+          {/* TAB 5: FAQ MANAGER */}
           {activeTab === 'faqs' && (
             <div className="space-y-6 text-left">
               {/* Form to insert custom FAQ */}
@@ -841,7 +1050,7 @@ export function AdminPanel({
             </div>
           )}
 
-          {/* TAB 5: THEME EDITOR */}
+          {/* TAB 6: THEME EDITOR */}
           {activeTab === 'themes' && (
             <div className="space-y-6 text-left">
               <div className="border border-white/5 bg-white/5 p-6 rounded-none space-y-4">
@@ -921,7 +1130,7 @@ export function AdminPanel({
             </div>
           )}
 
-          {/* TAB 6: REGISTRANTS DATABASE */}
+          {/* TAB 7: REGISTRANTS DATABASE */}
           {activeTab === 'registrants' && (
             <div className="space-y-6 text-left">
               <div className="border border-white/5 bg-white/5 p-5 rounded-none">
