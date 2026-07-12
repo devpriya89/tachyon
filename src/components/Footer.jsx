@@ -1,8 +1,8 @@
 import React from 'react'
-import { Github, Mail } from 'lucide-react'
+import { Github, Mail, Instagram, Twitter } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
-export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
+export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLink, twitterLink }) {
 
   // Custom synth triggers for footer Launchpad audio pads
   const pianoKeys = [
@@ -48,7 +48,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
 
       {/* Top corner labels */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-10 text-white/15">
-        <span>TAKUMI PROTOCOL v1.0</span>
+        <span>TACHYON PROTOCOL v1.0</span>
         <span>SYS:FOOTER // NODE:00</span>
       </div>
 
@@ -56,7 +56,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8 pb-8 border-b border-white/5">
 
         {/* Left — Event name */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5 text-left">
           <span className="text-white/40 text-[11px] tracking-[0.3em] font-normal">TACHYON // 2026</span>
           <span className="text-white/15 text-[8px] tracking-[0.25em]">CRAFT. CODE. CREATE.</span>
         </div>
@@ -64,7 +64,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
         {/* Center — Synth pads + Social links */}
         <div className="flex flex-col items-center gap-4">
           <span className="text-white/15 text-[8px] tracking-[0.25em]">PROTOCOL:SYNTH_PAD</span>
-          <div className="flex border border-white/5 p-1.5 gap-1 select-none">
+          <div className="flex border border-white/5 p-1.5 gap-1 select-none bg-[#0A0A08]">
             {pianoKeys.map((key) => (
               <button
                 key={key.label}
@@ -77,31 +77,41 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
           </div>
 
           {/* Social links row */}
-          <div className="flex items-center gap-4 text-white/20">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-white/20">
             <a
               href="https://github.com/Tachyon"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playSound('click', isMuted, volume)}
-              className="hover:text-white/50 flex items-center gap-1.5 transition-opacity duration-200 text-[9px] tracking-[0.2em]"
+              className="hover:text-[#F8F7F4] flex items-center gap-1.5 transition-colors duration-200 text-[9px] tracking-[0.2em]"
             >
               <Github className="w-3 h-3" /> GITHUB
             </a>
             <span className="text-white/10">—</span>
             <a
-              href="https://discord.gg/Tachyon"
+              href={twitterLink || 'https://twitter.com/Tachyon'}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playSound('click', isMuted, volume)}
-              className="hover:text-white/50 flex items-center gap-1.5 transition-opacity duration-200 text-[9px] tracking-[0.2em]"
+              className="hover:text-[#F8F7F4] flex items-center gap-1.5 transition-colors duration-200 text-[9px] tracking-[0.2em]"
             >
-              DISCORD
+              <Twitter className="w-3 h-3" /> TWITTER
+            </a>
+            <span className="text-white/10">—</span>
+            <a
+              href={instagramLink || 'https://instagram.com/Tachyon'}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => playSound('click', isMuted, volume)}
+              className="hover:text-[#F8F7F4] flex items-center gap-1.5 transition-colors duration-200 text-[9px] tracking-[0.2em]"
+            >
+              <Instagram className="w-3 h-3" /> INSTAGRAM
             </a>
             <span className="text-white/10">—</span>
             <a
               href="mailto:info@Tachyon.org"
               onClick={() => playSound('click', isMuted, volume)}
-              className="hover:text-white/50 flex items-center gap-1.5 transition-opacity duration-200 text-[9px] tracking-[0.2em]"
+              className="hover:text-[#F8F7F4] flex items-center gap-1.5 transition-colors duration-200 text-[9px] tracking-[0.2em]"
             >
               <Mail className="w-3 h-3" /> CONTACT
             </a>
@@ -109,21 +119,14 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
         </div>
 
         {/* Right — Copyright + Admin */}
-        <div className="flex flex-col items-end gap-3">
+        <div className="flex flex-col items-end gap-3 shrink-0">
           <span className="text-white/15">© 2026 TACHYON</span>
           <button
             onClick={() => {
               playSound('click', isMuted, volume)
-              const pw = prompt('ENTER SECURITY ACCESS PASSCODE:')
-              if (pw === 'admin123' || pw === 'root') {
-                playSound('success', isMuted, volume)
-                if (openAdminPanel) openAdminPanel()
-              } else if (pw !== null) {
-                playSound('error', isMuted, volume)
-                alert('ACCESS DENIED: INVALID PASSCODE.')
-              }
+              if (openAdminPanel) openAdminPanel()
             }}
-            className="text-white/10 hover:text-[#F8F7F4] border border-white/5 bg-white/[0.02] px-3 py-1 rounded-none cursor-pointer transition-colors duration-200 text-[8px] tracking-[0.2em] hover-glitch"
+            className="text-white/10 hover:text-[#F8F7F4] border border-white/5 bg-white/[0.02] px-3 py-1 rounded-none cursor-pointer transition-colors duration-200 text-[8px] tracking-[0.2em] hover-glitch border-0"
             title="Open System Administration Console"
           >
             [SYS:ADMIN]
@@ -138,7 +141,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel }) {
         <span className="hidden md:inline">48.8566°N, 2.3522°E — SIGNAL:ACTIVE</span>
       </div>
 
-    </footer>
+     </footer>
   )
 }
 

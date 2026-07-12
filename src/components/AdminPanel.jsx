@@ -21,7 +21,11 @@ export function AdminPanel({
   whatsappLink,
   setWhatsappLink,
   faqList,
-  setFaqList
+  setFaqList,
+  instagramLink,
+  setInstagramLink,
+  twitterLink,
+  setTwitterLink
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
   
@@ -307,6 +311,44 @@ export function AdminPanel({
                     SAVE LINK
                   </button>
                 </div>
+              </div>
+
+              {/* Social Links Setting Block */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left space-y-4">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">🌐 Social Media Handles</span>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Instagram Profile URL</label>
+                    <input
+                      type="text"
+                      value={instagramLink}
+                      onChange={(e) => setInstagramLink(e.target.value)}
+                      placeholder="https://instagram.com/XXXXX"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Twitter / X Profile URL</label>
+                    <input
+                      type="text"
+                      value={twitterLink}
+                      onChange={(e) => setTwitterLink(e.target.value)}
+                      placeholder="https://twitter.com/XXXXX"
+                      className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    playSound('success', isMuted, volume)
+                    alert('Social media URLs updated and saved!')
+                  }}
+                  className="w-full border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2 font-bold uppercase rounded-none active:scale-[0.99] transition-all cursor-pointer text-[10px]"
+                >
+                  SYNC SOCIAL MEDIA LINKS
+                </button>
               </div>
 
               <div className="border border-white/5 bg-white/5 p-5 rounded-none text-left">
