@@ -46,6 +46,14 @@ export function App() {
     return localStorage.getItem('Tachyon_whatsapp_link') || 'https://chat.whatsapp.com/mock-link'
   })
 
+  // Social Links States
+  const [instagramLink, setInstagramLink] = useState(() => {
+    return localStorage.getItem('Tachyon_instagram_link') || 'https://instagram.com/Tachyon'
+  })
+  const [twitterLink, setTwitterLink] = useState(() => {
+    return localStorage.getItem('Tachyon_twitter_link') || 'https://twitter.com/Tachyon'
+  })
+
   // FAQ list state
   const [faqList, setFaqList] = useState(() => {
     const saved = localStorage.getItem('Tachyon_faqs')
@@ -511,6 +519,14 @@ export function App() {
   }, [whatsappLink])
 
   useEffect(() => {
+    localStorage.setItem('Tachyon_instagram_link', instagramLink)
+  }, [instagramLink])
+
+  useEffect(() => {
+    localStorage.setItem('Tachyon_twitter_link', twitterLink)
+  }, [twitterLink])
+
+  useEffect(() => {
     localStorage.setItem('Tachyon_faqs', JSON.stringify(faqList))
   }, [faqList])
 
@@ -825,6 +841,8 @@ export function App() {
           isMuted={isMuted}
           volume={volume}
           openAdminPanel={handleOpenAdminSecurely}
+          instagramLink={instagramLink}
+          twitterLink={twitterLink}
         />
 
         {/* Registration multi-step Modal wizard */}
@@ -864,6 +882,10 @@ export function App() {
             setWhatsappLink={setWhatsappLink}
             faqList={faqList}
             setFaqList={setFaqList}
+            instagramLink={instagramLink}
+            setInstagramLink={setInstagramLink}
+            twitterLink={twitterLink}
+            setTwitterLink={setTwitterLink}
           />
         )}
 
