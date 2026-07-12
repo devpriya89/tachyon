@@ -109,7 +109,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLi
             </a>
             <span className="text-white/10">—</span>
             <a
-              href="mailto:info@Tachyon.org"
+              href="mailto:Help@tachyonindia.org"
               onClick={() => playSound('click', isMuted, volume)}
               className="hover:text-[#F8F7F4] flex items-center gap-1.5 transition-colors duration-200 text-[9px] tracking-[0.2em]"
             >
