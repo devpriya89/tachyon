@@ -34,7 +34,7 @@ export function Header({
   }, [])
 
   return (
-    <header className="sticky top-0 z-[80] w-full select-none bg-[#0A0A08]/95 border-b border-white/5">
+    <header className="sticky top-0 z-[80] w-full select-none bg-[#231f20]/80 backdrop-blur-md border-b border-zinc-800/80">
       {/* Main bar */}
       <div className="w-full max-w-[1250px] mx-auto px-6 h-14 flex items-center justify-between">
 
@@ -49,17 +49,17 @@ export function Header({
         >
           <Logo theme={siteTheme} />
           <div className="flex flex-col text-left">
-            <span className="font-mono font-bold text-[11px] tracking-[0.15em] uppercase text-[#F8F7F4] group-hover:text-[#C2452D] transition-colors duration-300">
+            <span className="font-semibold text-xs tracking-wider uppercase text-white group-hover:text-[#6db349] transition-colors duration-300">
               Tachyon
             </span>
-            <span className="font-mono text-[8px] text-white/20 tracking-[0.25em] uppercase hidden sm:inline-block">
+            <span className="text-[8px] text-zinc-500 tracking-[0.25em] uppercase hidden sm:inline-block">
               SYS:01
             </span>
           </div>
         </div>
 
         {/* Nav — center (desktop) */}
-        <nav className="hidden lg:flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.15em] shrink-0">
+        <nav className="hidden lg:flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold">
           {['overview', 'about', 'tracks', 'timeline', 'teamfinder', 'partners', 'faq'].map((section) => {
             const labelMap = {
               overview: 'HUD',
@@ -86,13 +86,13 @@ export function Header({
                 }}
                 className={`relative px-3 py-1 transition-colors duration-200 ${
                   isActive
-                    ? 'text-[#F8F7F4]'
-                    : 'text-white/30 hover:text-[#F8F7F4]'
+                    ? 'text-[#6db349]'
+                    : 'text-zinc-400 hover:text-[#6db349]'
                 }`}
               >
                 <span>{labelMap[section]}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-3 right-3 h-px bg-[#F8F7F4]" />
+                  <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[#6db349] rounded-full" />
                 )}
               </a>
             )
@@ -101,33 +101,33 @@ export function Header({
 
         {/* Dynamic Uptime clock, Auth actions & Register Button */}
         <div className="flex items-center gap-4 shrink-0">
-          <span className="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase hidden md:flex items-center gap-1.5 select-none">
-            SYS_CLOCK: {time} <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#C2452D] animate-pulse"></span>
+          <span className="text-[8px] text-zinc-500 tracking-wider uppercase hidden md:flex items-center gap-1.5 select-none">
+            SYS_CLOCK: {time} <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#6db349] animate-pulse"></span>
           </span>
 
           {/* Authentication Status Section */}
           {user ? (
-            <div className="flex items-center gap-3 border-r border-white/5 pr-4">
+            <div className="flex items-center gap-3 border-r border-zinc-800/80 pr-4">
               {user.picture ? (
                 <img 
                   src={user.picture} 
                   alt={user.name} 
-                  className="w-6 h-6 border border-white/10 select-none pointer-events-none rounded-none" 
+                  className="w-6 h-6 border border-zinc-800 rounded-full select-none pointer-events-none" 
                 />
               ) : (
-                <div className="w-6 h-6 bg-white/5 border border-white/10 flex items-center justify-center font-bold text-[9px] text-[#F8F7F4] rounded-none">
+                <div className="w-6 h-6 bg-[#6db349]/10 border border-[#6db349]/20 flex items-center justify-center font-bold text-[9px] text-[#6db349] rounded-full">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
               )}
               <div className="hidden sm:flex flex-col text-left select-none">
-                <span className="font-mono text-[8.5px] text-[#F8F7F4]/80 tracking-wider truncate max-w-[80px]">
+                <span className="text-[8.5px] text-zinc-300 tracking-wider truncate max-w-[80px]">
                   {user.name ? user.name.split(' ')[0] : 'Builder'}
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="font-mono text-[7px] text-[#C2452D]/60 hover:text-[#C2452D] uppercase tracking-widest text-left cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none"
+                  className="text-[7px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest text-left cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none"
                 >
-                  [LOGOUT]
+                  Logout
                 </button>
               </div>
             </div>
@@ -137,9 +137,9 @@ export function Header({
                 playSound('click', isMuted, volume)
                 setIsAuthModalOpen(true)
               }}
-              className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C2452D]/80 hover:text-[#F8F7F4] border border-[#C2452D]/20 hover:border-white/20 px-3.5 py-1.5 rounded-none cursor-pointer transition-all hover:bg-white/5 font-bold shrink-0"
+              className="text-[10px] uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 px-4 py-1.5 rounded-full cursor-pointer transition-all hover:bg-white/5 font-semibold shrink-0"
             >
-              [ SIGN IN ]
+              Sign In
             </button>
           )}
 
@@ -149,15 +149,15 @@ export function Header({
               playSound('click', isMuted, volume)
               setIsRegisterModalOpen(true)
             }}
-            className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 hover:text-[#F8F7F4] border border-white/8 px-4 py-1.5 rounded-none cursor-pointer transition-colors duration-200 shrink-0 hover-glitch"
+            className="text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black px-5 py-1.5 rounded-full cursor-pointer transition-all duration-200 shrink-0 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)]"
           >
-            {ticketData ? 'ACCESS_PASS' : 'REGISTER'}
+            {ticketData ? 'Access Pass' : 'Register'}
           </button>
         </div>
       </div>
 
       {/* Mobile horizontal nav */}
-      <div className="lg:hidden flex overflow-x-auto gap-5 py-2.5 px-6 font-mono text-[9px] uppercase tracking-[0.15em] scrollbar-none select-none border-t border-white/5">
+      <div className="lg:hidden flex overflow-x-auto gap-5 py-2.5 px-6 text-[9px] uppercase tracking-wider scrollbar-none select-none border-t border-zinc-800/80 bg-[#231f20]/95 font-semibold">
         {['overview', 'about', 'tracks', 'timeline', 'teamfinder', 'partners', 'faq'].map((section) => {
           const labelMap = {
             overview: 'HUD',
@@ -183,7 +183,7 @@ export function Header({
                 }
               }}
               className={`transition-colors duration-200 ${
-                isActive ? 'text-[#F8F7F4]' : 'text-white/20 hover:text-white/40'
+                isActive ? 'text-[#6db349]' : 'text-zinc-500 hover:text-zinc-300'
               }`}
             >
               {labelMap[section]}

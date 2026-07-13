@@ -1,20 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700;800&family=Syne:wght@700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-space: "Space Grotesk", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-syne: "Syne", sans-serif;
+  --font-space: "Inter", sans-serif;
+  --font-mono: "Inter", sans-serif;
+  --font-syne: "Inter", sans-serif;
 
-  --color-yellow-neo: #F8F7F4;
-  --color-red-neo: #C2452D;
-  --color-red-dark: #8B2E1A;
-  --color-ink: #11110F;
-  --color-paper: #F8F7F4;
+  --color-yellow-neo: #ffffff;
+  --color-red-neo: #6db349;
+  --color-red-dark: #528a36;
+  --color-ink: #231f20;
+  --color-paper: #ffffff;
 
-  --color-cyber-cyan: #F8F7F4;
-  --color-cyber-pink: #C2452D;
-  --color-drac-purple: #bd93f9;
+  --color-cyber-cyan: #84cc16;
+  --color-cyber-pink: #6db349;
+  --color-drac-purple: #6db349;
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-blink: blink 1s step-start infinite;
@@ -29,8 +28,7 @@
 }
 
 /* =========================================
-   TAKUMI DELHI — PRECISION CRAFT SYSTEM
-   Brutalist · Monochromatic · Terminal
+   NIDAR STYLE THEME CONFIGURATION
    ========================================= */
 
 /* Minimal Scrollbar */
@@ -39,94 +37,62 @@
   height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0A08;
+  background: #231f20;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(248, 247, 244, 0.08);
-  border-radius: 0;
+  background: rgba(109, 179, 73, 0.15);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(248, 247, 244, 0.15);
+  background: rgba(109, 179, 73, 0.3);
 }
 
 body {
-  font-family: var(--font-mono);
-  background-color: #0D0D0B;
+  font-family: var(--font-space);
+  background-color: #231f20;
   background-image: 
-    radial-gradient(circle at 50% 15%, rgba(194, 69, 45, 0.045) 0%, transparent 60%),
-    radial-gradient(rgba(248, 247, 244, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 20px 20px;
+    radial-gradient(circle at 50% 15%, rgba(109, 179, 73, 0.12) 0%, transparent 60%),
+    url('/topography.svg');
+  background-size: 100% 100%, 800px 800px;
+  background-repeat: no-repeat, repeat;
   background-position: center;
-  color: var(--color-paper);
+  color: #ffffff;
   overflow-x: hidden;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle CRT scanline overlay - premium hardware feel */
-body::before {
-  content: "";
-  display: block;
-  position: fixed;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(248, 247, 244, 0) 50%, rgba(10, 10, 8, 0.25) 50%);
-  background-size: 100% 4px;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.06;
-}
-
 /* ---- SECTION RESETS ---- */
 .min-h-screen, #overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq, footer {
   background-color: transparent !important;
   background-image: none !important;
-  color: var(--color-paper) !important;
-  border-color: rgba(248, 247, 244, 0.05) !important;
+  color: #ffffff !important;
+  border-color: rgba(63, 63, 70, 0.4) !important;
   border-width: 0 !important;
 }
 
 #overview, #about, #tracks, #timeline, #teamfinder, #partners, #faq {
-  border-bottom: 1px solid rgba(248, 247, 244, 0.05) !important;
+  border-bottom: 1px solid rgba(63, 63, 70, 0.4) !important;
 }
 
-/* ---- FLAT CARD SYSTEM ---- */
+/* ---- NIDAR CARDS SYSTEM ---- */
 .cyber-glass, .cyber-glass-interactive {
-  background: rgba(248, 247, 244, 0.02) !important;
-  background-color: rgba(248, 247, 244, 0.02) !important;
-  color: var(--color-paper) !important;
-  border: 1px solid rgba(248, 247, 244, 0.06) !important;
+  background: rgba(35, 31, 32, 0.6) !important;
+  background-color: rgba(35, 31, 32, 0.6) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(109, 179, 73, 0.12) !important;
   box-shadow: none !important;
-  border-radius: 0px !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 }
 
-/* Subtle cybernetic hardware corners */
-.cyber-glass::before, .cyber-glass-interactive::before {
-  content: "";
-  position: absolute;
-  top: -1px; left: -1px;
-  width: 6px; height: 6px;
-  border-top: 1.5px solid var(--color-red-neo);
-  border-left: 1.5px solid var(--color-red-neo);
-  pointer-events: none;
-  opacity: 0.55;
-  transition: opacity 0.3s ease;
-}
-
+/* Disabled brutalist corner ticks for clean rounded borders */
+.cyber-glass::before, .cyber-glass-interactive::before,
 .cyber-glass::after, .cyber-glass-interactive::after {
-  content: "";
-  position: absolute;
-  bottom: -1px; right: -1px;
-  width: 6px; height: 6px;
-  border-bottom: 1.5px solid var(--color-red-neo);
-  border-right: 1.5px solid var(--color-red-neo);
-  pointer-events: none;
-  opacity: 0.55;
-  transition: opacity 0.3s ease;
+  display: none !important;
 }
 
 .cyber-glass-interactive {
@@ -135,13 +101,9 @@ body::before {
 
 .cyber-glass-interactive:hover {
   transform: translateY(-2px);
-  border-color: rgba(194, 69, 45, 0.45) !important;
-  background: rgba(248, 247, 244, 0.035) !important;
-  box-shadow: 0 12px 40px rgba(194, 69, 45, 0.05) !important;
-}
-
-.cyber-glass-interactive:hover::before, .cyber-glass-interactive:hover::after {
-  opacity: 1;
+  border-color: rgba(109, 179, 73, 0.4) !important;
+  background: rgba(109, 179, 73, 0.04) !important;
+  box-shadow: 0 10px 40px rgba(109, 179, 73, 0.1) !important;
 }
 
 .cyber-glass-interactive:active {
@@ -150,10 +112,9 @@ body::before {
 
 /* ---- COUNTDOWN DIALS ---- */
 .grid-cols-4 > div {
-  background: rgba(248, 247, 244, 0.02) !important;
-  border: 1px solid rgba(248, 247, 244, 0.06) !important;
+  background: rgba(35, 31, 32, 0.6) !important;
+  border: 1px solid rgba(109, 179, 73, 0.12) !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
   position: relative;
@@ -161,20 +122,20 @@ body::before {
 }
 
 .grid-cols-4 > div:hover {
-  border-color: rgba(194, 69, 45, 0.35) !important;
-  background: rgba(248, 247, 244, 0.04) !important;
+  border-color: rgba(109, 179, 73, 0.4) !important;
+  background: rgba(109, 179, 73, 0.04) !important;
 }
 
 .countdown-number {
-  color: var(--color-paper) !important;
+  color: #ffffff !important;
   font-weight: 800 !important;
   text-shadow: none !important;
-  font-family: var(--font-mono) !important;
+  font-family: var(--font-space) !important;
 }
 
 /* ---- TYPOGRAPHY ---- */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--color-paper) !important;
+  color: #ffffff !important;
   font-family: var(--font-syne) !important;
   font-weight: 800 !important;
   text-shadow: none !important;
@@ -184,21 +145,21 @@ h1, h2, h3, h4, h5, h6 {
 .text-paper\/40, .text-paper\/50, .text-paper\/60, .text-paper\/70, .text-paper\/85,
 .text-ink\/60, .text-ink\/65, .text-white\/60, .text-white\/40,
 .text-paper\/55, .text-paper\/30, .text-paper\/35 {
-  color: #8C8B86 !important;
+  color: #9ca3af !important;
 }
 
 /* ---- SCROLLBAR HIDE ---- */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ---- TEXT GRADIENT (muted) ---- */
+/* ---- TEXT GRADIENT (muted green) ---- */
 .text-gradient {
-  background: linear-gradient(135deg, #F8F7F4 0%, #999890 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* ---- ANIMATIONS (minimal) ---- */
+/* ---- ANIMATIONS ---- */
 @keyframes float-slow {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(2px, -2px); }
@@ -232,7 +193,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .timeline-laser-line {
-  background: linear-gradient(180deg, rgba(248,247,244,0.1), rgba(248,247,244,0.02), rgba(248,247,244,0.1));
+  background: linear-gradient(180deg, rgba(109, 179, 73, 0.2), rgba(109, 179, 73, 0.02), rgba(109, 179, 73, 0.2));
   background-size: 100% 300%;
   animation: laser-flow 10s linear infinite;
 }
@@ -251,26 +212,11 @@ button, a, div, section, article, aside, main, nav, header, footer, span {
   text-shadow: none;
 }
 
-/* Override rounded-full on cards to sharp */
-.rounded-3xl { border-radius: 0px !important; }
-.rounded-2xl { border-radius: 0px !important; }
-.rounded-xl { border-radius: 0px !important; }
-
 /* Restore rounded-full for pills and avatars */
 .rounded-full { border-radius: 9999px !important; }
 
 /* Selection color */
 ::selection {
-  background: rgba(194, 69, 45, 0.35);
-  color: #F8F7F4;
-}
-
-/* Hide default cursor on desktop for custom pointer overlay */
-@media (min-width: 768px) {
-  html, body {
-    cursor: none !important;
-  }
-  a, button, input, select, textarea, [role="button"], span, div {
-    cursor: none !important;
-  }
+  background: rgba(109, 179, 73, 0.3);
+  color: #ffffff;
 }

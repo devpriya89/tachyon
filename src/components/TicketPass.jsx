@@ -97,67 +97,82 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={tiltStyle}
-          className="mt-4 w-full max-w-[420px] border border-white/8 bg-[#0A0A08] text-[#F8F7F4] p-5 md:p-6 rounded-none relative font-mono text-left select-none overflow-hidden"
+          className="mt-4 w-full max-w-[420px] border border-zinc-800 bg-[#231f20]/95 text-white p-6 rounded-2xl relative font-semibold text-left select-none overflow-hidden shadow-2xl"
         >
 
           {/* Top header strip */}
-          <div className="border-b border-white/5 pb-4 mb-5 flex justify-between items-center">
+          <div className="border-b border-zinc-800/60 pb-4 mb-5 flex justify-between items-center">
             <div>
-              <span className="text-sm font-syne font-black text-white uppercase tracking-widest block">
+              <span className="text-sm font-bold text-white uppercase tracking-wider block">
                 PASS:001
               </span>
-              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em] block mt-1">TACHYON // TICKET SYSTEM</span>
+              <span className="text-[9px] text-zinc-500 uppercase tracking-widest block mt-1 font-bold">TACHYON // TICKET SYSTEM</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-1 h-1 bg-white/30 rounded-none inline-block"></span>
-              <span className="font-mono text-[8px] text-white/35 uppercase tracking-[0.15em]">ACTIVE</span>
+              <span className="w-1.5 h-1.5 bg-[#6db349] rounded-full inline-block animate-pulse"></span>
+              <span className="text-[8px] text-[#6db349] uppercase tracking-widest font-extrabold">ACTIVE</span>
             </div>
           </div>
 
           {/* Badge Profile section */}
-          <div className="border border-white/5 bg-white/[0.02] rounded-none p-4 flex items-center justify-between gap-4 mb-5">
+          <div className="border border-zinc-850 bg-black/40 rounded-xl p-4 flex items-center justify-between gap-4 mb-5">
             <div className="flex items-center gap-3">
               {renderAvatar(ticketData.avatar || 'cyber')}
               <div>
-                <span className="font-mono text-[9px] text-white/35 block leading-none uppercase tracking-[0.15em]">BUILDER IDENTIFIER</span>
-                <span className="font-mono text-sm text-white/80 block uppercase truncate tracking-wider mt-1.5">
+                <span className="text-[9px] text-zinc-500 block leading-none uppercase tracking-wider font-bold">BUILDER IDENTIFIER</span>
+                <span className="text-sm text-white block uppercase truncate tracking-wider mt-1.5 font-bold">
                   {ticketData.name || 'Anonymous'}
                 </span>
-                <span className="font-mono text-[8px] border border-white/8 bg-white/[0.03] px-2 py-0.5 rounded-none text-white/40 inline-block mt-1 uppercase tracking-[0.15em]">
+                <span className="text-[8px] border border-[#6db349]/35 bg-[#6db349]/5 px-2.5 py-0.5 rounded-full text-[#6db349] inline-block mt-1.5 uppercase font-bold tracking-wider">
                   {ticketData.role ? ticketData.role.toUpperCase() : 'DEVELOPER'}
                 </span>
               </div>
             </div>
             
             <div className="text-right">
-              <span className="font-mono text-[9px] text-white/35 block uppercase tracking-[0.15em]">TICKET ID</span>
-              <span className="font-mono text-[8px] text-white/15 block tracking-[0.3em] mt-1 select-text">
+              <span className="text-[9px] text-zinc-500 block uppercase tracking-wider font-bold">TICKET ID</span>
+              <span className="text-[8px] text-[#6db349] block tracking-widest mt-1 select-text font-bold">
                 {ticketData.ticketId || '#0000'}
               </span>
             </div>
           </div>
 
           {/* Dynamic properties table */}
-          <div className="border border-white/5 bg-white/[0.02] rounded-none p-4 space-y-3">
+          <div className="border border-zinc-850 bg-black/45 rounded-xl p-4 space-y-3">
             
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Builder Handle</span>
-              <span className="font-mono text-[9px] text-white/50 uppercase select-all">@{ticketData.github || 'none'}</span>
+            <div className="flex justify-between items-center border-b border-zinc-855/50 pb-2">
+              <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Builder Handle</span>
+              <span className="text-[9px] text-zinc-300 uppercase select-all font-bold">@{ticketData.github || 'none'}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Core Domain</span>
-              <span className="font-mono text-[9px] text-white/50 uppercase">{ticketData.track ? ticketData.track.toUpperCase() : 'AI'}</span>
+            {ticketData.githubLink && (
+              <div className="flex justify-between items-center border-b border-zinc-855/50 pb-2">
+                <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">GitHub Link</span>
+                <a
+                  href={ticketData.githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[9px] text-[#6db349] hover:underline font-bold"
+                  onClick={() => playSound('click', isMuted, volume)}
+                >
+                  Link ↗
+                </a>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center border-b border-zinc-850/50 pb-2">
+              <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Core Domain</span>
+              <span className="text-[9px] text-zinc-300 uppercase font-bold">{ticketData.track ? ticketData.track.toUpperCase() : 'AI'}</span>
             </div>
 
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Seat Slot</span>
-              <span className="font-mono text-[9px] text-white/50 uppercase tracking-widest">SLOT-{ticketData.seatNumber || '00'}</span>
+            <div className="flex justify-between items-center border-b border-zinc-850/50 pb-2">
+              <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Seat Slot</span>
+              <span className="text-[9px] text-zinc-300 uppercase tracking-widest font-bold">SLOT-{ticketData.seatNumber || '00'}</span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="font-mono text-[9px] text-white/35 uppercase tracking-[0.15em]">Visitor Email</span>
-              <span className="font-mono text-[9px] text-white/40 select-all break-all text-right max-w-[200px] truncate leading-none">
+              <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-bold">Visitor Email</span>
+              <span className="text-[9px] text-zinc-400 select-all break-all text-right max-w-[200px] truncate leading-none font-bold">
                 {ticketData.email || 'guest@domain.com'}
               </span>
             </div>
@@ -165,17 +180,17 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
           </div>
 
           {/* Bottom barcode segment */}
-          <div className="border-t border-white/5 pt-4 mt-5 flex justify-between items-center">
+          <div className="border-t border-zinc-800/60 pt-4 mt-5 flex justify-between items-center">
             {/* Barcode stamp */}
-            <div className="flex items-center gap-[2.5px] opacity-20 select-none">
+            <div className="flex items-center gap-[2.5px] opacity-25 select-none">
               {[4, 12, 6, 16, 2, 10, 4, 14, 2, 8, 4, 16, 8, 2, 12].map((height, idx) => (
-                <span key={idx} className="w-[1.5px] bg-white/40 block" style={{ height: `${height}px` }}></span>
+                <span key={idx} className="w-[1.5px] bg-[#6db349] block" style={{ height: `${height}px` }}></span>
               ))}
             </div>
             
             <div className="text-right">
-              <span className="font-mono text-[8px] text-white/15 block uppercase tracking-[0.3em]">NODE:VERIFIED</span>
-              <span className="font-mono text-[9px] text-white/25 tracking-[0.15em]">TACHYON. DELHI. 2026</span>
+              <span className="text-[8px] text-zinc-650 block uppercase tracking-widest font-bold">NODE:VERIFIED</span>
+              <span className="text-[9px] text-zinc-500 tracking-wider font-semibold">TACHYON. DELHI. 2026</span>
             </div>
           </div>
 
@@ -191,9 +206,9 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
             playSound('click', isMuted, volume)
             downloadSVG(ticketData, ticketColorTheme)
           }}
-          className="flex items-center gap-1.5 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/30 font-mono text-[9px] uppercase tracking-[0.15em] px-4 py-2.5 rounded-none active:scale-95 transition-opacity cursor-pointer"
+          className="flex items-center gap-1.5 border border-zinc-850 bg-[#231f20]/40 hover:bg-[#231f20]/60 text-zinc-400 hover:text-white px-5 py-2.5 rounded-full active:scale-95 transition-all text-[9px] uppercase tracking-wider font-bold cursor-pointer shadow-md"
         >
-          <Download className="w-3.5 h-3.5 text-white/25" /> DOWNLOAD SVG
+          <Download className="w-3.5 h-3.5 text-zinc-500" /> Download SVG
         </button>
 
       </div>

@@ -71,13 +71,13 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
   const getStatusStyle = (status) => {
     switch (status) {
       case 'ACTIVE':
-        return 'text-[#C2452D] border-[#C2452D]/30 bg-[#C2452D]/5'
+        return 'text-[#6db349] border-[#6db349]/30 bg-[#6db349]/5'
       case 'UPCOMING':
-        return 'text-white/20 border-white/5'
+        return 'text-zinc-500 border-zinc-800 bg-black/20'
       case 'COMPLETED':
-        return 'text-white/10 border-white/5'
+        return 'text-zinc-600 border-zinc-900 bg-black/10'
       default:
-        return 'text-white/20 border-white/5'
+        return 'text-zinc-500 border-zinc-800 bg-black/20'
     }
   }
 
@@ -95,55 +95,55 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
   }
 
   return (
-    <section id="timeline" className="py-24 border-b border-white/5 bg-transparent max-w-[1400px] mx-auto w-full relative">
+    <section id="timeline" className="py-24 border-b border-zinc-800/80 bg-transparent max-w-[1400px] mx-auto w-full relative">
       <div className="relative z-10 max-w-5xl mx-auto px-4">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16 select-none text-left">
           <div>
-            <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/20 block mb-4">
+            <span className="text-[10px] uppercase tracking-widest text-[#6db349] font-extrabold block mb-4">
               SYS:03 — PHASE ROADMAP // SCHEDULING
             </span>
-            <h2 className="text-2xl font-syne font-black uppercase text-white">
-              EVENT SCHEDULING
+            <h2 className="text-3xl font-extrabold uppercase text-white">
+              Event Scheduling
             </h2>
           </div>
-          <p className="font-mono text-[10px] text-white/25 max-w-xs leading-relaxed text-left">
+          <p className="text-sm text-zinc-400 max-w-xs leading-relaxed text-left">
             Milestones along the way from registrations to the physical grand finals. Export dates directly to your device.
           </p>
         </div>
 
-        {/* Stepper Progress Box */}
-        <div className="relative border border-white/5 bg-white/[0.02] p-6 md:p-8 mb-16 select-none rounded-none">
+        {/* Stepper Progress Box - premium dashboard widget */}
+        <div className="relative border border-zinc-800 bg-[#231f20]/40 backdrop-blur-sm p-6 md:p-8 mb-16 select-none rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <div className="text-left">
-              <span className="block font-mono text-[9px] tracking-[0.2em] text-white/20 uppercase">
+              <span className="block text-[9px] tracking-wider text-zinc-500 uppercase font-bold">
                 NODE: CURRENT STATUS
               </span>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="font-mono text-[10px] text-[#C2452D]">■</span>
-                <span className="font-mono text-[10px] uppercase text-white/50 tracking-wider">Phase 01: ACTIVE</span>
+              <div className="flex items-center gap-2 mt-1.5 font-semibold text-xs">
+                <span className="w-2 h-2 rounded-full bg-[#6db349] animate-pulse"></span>
+                <span className="uppercase text-[#6db349] font-bold">Phase 01: Active</span>
               </div>
             </div>
 
             <div className="text-left">
               <div className="flex justify-between items-baseline mb-1.5">
-                <span className="font-mono text-[9px] tracking-[0.2em] text-white/20 uppercase">
+                <span className="text-[9px] tracking-wider text-zinc-500 uppercase font-bold">
                   QUALIFIER COUNTDOWN
                 </span>
-                <span className="font-mono text-[10px] text-white/40 tracking-wider">{timeLeft}</span>
+                <span className="text-xs text-white font-bold">{timeLeft}</span>
               </div>
-              <div className="h-[3px] w-full bg-white/[0.03] overflow-hidden rounded-none">
-                <div className="bg-[#C2452D]/60 h-full transition-all duration-1000" style={{ width: '20%' }}></div>
+              <div className="h-1.5 w-full bg-black/40 overflow-hidden rounded-full">
+                <div className="bg-[#6db349] h-full transition-all duration-1000 rounded-full" style={{ width: '20%' }}></div>
               </div>
             </div>
 
-            <div className="lg:pl-6 lg:border-l lg:border-white/5 text-left">
-              <span className="block font-mono text-[9px] tracking-[0.2em] text-white/20 uppercase">
+            <div className="lg:pl-6 lg:border-l lg:border-zinc-800/60 text-left">
+              <span className="block text-[9px] tracking-wider text-zinc-500 uppercase font-bold">
                 PROTOCOL: OFFLINE FINALS
               </span>
-              <span className="font-mono text-[10px] text-white/40 block mt-1 tracking-wider uppercase">
+              <span className="text-xs text-zinc-300 block mt-1 tracking-wider uppercase font-bold">
                 40 TEAMS ONLY (Delhi Showcase)
               </span>
             </div>
@@ -153,8 +153,8 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
         {/* Timeline Track Container */}
         <div className="relative max-w-4xl mx-auto pl-10 md:pl-0 mt-8">
           
-          {/* Vertical Timeline Line — single thin line */}
-          <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-4 bottom-4 w-px bg-white/5 z-0"></div>
+          {/* Vertical Timeline Line — glowing brand line */}
+          <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-4 bottom-4 w-[2px] bg-gradient-to-b from-[#6db349] via-zinc-800 to-zinc-800 z-0"></div>
 
           {/* Node items */}
           <div className="relative space-y-12">
@@ -172,59 +172,65 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
                   }`}
                 >
                   
-                  {/* Center Node Marker — simple dash */}
-                  <div className="absolute left-[-29px] md:left-1/2 md:-translate-x-1/2 top-6 z-20 font-mono text-[10px] text-white/15 select-none leading-none">
-                    —
+                  {/* Center Node Marker — glowing circles */}
+                  <div className="absolute left-[-32px] md:left-1/2 md:-translate-x-1/2 top-6 z-20 flex items-center justify-center">
+                    {isActive ? (
+                      <div className="w-4 h-4 rounded-full bg-[#231f20] border-2 border-[#6db349] shadow-[0_0_10px_rgba(109,179,73,0.6)] flex items-center justify-center">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#6db349]"></span>
+                      </div>
+                    ) : (
+                      <div className="w-3 h-3 rounded-full bg-[#231f20] border-2 border-zinc-700"></div>
+                    )}
                   </div>
 
                   {/* Card content panel */}
                   <div
                     onMouseEnter={() => setHoveredNodeIdx(idx)}
                     onMouseLeave={() => setHoveredNodeIdx(null)}
-                    className="w-full md:w-[46%] bg-white/[0.02] border border-white/5 p-5 rounded-none text-left transition-opacity duration-300 relative z-10 group hover:bg-white/[0.03]"
+                    className="w-full md:w-[46%] bg-[#231f20]/35 border border-zinc-800/80 p-5 rounded-2xl text-left transition-all duration-300 relative z-10 group hover:border-[#6db349]/45 hover:bg-[#231f20]/45 hover:shadow-[0_10px_25px_rgba(109,179,73,0.06)]"
                   >
                     {/* Phase label */}
-                    <div className="font-mono text-[9px] text-white/20 uppercase tracking-[0.2em] mb-2">
+                    <div className="text-[10px] text-[#6db349] font-extrabold uppercase tracking-widest mb-2">
                       PHASE {String(idx + 1).padStart(2, '0')}
                     </div>
 
-                    <div className="flex flex-wrap justify-between items-center border-b border-white/5 pb-2.5 mb-3">
-                      <h4 className="text-sm font-syne font-black uppercase tracking-tight text-white leading-none">
+                    <div className="flex flex-wrap justify-between items-center border-b border-zinc-800/60 pb-2.5 mb-3">
+                      <h4 className="text-sm font-bold uppercase tracking-tight text-white leading-none">
                         {step.title}
                       </h4>
-                      <div className="flex items-center gap-1.5 font-mono text-xs select-none">
+                      <div className="flex items-center gap-1.5 font-semibold text-xs select-none">
                         {/* Date */}
-                        <span className="font-mono text-[10px] text-white/40">
+                        <span className="text-[10px] text-zinc-500 font-bold">
                           {step.date}
                         </span>
                         {/* Status badge */}
-                        <span className={`border font-mono px-2 py-0.5 text-[8px] uppercase tracking-widest ${getStatusStyle(step.status)}`}>
+                        <span className={`border font-semibold px-2.5 py-0.5 text-[8px] uppercase tracking-wider rounded-full ${getStatusStyle(step.status)}`}>
                           {getStatusLabel(step.status)}
                         </span>
                       </div>
                     </div>
                     
                     {/* Description */}
-                    <p className="font-mono text-[10px] text-white/25 leading-relaxed">
+                    <p className="text-zinc-400 text-xs leading-relaxed">
                       {step.desc}
                     </p>
 
                     {/* Interactive Decryption box */}
                     {isDecrypted ? (
-                      <div className="mt-4 border border-white/5 bg-white/[0.02] p-3 rounded-none select-none font-mono text-left">
-                        <div className="flex items-center gap-1.5 text-white/30 text-[9px] uppercase tracking-widest mb-1">
-                          <CheckCircle className="w-3 h-3 text-[#C2452D]" />
+                      <div className="mt-4 border border-[#6db349]/20 bg-[#6db349]/5 p-4 rounded-xl font-mono text-left">
+                        <div className="flex items-center gap-1.5 text-zinc-300 text-[9px] uppercase tracking-wider font-extrabold mb-2">
+                          <CheckCircle className="w-3.5 h-3.5 text-[#6db349]" />
                           {easterEggData[idx]?.header}
                         </div>
-                        <p className="text-[10px] text-white/25 leading-relaxed">
+                        <p className="text-[10px] text-zinc-400 leading-relaxed font-semibold">
                           {easterEggData[idx]?.content}
                         </p>
                       </div>
                     ) : (
                       isDecrypting && (
-                        <div className="mt-4 border border-white/5 bg-white/[0.02] p-3 rounded-none select-none font-mono text-left opacity-60">
-                          <div className="flex items-center gap-2 text-white/30 text-[9px] uppercase tracking-widest">
-                            <Binary className="w-3.5 h-3.5 animate-spin shrink-0 text-[#C2452D]" />
+                        <div className="mt-4 border border-zinc-800 bg-black/40 p-4 rounded-xl font-mono text-left opacity-60">
+                          <div className="flex items-center gap-2 text-zinc-400 text-[9px] uppercase tracking-wider font-bold">
+                            <Binary className="w-3.5 h-3.5 animate-spin shrink-0 text-[#6db349]" />
                             RUNNING CORE DECRYPTOR SCANS...
                           </div>
                         </div>
@@ -232,21 +238,21 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
                     )}
 
                     {/* Exporter & decrypt controls */}
-                    <div className="mt-4 pt-2.5 border-t border-white/5 flex justify-between items-center gap-2">
+                    <div className="mt-4 pt-2.5 border-t border-zinc-800/60 flex justify-between items-center gap-2">
                       
                       {/* Decryption trigger button */}
                       {!isDecrypted && !isDecrypting && (
                         <button
                           onClick={() => handleDecryptLogs(idx)}
-                          className="flex items-center gap-1.5 border border-white/8 text-white/30 px-3 py-1.5 text-[9px] font-mono uppercase rounded-none active:translate-y-[0.5px] transition-opacity cursor-pointer select-none hover:text-white/50 hover:border-white/15"
+                          className="flex items-center gap-1.5 border border-zinc-750 text-zinc-400 hover:text-white px-3 py-1.5 text-[9px] font-semibold uppercase rounded-full active:translate-y-[0.5px] transition-all cursor-pointer select-none"
                           title="Decrypt hidden regional operators files"
                         >
-                          <Terminal className="w-3 h-3 text-white/20" /> DECRYPT LOGS
+                          <Terminal className="w-3 h-3 text-zinc-500" /> Decrypt Logs
                         </button>
                       )}
 
                       {isDecrypted && (
-                        <span className="font-mono text-[8px] text-white/15 uppercase tracking-widest select-none">
+                        <span className="text-[8px] text-[#6db349] uppercase tracking-widest select-none font-bold">
                           LOGS_DECRYPTED // OK
                         </span>
                       )}
@@ -256,10 +262,10 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, ven
                       {/* ICS download button */}
                       <button
                         onClick={() => handleCalendarExport(step)}
-                        className="flex items-center gap-1 border border-white/8 text-white/30 px-3 py-1.5 text-[9px] font-mono uppercase rounded-none active:translate-y-[0.5px] transition-opacity cursor-pointer hover:text-white/50 hover:border-white/15"
+                        className="flex items-center gap-1 border border-zinc-750 text-zinc-400 hover:text-white px-3 py-1.5 text-[9px] font-semibold uppercase rounded-full active:translate-y-[0.5px] transition-all cursor-pointer"
                         title={`Export ${step.title} schedule to calendar`}
                       >
-                        <Calendar className="w-3 h-3 text-white/20" /> EXPORT NODE
+                        <Calendar className="w-3 h-3 text-zinc-500" /> Export Node
                       </button>
                     </div>
 
