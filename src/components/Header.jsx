@@ -13,7 +13,10 @@ export function Header({
   setVolume,
   toggleCrtPower,
   ticketData,
-  setIsRegisterModalOpen
+  setIsRegisterModalOpen,
+  user,
+  setIsAuthModalOpen,
+  handleLogout
 }) {
   const [time, setTime] = useState('')
 
@@ -96,17 +99,57 @@ export function Header({
           })}
         </nav>
 
-        {/* Dynamic Uptime clock and Register Button */}
+        {/* Dynamic Uptime clock, Auth actions & Register Button */}
         <div className="flex items-center gap-4 shrink-0">
           <span className="font-mono text-[8px] text-white/20 tracking-[0.2em] uppercase hidden md:flex items-center gap-1.5 select-none">
             SYS_CLOCK: {time} <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#C2452D] animate-pulse"></span>
           </span>
+
+          {/* Authentication Status Section */}
+          {user ? (
+            <div className="flex items-center gap-3 border-r border-white/5 pr-4">
+              {user.picture ? (
+                <img 
+                  src={user.picture} 
+                  alt={user.name} 
+                  className="w-6 h-6 border border-white/10 select-none pointer-events-none rounded-none" 
+                />
+              ) : (
+                <div className="w-6 h-6 bg-white/5 border border-white/10 flex items-center justify-center font-bold text-[9px] text-[#F8F7F4] rounded-none">
+                  {user.name ? user.name[0].toUpperCase() : 'U'}
+                </div>
+              )}
+              <div className="hidden sm:flex flex-col text-left select-none">
+                <span className="font-mono text-[8.5px] text-[#F8F7F4]/80 tracking-wider truncate max-w-[80px]">
+                  {user.name ? user.name.split(' ')[0] : 'Builder'}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="font-mono text-[7px] text-[#C2452D]/60 hover:text-[#C2452D] uppercase tracking-widest text-left cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none"
+                >
+                  [LOGOUT]
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                playSound('click', isMuted, volume)
+                setIsAuthModalOpen(true)
+              }}
+              className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#C2452D]/80 hover:text-[#F8F7F4] border border-[#C2452D]/20 hover:border-white/20 px-3.5 py-1.5 rounded-none cursor-pointer transition-all hover:bg-white/5 font-bold shrink-0"
+            >
+              [ SIGN IN ]
+            </button>
+          )}
+
+          {/* Registration / Badge triggers */}
           <button
             onClick={() => {
               playSound('click', isMuted, volume)
               setIsRegisterModalOpen(true)
             }}
-            className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 hover:text-[#F8F7F4] border border-white/8 px-4 py-2 rounded-none cursor-pointer transition-colors duration-200 shrink-0 hover-glitch"
+            className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 hover:text-[#F8F7F4] border border-white/8 px-4 py-1.5 rounded-none cursor-pointer transition-colors duration-200 shrink-0 hover-glitch"
           >
             {ticketData ? 'ACCESS_PASS' : 'REGISTER'}
           </button>
@@ -139,18 +182,18 @@ export function Header({
                   targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 }
               }}
-              className={`shrink-0 pb-1 transition-colors duration-200 ${
-                isActive
-                  ? 'text-[#F8F7F4] border-b border-[#F8F7F4]'
-                  : 'text-white/25 hover:text-white/60'
+              className={`transition-colors duration-200 ${
+                isActive ? 'text-[#F8F7F4]' : 'text-white/20 hover:text-white/40'
               }`}
             >
-              {labelMap[section] || section}
+              {labelMap[section]}
             </a>
           )
         })}
       </div>
+
     </header>
   )
 }
+
 export default Header

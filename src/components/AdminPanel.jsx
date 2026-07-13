@@ -27,7 +27,13 @@ export function AdminPanel({
   twitterLink,
   setTwitterLink,
   tracksList,
-  setTracksList
+  setTracksList,
+  adminEmails,
+  setAdminEmails,
+  googleClientId,
+  setGoogleClientId,
+  venueLocation,
+  setVenueLocation
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
   
@@ -301,7 +307,8 @@ export function AdminPanel({
             { id: 'crewsponsors', label: 'Crews & Sponsors', icon: Sparkles },
             { id: 'faqs', label: 'FAQ Manager', icon: MessageSquare },
             { id: 'themes', label: 'Theme Editor', icon: Sliders },
-            { id: 'registrants', label: 'Registrant Registry', icon: FileText }
+            { id: 'registrants', label: 'Registrant Registry', icon: FileText },
+            { id: 'authsettings', label: 'Auth Settings', icon: Cpu }
           ].map(tab => {
             const Icon = tab.icon
             return (
@@ -1127,6 +1134,24 @@ export function AdminPanel({
                   </div>
                 </div>
               </div>
+
+              {/* Venue Location Section */}
+              <div className="border border-white/5 bg-white/5 p-6 rounded-none space-y-4">
+                <span className="block font-bold text-white uppercase border-b border-white/5 pb-2">📍 Venue Location configuration</span>
+                <p className="text-[10px] text-zinc-400">
+                  Set the physical venue location for the Offline Grand Showcase. This affects ICS calendar exports and system telemetry badges.
+                </p>
+                <div>
+                  <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Physical Venue Location</label>
+                  <input
+                    type="text"
+                    value={venueLocation}
+                    onChange={(e) => setVenueLocation(e.target.value)}
+                    placeholder="e.g. New Delhi Central, Delhi, India"
+                    className="w-full bg-zinc-950/60 border border-white/5 p-2 font-mono text-[10px] text-white rounded-none outline-none focus:border-white transition-all"
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -1181,6 +1206,103 @@ export function AdminPanel({
                       </div>
                     ))
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 8: AUTH CONFIGURATIONS */}
+          {activeTab === 'authsettings' && (
+            <div className="space-y-6 text-left">
+              {/* Google Client ID Form */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none">
+                <span className="block font-bold text-white uppercase mb-1">🔑 Google OAuth Client ID</span>
+                <p className="text-[10px] text-zinc-400 mb-3">Configure this key to activate Google One Tap Sign-In and Google Sign-in Buttons.</p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    value={googleClientId}
+                    onChange={(e) => {
+                      const val = e.target.value.trim()
+                      setGoogleClientId(val)
+                      localStorage.setItem('Tachyon_google_client_id', val)
+                    }}
+                    placeholder="e.g. xxxxxxxx.apps.googleusercontent.com"
+                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-none outline-none focus:border-white transition-all shadow-none"
+                  />
+                </div>
+              </div>
+
+              {/* Admin Emails List Form */}
+              <div className="border border-white/5 bg-white/5 p-5 rounded-none">
+                <span className="block font-bold text-white uppercase mb-1">🛡️ Authorized Administrator Emails</span>
+                <p className="text-[10px] text-zinc-400 mb-3">Add or remove email addresses that are permitted to view this Control Console.</p>
+                
+                {/* Add Admin Email */}
+                <form onSubmit={(e) => {
+                  e.preventDefault()
+                  const emailInput = e.target.elements.newAdminEmail.value.trim().toLowerCase()
+                  if (!emailInput) return
+                  if (adminEmails.includes(emailInput)) {
+                    alert('Email is already in the administrators list.')
+                    return
+                  }
+                  playSound('success', isMuted, volume)
+                  const updated = [...adminEmails, emailInput]
+                  setAdminEmails(updated)
+                  e.target.reset()
+                }} className="flex gap-3 mb-4">
+                  <input
+                    name="newAdminEmail"
+                    type="email"
+                    required
+                    placeholder="e.g. admin@tachyonindia.org"
+                    className="flex-1 bg-zinc-950/60 border border-white/5 px-3 py-2 font-mono text-xs text-white rounded-none outline-none focus:border-white transition-all"
+                  />
+                  <button
+                    type="submit"
+                    className="border border-white/10 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] px-4 py-2 font-bold uppercase rounded-none transition-all cursor-pointer"
+                  >
+                    ADD ADMIN
+                  </button>
+                </form>
+
+                {/* Admins Table */}
+                <div className="border border-white/5 max-h-[220px] overflow-y-auto">
+                  <table className="w-full text-left font-mono text-xs">
+                    <thead>
+                      <tr className="border-b border-white/5 bg-white/[0.02]">
+                        <th className="p-3 text-zinc-500 font-bold uppercase text-[9px]">Admin Email</th>
+                        <th className="p-3 text-zinc-500 font-bold uppercase text-[9px] text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminEmails.map((email) => (
+                        <tr key={email} className="border-b border-white/5 hover:bg-white/[0.01]">
+                          <td className="p-3 text-zinc-200 select-all font-bold">{email}</td>
+                          <td className="p-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (adminEmails.length <= 1) {
+                                  alert('Cannot delete the last remaining administrator!')
+                                  return
+                                }
+                                if (window.confirm(`Revoke administrator permissions for '${email}'?`)) {
+                                  playSound('error', isMuted, volume)
+                                  const updated = adminEmails.filter(e => e !== email)
+                                  setAdminEmails(updated)
+                                }
+                              }}
+                              className="text-red-400 hover:text-red-300 font-bold uppercase text-[9px] transition-colors border border-red-500/10 hover:border-red-500/30 bg-red-500/5 px-2.5 py-1 rounded-none cursor-pointer"
+                            >
+                              REVOKE
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

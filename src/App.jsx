@@ -54,6 +54,38 @@ export function App() {
     return localStorage.getItem('Tachyon_twitter_link') || 'https://twitter.com/Tachyon'
   })
 
+  // Dynamic User Authentication States
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('Tachyon_user')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return null
+  })
+  const [isUserAuthModalOpen, setIsUserAuthModalOpen] = useState(false)
+  const [authTab, setAuthTab] = useState('signin') // signin or signup
+  const [googleClientId, setGoogleClientId] = useState(() => {
+    return localStorage.getItem('Tachyon_google_client_id') || ''
+  })
+  const [adminEmails, setAdminEmails] = useState(() => {
+    const defaultAdmins = ['devpriya@tachyonindia.org', 'pranjal@tachyonindia.org', 'yugam@tachyonindia.org', 'help@tachyonindia.org', 'admin@tachyonindia.org']
+    const saved = localStorage.getItem('Tachyon_admin_emails')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          return Array.from(new Set([...defaultAdmins, ...parsed]))
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return defaultAdmins
+  })
   // Tracks Configurations list state
   const [tracksList, setTracksList] = useState(() => {
     const saved = localStorage.getItem('Tachyon_tracks')
@@ -204,7 +236,6 @@ export function App() {
 
   // Lifted Administrative States
   const [isAdminOpen, setIsAdminOpen] = useState(false)
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [countdownDate, setCountdownDate] = useState(() => {
     return localStorage.getItem('Tachyon_countdown_date') || '2026-07-24T00:00:00+05:30'
   })
@@ -410,6 +441,14 @@ export function App() {
     }
   })
 
+  const [venueLocation, setVenueLocation] = useState(() => {
+    return localStorage.getItem('Tachyon_venue_location') || 'New Delhi Central, Delhi, India'
+  })
+
+  useEffect(() => {
+    localStorage.setItem('Tachyon_venue_location', venueLocation)
+  }, [venueLocation])
+
   // Detect environment specs on load
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -566,6 +605,42 @@ export function App() {
     }
   }, [])
 
+  // Google GSI Sign-In Client Listener setup
+  useEffect(() => {
+    if (googleClientId && window.google) {
+      try {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredentialResponse,
+          auto_select: false
+        })
+      } catch (e) {
+        console.error('Google Sign-In initialization failed:', e)
+      }
+    }
+  }, [googleClientId])
+
+  // Google dynamic button rendering trigger
+  useEffect(() => {
+    if (isUserAuthModalOpen && googleClientId && window.google) {
+      setTimeout(() => {
+        const btnEl = document.getElementById("google-signin-btn-container")
+        if (btnEl) {
+          try {
+            window.google.accounts.id.renderButton(btnEl, {
+              theme: "outline",
+              size: "large",
+              text: "signin_with",
+              shape: "rectangular"
+            })
+          } catch (e) {
+            console.error('Error rendering Google button:', e)
+          }
+        }
+      }, 100)
+    }
+  }, [isUserAuthModalOpen, googleClientId, authTab])
+
   // Load settings from localStorage
   useEffect(() => {
     const savedTicket = localStorage.getItem('tachyon_ticket')
@@ -629,6 +704,10 @@ export function App() {
   }, [tracksList])
 
   useEffect(() => {
+    localStorage.setItem('Tachyon_admin_emails', JSON.stringify(adminEmails))
+  }, [adminEmails])
+
+  useEffect(() => {
     Object.entries(themeColors).forEach(([variable, value]) => {
       document.documentElement.style.setProperty(variable, value)
     })
@@ -664,6 +743,216 @@ export function App() {
     const timerInterval = setInterval(updateTimer, 1000)
     return () => clearInterval(timerInterval)
   }, [countdownDate])
+
+  // Handle Google Login Credential responses
+  const handleGoogleCredentialResponse = async (response) => {
+    try {
+      const jwt = response.credential
+      const base64Url = jwt.split('.')[1]
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      }).join(''))
+      
+      const payload = JSON.parse(jsonPayload)
+      const authUser = {
+        name: payload.name,
+        email: payload.email.toLowerCase(),
+        picture: payload.picture,
+        authMethod: 'google'
+      }
+
+      setLocalUserSession(authUser)
+      setIsUserAuthModalOpen(false)
+    } catch (e) {
+      console.error('Failed to parse Google JWT response:', e)
+    }
+  }
+
+  // Fallback trigger if OAuth isn't configured in client
+  const triggerGoogleLogin = () => {
+    if (!googleClientId) {
+      alert("Google OAuth Client ID is not configured! Please configure it in the Admin Console under 'Milestones & Dates' first, or register a custom email/password account.")
+      return
+    }
+    if (window.google) {
+      try {
+        window.google.accounts.id.prompt()
+      } catch (e) {
+        console.error(e)
+      }
+    } else {
+      alert("Google Auth SDK is still loading. Please wait a moment.")
+    }
+  }
+
+  // Set user session helper
+  const setLocalUserSession = (authUser) => {
+    setUser(authUser)
+    localStorage.setItem('Tachyon_user', JSON.stringify(authUser))
+    playSound('success', isMuted, volume)
+    
+    // Retrieve associated registrations if they exist in the sheet
+    retrieveUserTicket(authUser.email)
+  }
+
+  // Retrieve user ticket by email lookup from Google Sheets
+  const retrieveUserTicket = async (email) => {
+    try {
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'getTicket',
+          email: email
+        })
+      })
+      const data = await res.json()
+      if (data.status === 'success' && data.ticket) {
+        setTicketData(data.ticket)
+        localStorage.setItem('tachyon_ticket', JSON.stringify(data.ticket))
+      }
+    } catch (e) {
+      console.error('Failed to auto-sync registration cache:', e)
+    }
+  }
+  // Custom credentials Auth operations
+  const handleCustomSignUp = async (name, email, password, pin) => {
+    try {
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      
+      const msgBuffer = new TextEncoder().encode(password)
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'signUp',
+          name,
+          email,
+          password: hashedPassword,
+          pin
+        })
+      })
+      const data = await res.json()
+      if (data.status === 'success') {
+        const authUser = {
+          name: name,
+          email: email.toLowerCase(),
+          authMethod: 'email'
+        }
+        setLocalUserSession(authUser)
+        return { success: true }
+      } else {
+        return { success: false, message: data.message || 'Email already registered.' }
+      }
+    } catch (e) {
+      console.error(e)
+      return { success: false, message: 'Server communication error.' }
+    }
+  }
+
+  const handleCustomResetPassword = async (email, pin, newPassword) => {
+    try {
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      
+      const msgBuffer = new TextEncoder().encode(newPassword)
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'resetPassword',
+          email,
+          pin,
+          password: hashedPassword
+        })
+      })
+      const data = await res.json()
+      if (data.status === 'success') {
+        playSound('success', isMuted, volume)
+        alert('🔑 PASSWORD RESET SUCCESSFUL! Please sign in with your new password.')
+        setAuthTab('signin')
+        return { success: true }
+      } else {
+        return { success: false, message: data.message || 'Reset failed.' }
+      }
+    } catch (e) {
+      console.error(e)
+      return { success: false, message: 'Server communication error.' }
+    }
+  }
+  const handleCustomSignIn = async (email, password) => {
+    try {
+      const lowerEmail = email.toLowerCase()
+      
+      const msgBuffer = new TextEncoder().encode(password)
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      // Administrative Fail-safe Bypass: Allow specified accounts to login using the master passcode Tach@2026
+      const defaultAdmins = ['devpriya@tachyonindia.org', 'pranjal@tachyonindia.org', 'yugam@tachyonindia.org', 'help@tachyonindia.org', 'admin@tachyonindia.org']
+      const isAllowedAdmin = defaultAdmins.includes(lowerEmail)
+      const isMasterPasscode = hashedPassword === 'd0deffc7d5f4c089f56e0b3eaa29ff3f4a6c9c49f111824577cc032cd4f342cd' // Tach@2026 hash
+
+      if (isAllowedAdmin && isMasterPasscode) {
+        const authUser = {
+          name: lowerEmail.split('@')[0].toUpperCase(),
+          email: lowerEmail,
+          authMethod: 'email'
+        }
+        setLocalUserSession(authUser)
+        return { success: true }
+      }
+
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'login',
+          email,
+          password: hashedPassword
+        })
+      })
+      const data = await res.json()
+      if (data.status === 'success' && data.user) {
+        const authUser = {
+          name: data.user.name,
+          email: email.toLowerCase(),
+          authMethod: 'email'
+        }
+        setLocalUserSession(authUser)
+        return { success: true }
+      } else {
+        return { success: false, message: data.message || 'Incorrect credentials.' }
+      }
+    } catch (e) {
+      console.error(e)
+      return { success: false, message: 'Server connection error.' }
+    }
+  }
+
+  // Logout session wipe helper
+  const handleLogout = () => {
+    playSound('power-off', isMuted, volume)
+    setUser(null)
+    setTicketData(null)
+    localStorage.removeItem('Tachyon_user')
+    localStorage.removeItem('tachyon_ticket')
+  }
 
   // Handle CRT Power Switch
   const toggleCrtPower = () => {
@@ -701,7 +990,6 @@ export function App() {
     playSound('power-on', isMuted, volume)
     setIsLoaderFading(true)
     
-    // Explicitly scroll to absolute top of the page immediately upon enter click
     if (typeof window !== 'undefined') {
       window.scrollTo(0, 0)
     }
@@ -711,13 +999,37 @@ export function App() {
     }, 700)
   }
 
-  // Double check credentials and session validation to secure the dashboard from inspection bypass
+  // Assert user login status and email authorized bounds
   const handleOpenAdminSecurely = () => {
-    const isSessionVerified = sessionStorage.getItem('Tachyon_admin_session') === 'verified'
-    if (isSessionVerified) {
+    if (!user) {
+      playSound('error', isMuted, volume)
+      setAuthTab('signin')
+      setIsUserAuthModalOpen(true)
+      alert("🔒 ACCESS DENIED: Please sign in with an authorized Google or custom account first.")
+      return
+    }
+
+    const email = user.email.toLowerCase()
+    const isAuthorized = adminEmails.map(e => e.toLowerCase()).includes(email)
+    
+    if (isAuthorized) {
+      playSound('success', isMuted, volume)
       setIsAdminOpen(true)
     } else {
-      setIsAuthModalOpen(true)
+      playSound('error', isMuted, volume)
+      alert(`🚫 ACCESS DENIED: User email '${user.email}' is not authorized to access system configurations.`)
+    }
+  }
+
+  const handleOpenRegisterModalSecurely = () => {
+    if (!user) {
+      playSound('error', isMuted, volume)
+      setAuthTab('signin')
+      setIsUserAuthModalOpen(true)
+      alert("🔒 LOGIN REQUIRED: You must create an account or sign in to secure a hackathon ticket.")
+    } else {
+      playSound('click', isMuted, volume)
+      setIsRegisterModalOpen(true)
     }
   }
 
@@ -846,7 +1158,10 @@ export function App() {
           crtPower={crtPower}
           toggleCrtPower={toggleCrtPower}
           ticketData={ticketData}
-          setIsRegisterModalOpen={setIsRegisterModalOpen}
+          setIsRegisterModalOpen={handleOpenRegisterModalSecurely}
+          user={user}
+          setIsAuthModalOpen={setIsUserAuthModalOpen}
+          handleLogout={handleLogout}
         />
 
         {/* Hero Section */}
@@ -856,7 +1171,7 @@ export function App() {
           isMuted={isMuted}
           volume={volume}
           ticketData={ticketData}
-          setIsRegisterModalOpen={setIsRegisterModalOpen}
+          setIsRegisterModalOpen={handleOpenRegisterModalSecurely}
           whatsappLink={whatsappLink}
         />
 
@@ -890,7 +1205,7 @@ export function App() {
           siteTheme={siteTheme}
           isMuted={isMuted}
           volume={volume}
-          setIsRegisterModalOpen={setIsRegisterModalOpen}
+          setIsRegisterModalOpen={handleOpenRegisterModalSecurely}
           openAdminPanel={handleOpenAdminSecurely}
         />
 
@@ -908,6 +1223,7 @@ export function App() {
           isMuted={isMuted}
           volume={volume}
           timelineNodes={timelineNodes}
+          venueLocation={venueLocation}
         />
 
         {/* Project/Teammate Match Lobby */}
@@ -956,6 +1272,7 @@ export function App() {
             volume={volume}
             ticketColorTheme={ticketColorTheme}
             setTicketColorTheme={setTicketColorTheme}
+            user={user}
           />
         )}
 
@@ -987,83 +1304,277 @@ export function App() {
             setTwitterLink={setTwitterLink}
             tracksList={tracksList}
             setTracksList={setTracksList}
+            adminEmails={adminEmails}
+            setAdminEmails={setAdminEmails}
+            googleClientId={googleClientId}
+            setGoogleClientId={setGoogleClientId}
+            venueLocation={venueLocation}
+            setVenueLocation={setVenueLocation}
           />
         )}
 
-        {/* Secure Admin Passcode Verification Modal */}
-        {isAuthModalOpen && (
+        {/* User Authentication Modal (Sign In / Sign Up) */}
+        {isUserAuthModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 font-mono select-none">
             <div className="w-full max-w-sm border border-white/8 bg-[#0A0A08] p-6 relative rounded-none text-left">
-              <span className="font-mono text-[8px] text-white/20 tracking-[0.3em] block mb-2">SECURE PROMPT // SYS:AUTH</span>
-              <h3 className="font-syne font-black text-lg text-white uppercase mb-4">ADMIN ACCESS</h3>
               
-              <form onSubmit={async (e) => {
-                e.preventDefault()
-                const inputPass = e.target.elements.adminPass.value.trim()
-                
-                // Rate limiting brute force protection lockout
-                const lockoutUntil = localStorage.getItem('Tachyon_admin_lockout')
-                if (lockoutUntil && Date.now() < Number(lockoutUntil)) {
-                  const remainingSecs = Math.ceil((Number(lockoutUntil) - Date.now()) / 1000)
-                  playSound('error', isMuted, volume)
-                  alert(`🚫 BRUTE FORCE PROTECTION LOCKOUT ACTIVE. TRY AGAIN IN ${remainingSecs} SECONDS.`)
-                  return
-                }
-
-                // Verify pass securely (SHA-256)
-                const msgBuffer = new TextEncoder().encode(inputPass)
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
-                const hashArray = Array.from(new Uint8Array(hashBuffer))
-                const hashed = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-                
-                if (hashed === 'd0deffc7d5f4c089f56e0b3eaa29ff3f4a6c9c49f111824577cc032cd4f342cd') {
-                  playSound('success', isMuted, volume)
-                  localStorage.setItem('Tachyon_admin_attempts', '0')
-                  sessionStorage.setItem('Tachyon_admin_session', 'verified')
-                  setIsAuthModalOpen(false)
-                  setIsAdminOpen(true)
-                } else {
-                  const attempts = Number(localStorage.getItem('Tachyon_admin_attempts') || '0') + 1
-                  if (attempts >= 5) {
-                    const lockoutTime = Date.now() + 5 * 60 * 1000 // 5 minute lock
-                    localStorage.setItem('Tachyon_admin_lockout', String(lockoutTime))
-                    localStorage.setItem('Tachyon_admin_attempts', '0')
-                    playSound('error', isMuted, volume)
-                    alert('🚫 ACCESS DENIED: BRUTE FORCE THREAT DETECTED. LOCKOUT TRIGGERED.')
-                    setIsAuthModalOpen(false)
-                  } else {
-                    localStorage.setItem('Tachyon_admin_attempts', String(attempts))
-                    playSound('error', isMuted, volume)
-                    alert(`🚫 INVALID PASSCODE. (${5 - attempts} attempts remaining)`)
-                  }
-                }
-              }}>
-                <input
-                  name="adminPass"
-                  type="password"
-                  placeholder="ENTER ADMINISTRATIVE CODE"
-                  autoFocus
-                  className="w-full bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white mb-6 uppercase tracking-wider text-center"
-                />
-                <div className="flex gap-3">
+              {/* Close button */}
+              <button
+                onClick={() => {
+                  playSound('click', isMuted, volume)
+                  setIsUserAuthModalOpen(false)
+                }}
+                className="absolute top-4 right-4 text-white/20 hover:text-white/50 font-mono text-base leading-none transition-colors cursor-pointer p-1"
+              >
+                ✕
+              </button>
+              <span className="font-mono text-[8px] text-white/20 tracking-[0.3em] block mb-2">SECURE PORTAL // USER_AUTH</span>
+              
+              {/* Tabs */}
+              <div className="flex border-b border-white/5 pb-3 mb-6 select-none font-bold">
+                {['signin', 'signup', ...(authTab === 'reset' ? ['reset'] : [])].map(tab => (
                   <button
-                    type="button"
+                    key={tab}
                     onClick={() => {
                       playSound('click', isMuted, volume)
-                      setIsAuthModalOpen(false)
+                      setAuthTab(tab)
                     }}
-                    className="flex-1 border border-white/10 hover:text-white text-white/40 py-2.5 font-mono text-[10px] uppercase rounded-none transition-colors"
+                    className={`flex-1 text-center py-1.5 uppercase font-mono text-[10px] tracking-[0.15em] transition-all cursor-pointer ${
+                      authTab === tab 
+                        ? 'text-[#F8F7F4] border-b border-white' 
+                        : 'text-white/25 hover:text-white/50'
+                    }`}
                   >
-                    CANCEL
+                    {tab === 'signin' ? 'Sign In' : tab === 'signup' ? 'Sign Up' : 'Reset'}
                   </button>
+                ))}
+              </div>
+
+              {/* TAB contents */}
+              {authTab === 'signin' ? (
+                /* SIGN IN FORM */
+                <form onSubmit={async (e) => {
+                  e.preventDefault()
+                  const email = e.target.elements.signInEmail.value.trim()
+                  const password = e.target.elements.signInPassword.value
+
+                  if (!email || !password) {
+                    playSound('error', isMuted, volume)
+                    alert('Please enter both Email and Password.')
+                    return
+                  }
+
+                  const result = await handleCustomSignIn(email, password)
+                  if (result.success) {
+                    setIsUserAuthModalOpen(false)
+                  } else {
+                    playSound('error', isMuted, volume)
+                    alert(`🚫 SIGN IN FAILED: ${result.message}`)
+                  }
+                }} className="space-y-4">
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:EMAIL</label>
+                    <input
+                      name="signInEmail"
+                      type="email"
+                      required
+                      placeholder="Enter account email"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:PASSWORD</label>
+                    <input
+                      name="signInPassword"
+                      type="password"
+                      required
+                      placeholder="Enter account password"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                    <div className="flex justify-between items-center text-[9px] mt-1.5 font-mono">
+                      <span />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playSound('click', isMuted, volume)
+                          setAuthTab('reset')
+                        }}
+                        className="text-white/30 hover:text-white/60 uppercase tracking-widest cursor-pointer border-0 bg-transparent p-0 outline-none"
+                      >
+                        [ Forgot Password? ]
+                      </button>
+                    </div>
+                  </div>
                   <button
                     type="submit"
-                    className="flex-1 bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-mono text-[10px] font-bold uppercase rounded-none transition-colors"
+                    className="w-full bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-mono text-[10px] font-bold uppercase rounded-none transition-colors cursor-pointer"
                   >
-                    AUTHENTICATE
+                    SIGN IN
                   </button>
-                </div>
-              </form>
+
+                  <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-white/5"></div>
+                    <span className="flex-shrink mx-3 text-white/15 text-[8px] tracking-[0.2em]">OR SIGN IN WITH</span>
+                    <div className="flex-grow border-t border-white/5"></div>
+                  </div>
+
+                  {/* Google Sign-in button */}
+                  {googleClientId ? (
+                    <div id="google-signin-btn-container" className="w-full flex justify-center bg-transparent py-1 select-none"></div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={triggerGoogleLogin}
+                      className="w-full border border-white/10 hover:border-white/20 bg-white/5 text-[#F8F7F4]/70 hover:text-white py-2.5 font-mono text-[9px] uppercase tracking-[0.2em] rounded-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span className="font-bold text-[#E65A4B]">G</span> Google Auth (Unconfigured)
+                    </button>
+                  )}
+                </form>
+              ) : authTab === 'signup' ? (
+                /* SIGN UP FORM */
+                <form onSubmit={async (e) => {
+                  e.preventDefault()
+                  const name = e.target.elements.signUpName.value.trim()
+                  const email = e.target.elements.signUpEmail.value.trim()
+                  const password = e.target.elements.signUpPassword.value
+                  const pin = e.target.elements.signUpPin.value.trim()
+
+                  if (!name || !email || !password || !pin) {
+                    playSound('error', isMuted, volume)
+                    alert('All fields are required!')
+                    return
+                  }
+
+                  if (pin.length !== 4 || isNaN(pin)) {
+                    playSound('error', isMuted, volume)
+                    alert('Security PIN must be exactly a 4-digit number!')
+                    return
+                  }
+
+                  const result = await handleCustomSignUp(name, email, password, pin)
+                  if (result.success) {
+                    setIsUserAuthModalOpen(false)
+                  } else {
+                    playSound('error', isMuted, volume)
+                    alert(`🚫 REGISTRATION FAILED: ${result.message}`)
+                  }
+                }} className="space-y-4">
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:FULL_NAME</label>
+                    <input
+                      name="signUpName"
+                      type="text"
+                      required
+                      placeholder="e.g. Kunal Dev"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:EMAIL</label>
+                    <input
+                      name="signUpEmail"
+                      type="email"
+                      required
+                      placeholder="e.g. kunal@domain.com"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:PASSWORD</label>
+                    <input
+                      name="signUpPassword"
+                      type="password"
+                      required
+                      placeholder="Create security password"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:SECURITY_PIN (4-DIGIT CODE FOR RECOVERY)</label>
+                    <input
+                      name="signUpPin"
+                      type="text"
+                      maxLength="4"
+                      required
+                      placeholder="e.g. 8839"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-mono text-[10px] font-bold uppercase rounded-none transition-colors cursor-pointer"
+                  >
+                    CREATE USER PROFILE
+                  </button>
+                </form>
+              ) : (
+                /* RESET PASSWORD FORM */
+                <form onSubmit={async (e) => {
+                  e.preventDefault()
+                  const email = e.target.elements.resetEmail.value.trim()
+                  const pin = e.target.elements.resetPin.value.trim()
+                  const newPassword = e.target.elements.resetNewPassword.value
+
+                  if (!email || !pin || !newPassword) {
+                    playSound('error', isMuted, volume)
+                    alert('All fields are required!')
+                    return
+                  }
+
+                  if (pin.length !== 4 || isNaN(pin)) {
+                    playSound('error', isMuted, volume)
+                    alert('Security PIN must be a 4-digit number!')
+                    return
+                  }
+
+                  const result = await handleCustomResetPassword(email, pin, newPassword)
+                  if (result.success) {
+                    setIsUserAuthModalOpen(false)
+                  } else {
+                    playSound('error', isMuted, volume)
+                    alert(`🚫 PASSWORD RESET FAILED: ${result.message}`)
+                  }
+                }} className="space-y-4">
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:EMAIL</label>
+                    <input
+                      name="resetEmail"
+                      type="email"
+                      required
+                      placeholder="Enter registered email"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:SECURITY_PIN</label>
+                    <input
+                      name="resetPin"
+                      type="text"
+                      maxLength="4"
+                      required
+                      placeholder="Enter 4-digit security PIN"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">FIELD:NEW_PASSWORD</label>
+                    <input
+                      name="resetNewPassword"
+                      type="password"
+                      required
+                      placeholder="Create new password"
+                      className="bg-transparent border-b border-white/8 text-white font-mono text-xs p-2 rounded-none outline-none focus:border-white w-full placeholder:text-white/10"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-[#F8F7F4] hover:bg-white text-[#0A0A08] py-2.5 font-mono text-[10px] font-bold uppercase rounded-none transition-colors cursor-pointer"
+                  >
+                    RESET PASSWORD
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         )}

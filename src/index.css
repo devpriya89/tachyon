@@ -9,7 +9,7 @@
   --color-yellow-neo: #F8F7F4;
   --color-red-neo: #C2452D;
   --color-red-dark: #8B2E1A;
-  --color-ink: #0A0A08;
+  --color-ink: #11110F;
   --color-paper: #F8F7F4;
 
   --color-cyber-cyan: #F8F7F4;
@@ -51,10 +51,10 @@
 
 body {
   font-family: var(--font-mono);
-  background-color: var(--color-ink);
+  background-color: #0D0D0B;
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(248, 247, 244, 0.015) 0%, transparent 70%),
-    radial-gradient(rgba(248, 247, 244, 0.05) 1px, transparent 1px);
+    radial-gradient(circle at 50% 15%, rgba(194, 69, 45, 0.045) 0%, transparent 60%),
+    radial-gradient(rgba(248, 247, 244, 0.02) 1px, transparent 1px);
   background-size: 100% 100%, 20px 20px;
   background-position: center;
   color: var(--color-paper);
@@ -92,39 +92,77 @@ body::before {
 
 /* ---- FLAT CARD SYSTEM ---- */
 .cyber-glass, .cyber-glass-interactive {
-  background: rgba(248, 247, 244, 0.015) !important;
-  background-color: rgba(248, 247, 244, 0.015) !important;
+  background: rgba(248, 247, 244, 0.02) !important;
+  background-color: rgba(248, 247, 244, 0.02) !important;
   color: var(--color-paper) !important;
-  border: 1px solid rgba(248, 247, 244, 0.05) !important;
+  border: 1px solid rgba(248, 247, 244, 0.06) !important;
   box-shadow: none !important;
   border-radius: 0px !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+/* Subtle cybernetic hardware corners */
+.cyber-glass::before, .cyber-glass-interactive::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 6px; height: 6px;
+  border-top: 1.5px solid var(--color-red-neo);
+  border-left: 1.5px solid var(--color-red-neo);
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+
+.cyber-glass::after, .cyber-glass-interactive::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; right: -1px;
+  width: 6px; height: 6px;
+  border-bottom: 1.5px solid var(--color-red-neo);
+  border-right: 1.5px solid var(--color-red-neo);
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
 }
 
 .cyber-glass-interactive {
-  position: relative;
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 .cyber-glass-interactive:hover {
-  transform: translateY(-1px);
-  border-color: rgba(194, 69, 45, 0.35) !important;
-  background: rgba(248, 247, 244, 0.03) !important;
-  box-shadow: none !important;
+  transform: translateY(-2px);
+  border-color: rgba(194, 69, 45, 0.45) !important;
+  background: rgba(248, 247, 244, 0.035) !important;
+  box-shadow: 0 12px 40px rgba(194, 69, 45, 0.05) !important;
+}
+
+.cyber-glass-interactive:hover::before, .cyber-glass-interactive:hover::after {
+  opacity: 1;
 }
 
 .cyber-glass-interactive:active {
-  transform: none;
+  transform: translateY(0);
 }
 
 /* ---- COUNTDOWN DIALS ---- */
 .grid-cols-4 > div {
-  background: rgba(248, 247, 244, 0.01) !important;
-  border: 1px solid rgba(248, 247, 244, 0.04) !important;
+  background: rgba(248, 247, 244, 0.02) !important;
+  border: 1px solid rgba(248, 247, 244, 0.06) !important;
   box-shadow: none !important;
   border-radius: 0 !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grid-cols-4 > div:hover {
+  border-color: rgba(194, 69, 45, 0.35) !important;
+  background: rgba(248, 247, 244, 0.04) !important;
 }
 
 .countdown-number {
@@ -146,7 +184,7 @@ h1, h2, h3, h4, h5, h6 {
 .text-paper\/40, .text-paper\/50, .text-paper\/60, .text-paper\/70, .text-paper\/85,
 .text-ink\/60, .text-ink\/65, .text-white\/60, .text-white\/40,
 .text-paper\/55, .text-paper\/30, .text-paper\/35 {
-  color: rgba(248, 247, 244, 0.35) !important;
+  color: #8C8B86 !important;
 }
 
 /* ---- SCROLLBAR HIDE ---- */

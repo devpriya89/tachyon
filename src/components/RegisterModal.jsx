@@ -11,12 +11,13 @@ export function RegisterModal({
   isMuted,
   volume,
   ticketColorTheme,
-  setTicketColorTheme
+  setTicketColorTheme,
+  user
 }) {
   const [step, setStep] = useState(1) // 1: Core details, 2: Avatars & Skills, 3: Conduct & Submit
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: user ? user.name : '',
+    email: user ? user.email : '',
     github: '',
     role: 'developer',
     track: 'ai',
@@ -266,13 +267,13 @@ export function RegisterModal({
                       type="text"
                       name="name"
                       required
+                      disabled={!!(user && user.name)}
                       value={formData.name}
                       onChange={handleFormChange}
                       placeholder="e.g. Arjun Sharma"
-                      className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
+                      className={`bg-transparent border-b border-white/8 font-mono text-xs outline-none py-2 rounded-none w-full placeholder:text-white/10 ${(user && user.name) ? 'text-white/40 opacity-60 cursor-not-allowed' : 'text-white/60 focus:border-white/20 transition-colors'}`}
                     />
                   </div>
-
                   <div className="flex flex-col">
                     <label className="font-mono text-[9px] uppercase text-white/30 mb-2 flex items-center gap-1.5 select-none tracking-[0.2em]">
                       <Mail className="w-3 h-3 text-white/20" /> FIELD:EMAIL *
@@ -281,10 +282,11 @@ export function RegisterModal({
                       type="email"
                       name="email"
                       required
+                      disabled
                       value={formData.email}
                       onChange={handleFormChange}
                       placeholder="e.g. hacker@domain.com"
-                      className="bg-transparent border-b border-white/8 text-white/60 font-mono text-xs outline-none focus:border-white/20 transition-colors py-2 rounded-none w-full placeholder:text-white/10"
+                      className="bg-transparent border-b border-white/8 text-white/40 font-mono text-xs outline-none py-2 rounded-none w-full placeholder:text-white/10 opacity-60 cursor-not-allowed"
                     />
                   </div>
 

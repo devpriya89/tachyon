@@ -3,7 +3,7 @@ import { Calendar, Binary, CheckCircle, Terminal } from 'lucide-react'
 import { downloadICS } from '../utils/icsGenerator'
 import { playSound } from '../utils/audio'
 
-export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
+export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes, venueLocation }) {
   const [hoveredNodeIdx, setHoveredNodeIdx] = useState(null)
   const [decryptingIdx, setDecryptingIdx] = useState(null)
   const [decryptedIndices, setDecryptedIndices] = useState([])
@@ -42,7 +42,7 @@ export function TimelineSection({ siteTheme, isMuted, volume, timelineNodes }) {
       description: step.desc,
       startDateStr: step.startDateStr,
       endDateStr: step.endDateStr,
-      location: step.phase === '05' ? 'New Delhi Central, Delhi, India' : 'Online Website'
+      location: step.phase === '05' ? (venueLocation || 'New Delhi Central, Delhi, India') : 'Online Website'
     }
     downloadICS(event)
   }

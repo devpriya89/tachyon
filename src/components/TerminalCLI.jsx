@@ -478,11 +478,11 @@ export function TerminalCLI({ siteTheme, isMuted, volume, setIsRegisterModalOpen
       case 'admin':
       case 'sudo':
         playSound('click', isMuted, volume)
-        setAdminPrompt(true)
         setTerminalHistory([
           ...newHistory,
-          { type: 'output', text: 'ENTER ADMINISTRATIVE SECURITY PASSCODE:' }
+          { type: 'success', text: '🗝️ INITIALIZING SECURE ADMINISTRATIVE PORT HANDSHAKE...' }
         ])
+        if (openAdminPanel) openAdminPanel()
         return
       case 'clear':
         setTerminalHistory([])
