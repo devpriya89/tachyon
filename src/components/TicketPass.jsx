@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Printer, Download, Check } from 'lucide-react'
+import { Download, Check } from 'lucide-react'
 import { downloadSVG } from '../utils/ticketExport'
 import { playSound } from '../utils/audio'
 
@@ -28,10 +28,6 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
     })
   }
 
-  const handlePrintTicket = () => {
-    playSound('click', isMuted, volume)
-    window.print()
-  }
 
   // Render pixelated avatar generator
   const renderAvatar = (avatarId) => {
@@ -190,13 +186,6 @@ export function TicketPass({ ticketData, ticketColorTheme = 'cyberpunk', setTick
       {/* Pass Actions Controls */}
       <div className="mt-8 flex flex-wrap justify-center gap-4 print:hidden select-none">
         
-        <button
-          onClick={handlePrintTicket}
-          className="flex items-center gap-1.5 border border-white/8 bg-transparent hover:bg-white/[0.03] text-white/30 font-mono text-[9px] uppercase tracking-[0.15em] px-4 py-2.5 rounded-none active:scale-95 transition-opacity cursor-pointer"
-        >
-          <Printer className="w-3.5 h-3.5 text-white/25" /> PRINT PASS
-        </button>
-
         <button
           onClick={() => {
             playSound('click', isMuted, volume)

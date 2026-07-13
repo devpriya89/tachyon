@@ -1184,24 +1184,26 @@ export function AdminPanel({
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
                           <div>
                             <span className="text-zinc-500 block uppercase text-[8px]">Name</span>
-                            <span className="text-zinc-200 font-bold">{reg.fullName}</span>
+                            <span className="text-zinc-200 font-bold">{reg.fullName || reg.name || 'Anonymous'}</span>
                           </div>
                           <div>
                             <span className="text-zinc-500 block uppercase text-[8px]">Email</span>
                             <span className="text-zinc-200 select-all truncate block">{reg.email}</span>
                           </div>
                           <div>
-                            <span className="text-zinc-500 block uppercase text-[8px]">Discord</span>
-                            <span className="text-zinc-200 select-all truncate block">{reg.discord}</span>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Discord / Team</span>
+                            <span className="text-zinc-200 select-all truncate block">{reg.discord || reg.teamName || 'N/A'}</span>
                           </div>
                           <div>
-                            <span className="text-zinc-500 block uppercase text-[8px]">Pass type</span>
-                            <span className="text-[#C2452D] font-bold uppercase tracking-wider">{reg.passType}</span>
+                            <span className="text-zinc-500 block uppercase text-[8px]">Pass type / Role</span>
+                            <span className="text-[#C2452D] font-bold uppercase tracking-wider">{reg.passType || reg.role || 'DEVELOPER'}</span>
                           </div>
                         </div>
-                        <div className="mt-2 pt-2 border-t border-white/5 text-[9px] text-zinc-500 flex gap-4">
-                          <span>GITHUB: <strong className="text-zinc-400 select-all">{reg.githubUsername}</strong></span>
+                        <div className="mt-2 pt-2 border-t border-white/5 text-[9px] text-zinc-500 flex flex-wrap gap-4">
+                          <span>GITHUB: <strong className="text-zinc-400 select-all">{reg.githubUsername || reg.github || 'N/A'}</strong></span>
                           <span>CITY: <strong className="text-zinc-400 uppercase">{reg.city || 'Delhi'}</strong></span>
+                          {reg.track && <span>TRACK: <strong className="text-zinc-400 uppercase">{reg.track}</strong></span>}
+                          {reg.seatNumber && <span>SEAT: <strong className="text-zinc-400 uppercase">SLOT-{reg.seatNumber}</strong></span>}
                         </div>
                       </div>
                     ))

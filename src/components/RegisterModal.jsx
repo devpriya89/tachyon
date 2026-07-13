@@ -12,7 +12,8 @@ export function RegisterModal({
   volume,
   ticketColorTheme,
   setTicketColorTheme,
-  user
+  user,
+  setUser
 }) {
   const [step, setStep] = useState(1) // 1: Core details, 2: Avatars & Skills, 3: Conduct & Submit
   const [formData, setFormData] = useState({
@@ -107,9 +108,9 @@ export function RegisterModal({
 
     fetch(googleSheetUrl, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain'
       },
       body: JSON.stringify({
         action: 'register',
@@ -134,9 +135,9 @@ export function RegisterModal({
       const googleSheetUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
       fetch(googleSheetUrl, {
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain'
         },
         body: JSON.stringify({
           action: 'deregister',
@@ -159,6 +160,12 @@ export function RegisterModal({
 
     setTicketData(null)
     localStorage.removeItem('Tachyon_ticket')
+    localStorage.removeItem('tachyon_ticket')
+    localStorage.removeItem('Tachyon_user')
+    if (setUser) {
+      setUser(null)
+    }
+    setIsRegisterModalOpen(false)
     setStep(1)
     setFormData({
       name: '',

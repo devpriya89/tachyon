@@ -643,7 +643,7 @@ export function App() {
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedTicket = localStorage.getItem('tachyon_ticket')
+    const savedTicket = localStorage.getItem('Tachyon_ticket')
     if (savedTicket) {
       setTicketData(JSON.parse(savedTicket))
     }
@@ -812,7 +812,7 @@ export function App() {
       const data = await res.json()
       if (data.status === 'success' && data.ticket) {
         setTicketData(data.ticket)
-        localStorage.setItem('tachyon_ticket', JSON.stringify(data.ticket))
+        localStorage.setItem('Tachyon_ticket', JSON.stringify(data.ticket))
       }
     } catch (e) {
       console.error('Failed to auto-sync registration cache:', e)
@@ -951,7 +951,7 @@ export function App() {
     setUser(null)
     setTicketData(null)
     localStorage.removeItem('Tachyon_user')
-    localStorage.removeItem('tachyon_ticket')
+    localStorage.removeItem('Tachyon_ticket')
   }
 
   // Handle CRT Power Switch
@@ -1273,6 +1273,7 @@ export function App() {
             ticketColorTheme={ticketColorTheme}
             setTicketColorTheme={setTicketColorTheme}
             user={user}
+            setUser={setUser}
           />
         )}
 
