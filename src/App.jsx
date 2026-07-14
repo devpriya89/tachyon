@@ -253,20 +253,20 @@ export function App() {
       {
         phase: '01',
         title: 'Registration Launch',
-        date: 'July 2, 2026',
+        date: 'July 14, 2026',
         status: 'ACTIVE',
         desc: 'Registrations open worldwide. Secure your builder pass to obtain direct, guaranteed entry to the hackathon arena.',
-        startDateStr: '2026-07-02T10:00:00+05:30',
-        endDateStr: '2026-07-02T12:00:00+05:30'
+        startDateStr: '2026-07-14T10:00:00+05:30',
+        endDateStr: '2026-07-14T12:00:00+05:30'
       },
       {
         phase: '02',
         title: 'Hackathon Commences',
-        date: 'July 24, 2026',
+        date: 'July 18, 2026',
         status: 'UPCOMING',
-        desc: 'The official build prompt goes live. All registered participants directly enter the arena and begin coding.',
-        startDateStr: '2026-07-24T00:00:00+05:30',
-        endDateStr: '2026-07-24T03:00:00+05:30'
+        desc: "The official Build Guidelines goes live. All registered participants directly sent the links for it also with the Venue's Location",
+        startDateStr: '2026-07-18T00:00:00+05:30',
+        endDateStr: '2026-07-18T03:00:00+05:30'
       },
       {
         phase: '03',
@@ -395,9 +395,9 @@ export function App() {
       }
     }
     return [
-      { id: 'org-1', name: 'Kunal Dev', role: 'Core Architect', email: 'kunal@Tachyon.org', instagram: 'kunal_dev', image: '' },
-      { id: 'org-2', name: 'Rhea Sen', role: 'Interface Craft', email: 'rhea@Tachyon.org', instagram: 'rhea_craft', image: '' },
-      { id: 'org-3', name: 'Aman Goel', role: 'Mainframe Moderator', email: 'aman@Tachyon.org', instagram: 'aman_mainframe', image: '' }
+      { id: 'org-1', name: 'Pranjal Kumar', role: 'Lead Organizer', email: 'pranjal@tachyonindia.org', instagram: 'pranjal_kumar', image: '' },
+      { id: 'org-2', name: 'Devpriya', role: 'Lead Organizer', email: 'devpriya@tachyonindia.org', instagram: 'devpriya', image: '' },
+      { id: 'org-3', name: 'Vikrant Yadav', role: 'Organizer', email: 'vikrant@tachyonindia.org', instagram: 'vikrant_yadav', image: '' }
     ]
   })
 
@@ -410,13 +410,7 @@ export function App() {
         console.error(e)
       }
     }
-    return [
-      { id: 'sp-1', name: 'Vercel', tier: 'core', website: 'https://vercel.com', logo: '' },
-      { id: 'sp-2', name: 'GitHub', tier: 'core', website: 'https://github.com', logo: '' },
-      { id: 'sp-3', name: 'Delhi Tech Node', tier: 'subprocessor', website: 'https://delhitech.in', logo: '' },
-      { id: 'sp-4', name: 'Replit', tier: 'subprocessor', website: 'https://replit.com', logo: '' },
-      { id: 'sp-5', name: 'Oxlint', tier: 'peripheral', website: 'https://oxc.rs', logo: '' }
-    ]
+    return []
   })
 
   const [themeColors, setThemeColors] = useState(() => {
@@ -555,8 +549,95 @@ export function App() {
     }
   }, [isUserAuthModalOpen, googleClientId, authTab])
 
+  const syncGlobalSettingsFromSheet = async () => {
+    try {
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'getSettings' })
+      })
+      const data = await res.json()
+      if (data.status === 'success' && data.settings) {
+        const s = data.settings
+        if (s.countdownDate) setCountdownDate(s.countdownDate)
+        if (s.timelineNodes) setTimelineNodes(s.timelineNodes)
+        if (s.whatsappLink) setWhatsappLink(s.whatsappLink)
+        if (s.instagramLink) setInstagramLink(s.instagramLink)
+        if (s.twitterLink) setTwitterLink(s.twitterLink)
+        if (s.githubLink) setGithubLink(s.githubLink)
+        if (s.websiteLink) setWebsiteLink(s.websiteLink)
+        if (s.faqList) setFaqList(s.faqList)
+        if (s.tracksList) setTracksList(s.tracksList)
+        if (s.organizers) setOrganizers(s.organizers)
+        if (s.sponsors) setSponsors(s.sponsors)
+      }
+
+      // Fetch matchmaking postings from Sheet
+      const matchRes = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'getMatchmaking' })
+      })
+      const matchData = await matchRes.json()
+      if (matchData.status === 'success' && matchData.matchmaking) {
+        const grouped = {}
+        matchData.matchmaking.forEach(item => {
+          const tid = item.teamId
+          if (!grouped[tid]) {
+            grouped[tid] = {
+              id: tid,
+              teamName: tid,
+              name: item.name,
+              role: item.role || 'developer',
+              track: item.track || 'ai',
+              skills: [],
+              pitch: 'Matchmaking lobby group registration.',
+              discord: item.email ? item.email.split('@')[0] + '#0000' : 'discord#0000',
+              members: []
+            }
+          }
+          grouped[tid].members.push({
+            name: item.name,
+            github: item.email ? item.email.split('@')[0] : 'github',
+            role: item.role || 'developer',
+            email: item.email || ''
+          })
+        })
+        const listingsArray = Object.values(grouped)
+        if (listingsArray.length > 0) {
+          setTeamListings(listingsArray)
+          localStorage.setItem('Tachyon_team_listings', JSON.stringify(listingsArray))
+        }
+      }
+    } catch (e) {
+      console.error('Failed to sync global settings on load:', e)
+    }
+  }
+
+  const saveGlobalSettingToSheet = async (key, value) => {
+    try {
+      const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'saveSettings',
+          key,
+          value
+        })
+      })
+    } catch (e) {
+      console.error(`Failed to save global setting [${key}] to Sheet:`, e)
+    }
+  }
+
   // Load settings from localStorage
   useEffect(() => {
+    syncGlobalSettingsFromSheet()
     const savedTicket = localStorage.getItem('Tachyon_ticket')
     if (savedTicket) {
       setTicketData(JSON.parse(savedTicket))
@@ -1247,6 +1328,7 @@ export function App() {
             setGithubLink={setGithubLink}
             websiteLink={websiteLink}
             setWebsiteLink={setWebsiteLink}
+            saveGlobalSetting={saveGlobalSettingToSheet}
           />
         )}
 

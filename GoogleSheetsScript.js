@@ -1,324 +1,545 @@
 /**
- * Google Apps Script Web App for Tachyon Arcade & Website Registration Synchronization
+ * =================================================================================
+ *  ████████╗ █████╗  ██████╗██╗  ██╗██╗   ██╗ ██████╗ ███╗   ██╗    ██████╗ ██████╗ 
+ *  ╚══██╔══╝██╔══██╗██╔════╝██║  ██║╚██╗ ██╔╝██╔═══██╗████╗  ██║    ██╔══██╗██╔══██╗
+ *     ██║   ███████║██║     ███████║ ╚████╔╝ ██║   ██║██╔██╗ ██║    ██║  ██║██████╔╝
+ *     ██║   ██╔══██║██║     ██╔══██║  ╚██╔╝  ██║   ██║██║╚██╗██║    ██║  ██║██╔══██╗
+ *     ██║   ██║  ██║╚██████╗██║  ██║   ██║   ╚██████╔╝██║ ╚████║    ██████╔╝██████╔╝
+ *     ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝    ╚═════╝ ╚═════╝ 
+ * =================================================================================
+ * Tachyon Core Database Engine & Admin Sync Web App Protocol
+ * Version: 2.1.0 // Production Build
  * 
- * Instructions:
+ * INSTRUCTIONS FOR DEPLOYMENT:
  * 1. Open Google Sheets.
- * 2. Click Extensions > Apps Script.
- * 3. Delete any default template code and paste this script.
- * 4. Click Deploy > New Deployment.
- * 5. Set Select type to "Web app".
- * 6. Set Description to "Tachyon Registration Sync".
- * 7. Set Execute as to "Me" (your account).
- * 8. Set Who has access to to "Anyone".
- * 9. Click Deploy, authorize permissions, and copy the Web App URL.
- * 10. Paste this URL into the Admin Control Console under "Google Sheets Sync Webhook URL" or save it to localStorage.
+ * 2. Click "Extensions" > "Apps Script".
+ * 3. Delete any default template code and paste this entire script.
+ * 4. Click the "Save" (floppy disk) icon.
+ * 5. Click the blue "Deploy" button in the top-right corner > select "New deployment".
+ * 6. Set deployment type to "Web app".
+ * 7. Set Description to "Tachyon Cloud Sync Service".
+ * 8. Set "Execute as" to "Me" (your Google account).
+ * 9. Set "Who has access" to "Anyone" (required for website clients to connect).
+ * 10. Click "Deploy", approve access permissions, and copy the Web App URL.
+ * 11. Paste this URL into your website Admin Panel under "Google Sheets Webhook URL".
+ * =================================================================================
  */
 
-function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Helper to get or create a sheet and set up headers
-  function getOrCreateSheet(name, defaultHeaders) {
-    var sheet = ss.getSheetByName(name);
-    if (!sheet) {
-      sheet = ss.insertSheet(name);
-      sheet.appendRow(defaultHeaders);
-    }
-    return sheet;
-  }
-  
-  // Initialize sheets with expected headers if they don't exist
-  var regSheet = getOrCreateSheet("Registrations", [
-    "Ticket ID", 
-    "Full Name", 
-    "Email Address", 
-    "GitHub Username", 
-    "Selected Role", 
-    "Challenge Track", 
-    "Seat Number", 
-    "Timestamp", 
-    "Galactic Core Score", 
-    "Mainframe Grid Score", 
-    "Laser Paddle Score"
-  ]);
-  
-  var authSheet = getOrCreateSheet("Email_Password", [
-    "Email", 
-    "Password", 
-    "Name", 
-    "PIN"
-  ]);
-  
-  var matchSheet = getOrCreateSheet("Matchmaking", [
-    "Team ID", 
-    "Name", 
-    "Email", 
-    "Role", 
-    "Track", 
-    "Timestamp"
-  ]);
-  
-  try {
-    var data = JSON.parse(e.postData.contents);
-    var action = data.action;
+// Global spreadsheet binding reference
+const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+/**
+ * Validates and self-heals sheet structures by verifying headers.
+ * If a sheet does not exist, it is created with the default headers.
+ * If columns are missing, they are appended.
+ */
+function initializeAndVerifyDatabase() {
+  const schema = {
+    "Registrations": [
+      "Ticket ID", "Timestamp", "Name", "Email Address", "GitHub Username", 
+      "Selected Role", "Challenge Track", "Seat Number", "Galactic Core Score", 
+      "Mainframe Grid Score", "Laser Paddle Score"
+    ],
+    "Email_Password": [
+      "Email", "Password", "Name", "PIN"
+    ],
+    "Matchmaking": [
+      "Team ID", "Name", "Email", "Role", "Track", "Timestamp"
+    ],
+    "Settings": [
+      "KEY", "VALUE"
+    ],
+    "System_Logs": [
+      "Log ID", "Timestamp", "Action Type", "Status", "Details", "Payload Summary"
+    ]
+  };
+
+  for (let sheetName in schema) {
+    let sheet = ss.getSheetByName(sheetName);
+    let expectedHeaders = schema[sheetName];
     
-    // --- SIGN UP ACTION ---
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      sheet.appendRow(expectedHeaders);
+      
+      // Auto-fit column widths and style headers
+      sheet.getRange(1, 1, 1, expectedHeaders.length)
+           .setFontWeight("bold")
+           .setBackground("#222222")
+           .setFontColor("#ffffff")
+           .setHorizontalAlignment("center");
+      sheet.setFrozenRows(1);
+    } else {
+      // Self-heal headers if any columns are missing
+      let lastCol = sheet.getLastColumn();
+      if (lastCol > 0) {
+        let actualHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        let headersSet = new Set(actualHeaders.map(h => h.toString().trim()));
+        
+        for (let header of expectedHeaders) {
+          if (!headersSet.has(header)) {
+            sheet.getRange(1, lastCol + 1).setValue(header)
+                 .setFontWeight("bold")
+                 .setBackground("#222222")
+                 .setFontColor("#ffffff")
+                 .setHorizontalAlignment("center");
+            lastCol++;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Log transactions inside the System_Logs sheet for diagnostic tracking
+ */
+function logTransaction(action, status, details, payload) {
+  try {
+    const logSheet = ss.getSheetByName("System_Logs");
+    if (logSheet) {
+      const logId = "LOG-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+      const timestamp = new Date().toLocaleString();
+      const payloadString = payload ? JSON.stringify(payload).substring(0, 1000) : "No Payload";
+      logSheet.appendRow([logId, timestamp, action, status, details, payloadString]);
+    }
+  } catch (e) {
+    console.error("Logging failed: " + e.toString());
+  }
+}
+
+/**
+ * Main Web App POST Endpoint Router. Handles inbound data request routing.
+ */
+function doPost(e) {
+  try {
+    // 1. Database Schema Integrity Self-Heal Check
+    initializeAndVerifyDatabase();
+    
+    // 2. Parse inbound request contents safely
+    if (!e || !e.postData || !e.postData.contents) {
+      logTransaction("UNKNOWN", "ERROR", "Null or empty request body", null);
+      return createResponse({ status: "error", message: "Inbound request contents are empty." });
+    }
+    
+    const data = JSON.parse(e.postData.contents);
+    const action = data.action;
+    
+    const regSheet = ss.getSheetByName("Registrations");
+    const authSheet = ss.getSheetByName("Email_Password");
+    const matchSheet = ss.getSheetByName("Matchmaking");
+    const settingsSheet = ss.getSheetByName("Settings");
+    
+    // =================================================================================
+    // ROUTE 1: SIGN UP (ADMIN/USER CREDENTIALS REGISTRY)
+    // =================================================================================
     if (action === "signUp") {
-      var email = (data.email || "").toLowerCase().trim();
-      var password = data.password || "";
-      var name = data.name || "";
-      var pin = data.pin || "";
+      const email = (data.email || "").toLowerCase().trim();
+      const name = (data.name || "").trim();
+      const password = data.password || "";
+      const pin = data.pin ? data.pin.toString().trim() : "0000";
+      
+      if (!email || !password || !name) {
+        logTransaction("signUp", "ERROR", "Missing required sign up parameters", data);
+        return createResponse({ status: "error", message: "Email, Password, and Name are required." });
+      }
+      
+      const rows = authSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString().toLowerCase().trim() === email) {
+          logTransaction("signUp", "CONFLICT", "Conflict: Email already exists: " + email, data);
+          return createResponse({ status: "error", message: "Email already registered." });
+        }
+      }
+      
+      authSheet.appendRow([email, password, name, pin]);
+      logTransaction("signUp", "SUCCESS", "New administrator user registered: " + email, { email, name });
+      return createResponse({ status: "success", user: { name: name, email: email } });
+    }
+    
+    // =================================================================================
+    // ROUTE 2: LOGIN (USER CREDENTIALS AUTHENTICATION)
+    // =================================================================================
+    else if (action === "login") {
+      const email = (data.email || "").toLowerCase().trim();
+      const password = data.password || "";
       
       if (!email || !password) {
-        return createResponse({ status: "error", message: "Email and password are required" });
+        logTransaction("login", "ERROR", "Missing credentials on payload", null);
+        return createResponse({ status: "error", message: "Email and password are required." });
       }
       
-      // Check if email already exists in Email_Password sheet
-      var authRows = authSheet.getLastRow();
-      if (authRows > 1) {
-        var emailColValues = authSheet.getRange(2, 1, authRows - 1, 1).getValues();
-        for (var i = 0; i < emailColValues.length; i++) {
-          if (emailColValues[i][0].toString().toLowerCase().trim() === email) {
-            return createResponse({ status: "error", message: "Email already registered." });
+      const rows = authSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString().toLowerCase().trim() === email) {
+          if (rows[i][1].toString() === password) {
+            logTransaction("login", "SUCCESS", "Authorized access granted for " + email, null);
+            return createResponse({ status: "success", user: { name: rows[i][2], email: email } });
+          } else {
+            logTransaction("login", "FAIL", "Invalid credential attempt for " + email, null);
+            return createResponse({ status: "error", message: "Incorrect password" });
           }
         }
       }
-      
-      // Append new credentials
-      authSheet.appendRow([email, password, name, pin]);
-      return createResponse({ status: "success", message: "User signed up successfully." });
+      logTransaction("login", "NOT_FOUND", "No user found with email " + email, null);
+      return createResponse({ status: "error", message: "User not found" });
     }
     
-    // --- LOGIN ACTION ---
-    else if (action === "login") {
-      var email = (data.email || "").toLowerCase().trim();
-      var password = data.password || "";
-      
-      var authRows = authSheet.getLastRow();
-      if (authRows > 1) {
-        var authData = authSheet.getRange(2, 1, authRows - 1, 4).getValues();
-        for (var i = 0; i < authData.length; i++) {
-          if (authData[i][0].toString().toLowerCase().trim() === email && authData[i][1].toString() === password) {
-            return createResponse({
-              status: "success",
-              user: {
-                name: authData[i][2],
-                email: authData[i][0]
-              }
-            });
-          }
-        }
-      }
-      return createResponse({ status: "error", message: "Incorrect credentials." });
-    }
-    
-    // --- RESET PASSWORD ACTION ---
+    // =================================================================================
+    // ROUTE 3: RESET PASSWORD (PIN VALIDATION & OVERWRITE)
+    // =================================================================================
     else if (action === "resetPassword") {
-      var email = (data.email || "").toLowerCase().trim();
-      var pin = (data.pin || "").toString().trim();
-      var newPassword = data.password || "";
+      const email = (data.email || "").toLowerCase().trim();
+      const pin = (data.pin || "").toString().trim();
+      const newPassword = data.password || "";
       
-      var authRows = authSheet.getLastRow();
-      if (authRows > 1) {
-        var authData = authSheet.getRange(2, 1, authRows - 1, 4).getValues();
-        for (var i = 0; i < authData.length; i++) {
-          if (authData[i][0].toString().toLowerCase().trim() === email && authData[i][3].toString().trim() === pin) {
-            // Update password in column 2 of the matched row
-            authSheet.getRange(i + 2, 2).setValue(newPassword);
+      if (!email || !pin || !newPassword) {
+        logTransaction("resetPassword", "ERROR", "Missing parameters in request", null);
+        return createResponse({ status: "error", message: "Email, PIN, and new Password are required." });
+      }
+      
+      const rows = authSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString().toLowerCase().trim() === email) {
+          if (rows[i][3].toString().trim() === pin) {
+            authSheet.getRange(i + 1, 2).setValue(newPassword);
+            logTransaction("resetPassword", "SUCCESS", "Credentials updated successfully for: " + email, null);
             return createResponse({ status: "success", message: "Password reset successful." });
+          } else {
+            logTransaction("resetPassword", "FORBIDDEN", "Incorrect security PIN verification: " + email, null);
+            return createResponse({ status: "error", message: "Incorrect Security PIN" });
           }
         }
       }
-      return createResponse({ status: "error", message: "Invalid email or PIN." });
+      logTransaction("resetPassword", "NOT_FOUND", "No reset target profile matching " + email, null);
+      return createResponse({ status: "error", message: "User not found" });
     }
     
-    // --- REGISTER TICKET ACTION ---
-    else if (action === "register") {
-      var ticketId = data.ticketId;
-      var email = (data.email || "").toLowerCase().trim();
-      
-      // Update if already exists, else append
-      var regRows = regSheet.getLastRow();
-      var foundIndex = -1;
-      if (regRows > 1) {
-        var emailValues = regSheet.getRange(2, 3, regRows - 1, 1).getValues();
-        for (var i = 0; i < emailValues.length; i++) {
-          if (emailValues[i][0].toString().toLowerCase().trim() === email) {
-            foundIndex = i + 2;
-            break;
-          }
-        }
-      }
-      
-      if (foundIndex !== -1) {
-        // Update existing row
-        regSheet.getRange(foundIndex, 1).setValue(ticketId);
-        regSheet.getRange(foundIndex, 2).setValue(data.name || "");
-        regSheet.getRange(foundIndex, 4).setValue(data.github || "");
-        regSheet.getRange(foundIndex, 5).setValue(data.role || "");
-        regSheet.getRange(foundIndex, 6).setValue(data.track || "");
-        regSheet.getRange(foundIndex, 7).setValue(data.seatNumber || "");
-        regSheet.getRange(foundIndex, 8).setValue(new Date().toLocaleString());
-        return createResponse({ status: "success", message: "Updated existing ticket " + ticketId });
-      } else {
-        // Append new registration row
-        regSheet.appendRow([
-          ticketId,
-          data.name || "",
-          email,
-          data.github || "",
-          data.role || "",
-          data.track || "",
-          data.seatNumber || "",
-          new Date().toLocaleString(),
-          "", // Galactic Core Score
-          "", // Mainframe Grid Score
-          ""  // Laser Paddle Score
-        ]);
-        return createResponse({ status: "success", message: "Registered ticket " + ticketId });
-      }
-    }
-    
-    // --- DEREGISTER TICKET ACTION (Deletes registration AND user details!) ---
-    else if (action === "deregister") {
-      var ticketId = data.ticketId;
-      var userEmail = "";
-      
-      // 1. Find and delete from Registrations sheet
-      var regRows = regSheet.getLastRow();
-      if (regRows > 1) {
-        var regRange = regSheet.getRange(2, 1, regRows - 1, 3); // Cols: Ticket ID (1), Name (2), Email (3)
-        var regValues = regRange.getValues();
-        for (var i = regValues.length - 1; i >= 0; i--) {
-          if (String(regValues[i][0]).trim() === String(ticketId).trim()) {
-            userEmail = String(regValues[i][2]).toLowerCase().trim();
-            regSheet.deleteRow(i + 2);
-          }
-        }
-      }
-      
-      // 2. Delete from Email_Password sheet if email is found/available
-      if (userEmail) {
-        var authRows = authSheet.getLastRow();
-        if (authRows > 1) {
-          var authEmailValues = authSheet.getRange(2, 1, authRows - 1, 1).getValues();
-          for (var j = authEmailValues.length - 1; j >= 0; j--) {
-            if (String(authEmailValues[j][0]).toLowerCase().trim() === userEmail) {
-              authSheet.deleteRow(j + 2);
-            }
-          }
-        }
-        
-        // 3. Delete from Matchmaking sheet if email is found
-        var matchRows = matchSheet.getLastRow();
-        if (matchRows > 1) {
-          var matchEmailValues = matchSheet.getRange(2, 3, matchRows - 1, 1).getValues(); // Email is Col 3
-          for (var k = matchEmailValues.length - 1; k >= 0; k--) {
-            if (String(matchEmailValues[k][0]).toLowerCase().trim() === userEmail) {
-              matchSheet.deleteRow(k + 2);
-            }
-          }
-        }
-      } else {
-        // Fallback: If no email was resolved, search by ticketId in Registrations anyway
-        var regRowsFallback = regSheet.getLastRow();
-        if (regRowsFallback > 1) {
-          var idValues = regSheet.getRange(2, 1, regRowsFallback - 1, 1).getValues();
-          for (var idx = idValues.length - 1; idx >= 0; idx--) {
-            if (String(idValues[idx][0]).trim() === String(ticketId).trim()) {
-              regSheet.deleteRow(idx + 2);
-            }
-          }
-        }
-      }
-      
-      return createResponse({ status: "success", message: "Successfully removed ticket, account, and matchmaking details for " + ticketId });
-    }
-    
-    // --- GET TICKET ACTION ---
+    // =================================================================================
+    // ROUTE 4: GET TICKET (RETRIEVE SEAT DETAILS & HIGHSCORES)
+    // =================================================================================
     else if (action === "getTicket") {
-      var email = (data.email || "").toLowerCase().trim();
-      var regRows = regSheet.getLastRow();
-      if (regRows > 1) {
-        var regData = regSheet.getRange(2, 1, regRows - 1, 11).getValues();
-        for (var i = 0; i < regData.length; i++) {
-          if (regData[i][2].toString().toLowerCase().trim() === email) {
-            return createResponse({
-              status: "success",
-              ticket: {
-                ticketId: regData[i][0],
-                name: regData[i][1],
-                email: regData[i][2],
-                github: regData[i][3],
-                role: regData[i][4],
-                track: regData[i][5],
-                seatNumber: regData[i][6],
-                timestamp: regData[i][7],
-                scores: {
-                  galacticCore: regData[i][8],
-                  mainframeGrid: regData[i][9],
-                  laserPaddle: regData[i][10]
-                }
-              }
-            });
-          }
-        }
-      }
-      return createResponse({ status: "not_found", message: "No ticket found for email " + email });
-    }
-    
-    // --- SCORE UPDATE ACTION ---
-    else if (action === "score") {
-      var ticketId = data.ticketId;
-      var scoreVal = Number(data.score) || 0;
-      var gameId = data.gameId; // "space", "tetris", "pong"
+      const email = (data.email || "").toLowerCase().trim();
       
-      var regRows = regSheet.getLastRow();
-      if (regRows > 1) {
-        var idValues = regSheet.getRange(2, 1, regRows - 1, 1).getValues();
-        for (var i = 0; i < idValues.length; i++) {
-          if (String(idValues[i][0]).trim() === String(ticketId).trim()) {
-            var rowNum = i + 2;
-            var colNum = 9; // Default to Galactic Core
-            if (gameId === "tetris") colNum = 10;
-            if (gameId === "pong") colNum = 11;
-            
-            var cell = regSheet.getRange(rowNum, colNum);
-            var currentVal = Number(cell.getValue()) || 0;
-            if (scoreVal > currentVal) {
-              cell.setValue(scoreVal);
+      if (!email) {
+        logTransaction("getTicket", "ERROR", "Null query parameter", null);
+        return createResponse({ status: "error", message: "Email is required." });
+      }
+      
+      const rows = regSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][3].toString().toLowerCase().trim() === email) {
+          return createResponse({
+            status: "success",
+            ticket: {
+              ticketId: rows[i][0],
+              timestamp: rows[i][1],
+              name: rows[i][2],
+              email: rows[i][3],
+              github: rows[i][4],
+              role: rows[i][5],
+              track: rows[i][6],
+              seatNumber: rows[i][7],
+              scores: {
+                galacticCore: rows[i][8] || 0,
+                mainframeGrid: rows[i][9] || 0,
+                laserPaddle: rows[i][10] || 0
+              }
             }
-            return createResponse({ status: "success", message: "Highscore updated." });
-          }
+          });
         }
       }
       return createResponse({ status: "not_found", message: "Ticket not found." });
     }
     
-    // --- JOIN TEAM / MATCHMAKING ACTION ---
-    else if (action === "join_team") {
-      var teamId = data.teamId;
-      var name = data.name || "";
-      var email = (data.email || "").toLowerCase().trim();
-      var role = data.role || "";
-      var track = data.track || "";
+    // =================================================================================
+    // ROUTE 5: DEREGISTER (CLEAN DELETE ASSOCIATED REGISTRY ENTRIES)
+    // =================================================================================
+    else if (action === "deregister") {
+      const ticketId = (data.ticketId || "").toString().trim();
+      if (!ticketId) {
+        logTransaction("deregister", "ERROR", "No target ID supplied", null);
+        return createResponse({ status: "error", message: "Ticket ID is required." });
+      }
       
-      matchSheet.appendRow([teamId, name, email, role, track, new Date().toLocaleString()]);
-      return createResponse({ status: "success", message: "Joined team successfully." });
+      var userEmail = "";
+      
+      // Remove matching Registration rows
+      const regRows = regSheet.getDataRange().getValues();
+      for (let i = regRows.length - 1; i >= 1; i--) {
+        if (String(regRows[i][0]).trim() === ticketId) {
+          userEmail = String(regRows[i][3]).toLowerCase().trim();
+          regSheet.deleteRow(i + 1);
+        }
+      }
+      
+      // Cleanup corresponding accounts and team registries
+      if (userEmail) {
+        const authRows = authSheet.getDataRange().getValues();
+        for (let j = authRows.length - 1; j >= 1; j--) {
+          if (String(authRows[j][0]).toLowerCase().trim() === userEmail) {
+            authSheet.deleteRow(j + 1);
+          }
+        }
+        
+        const matchRows = matchSheet.getDataRange().getValues();
+        for (let k = matchRows.length - 1; k >= 1; k--) {
+          if (String(matchRows[k][2]).toLowerCase().trim() === userEmail) {
+            matchSheet.deleteRow(k + 1);
+          }
+        }
+      }
+      
+      logTransaction("deregister", "SUCCESS", "Purged system credentials and ticket registry for seat: " + ticketId, { ticketId, userEmail });
+      return createResponse({ status: "success", message: "Seat data purged completely." });
+    }
+
+    // =================================================================================
+    // ROUTE 6: GET REGISTRATIONS (GLOBAL LIST OF ALL REGISTERED BUILDERS)
+    // =================================================================================
+    else if (action === "getRegistrations") {
+      const regs = [];
+      const rows = regSheet.getDataRange().getValues();
+      
+      for (let i = 1; i < rows.length; i++) {
+        regs.push({
+          ticketId: rows[i][0],
+          timestamp: rows[i][1],
+          name: rows[i][2],
+          email: rows[i][3],
+          github: rows[i][4],
+          role: rows[i][5],
+          track: rows[i][6],
+          seatNumber: rows[i][7],
+          scores: {
+            galacticCore: rows[i][8] || 0,
+            mainframeGrid: rows[i][9] || 0,
+            laserPaddle: rows[i][10] || 0
+          }
+        });
+      }
+      return createResponse({ status: "success", registrations: regs });
+    }
+
+    // =================================================================================
+    // ROUTE 7: GET MATCHMAKING (GLOBAL LIST OF ACTIVE TEAM POSTINGS)
+    // =================================================================================
+    else if (action === "getMatchmaking") {
+      const matches = [];
+      const rows = matchSheet.getDataRange().getValues();
+      
+      for (let i = 1; i < rows.length; i++) {
+        matches.push({
+          teamId: rows[i][0],
+          name: rows[i][1],
+          email: rows[i][2],
+          role: rows[i][3],
+          track: rows[i][4],
+          timestamp: rows[i][5]
+        });
+      }
+      return createResponse({ status: "success", matchmaking: matches });
+    }
+
+    // =================================================================================
+    // ROUTE 8: SAVE SETTINGS (GLOBAL SITE ACCENTS AND TIMELINE STORAGE)
+    // =================================================================================
+    else if (action === "saveSettings") {
+      const key = data.key;
+      const value = JSON.stringify(data.value);
+      
+      if (!key) {
+        logTransaction("saveSettings", "ERROR", "Null parameter target", null);
+        return createResponse({ status: "error", message: "Settings KEY parameter is required." });
+      }
+      
+      const rows = settingsSheet.getDataRange().getValues();
+      let foundIndex = -1;
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString() === key) {
+          foundIndex = i + 1;
+          break;
+        }
+      }
+      
+      if (foundIndex !== -1) {
+        settingsSheet.getRange(foundIndex, 2).setValue(value);
+      } else {
+        settingsSheet.appendRow([key, value]);
+      }
+      
+      logTransaction("saveSettings", "SUCCESS", "Updated global parameter: " + key, null);
+      return createResponse({ status: "success", message: "Global parameter saved." });
     }
     
-    return createResponse({ status: "error", message: "Unknown action parameter" });
+    // =================================================================================
+    // ROUTE 9: GET SETTINGS (RETRIEVE ALL TIMELINES & LINK SETTINGS)
+    // =================================================================================
+    else if (action === "getSettings") {
+      const settings = {};
+      const rows = settingsSheet.getDataRange().getValues();
+      
+      for (let i = 1; i < rows.length; i++) {
+        try {
+          settings[rows[i][0].toString()] = JSON.parse(rows[i][1]);
+        } catch(e) {
+          settings[rows[i][0].toString()] = rows[i][1];
+        }
+      }
+      return createResponse({ status: "success", settings: settings });
+    }
+
+    // =================================================================================
+    // ROUTE 10: SCORE (UPDATE INDIVIDUAL ARCADE HIGHSCORES)
+    // =================================================================================
+    else if (action === "score") {
+      const ticketId = (data.ticketId || "").toString().trim();
+      const scoreVal = Number(data.score) || 0;
+      const gameId = data.gameId; // "space", "tetris", or "pong"
+      
+      if (!ticketId || !gameId) {
+        logTransaction("score", "ERROR", "Missing parameters in query", data);
+        return createResponse({ status: "error", message: "Ticket ID and Game ID are required." });
+      }
+      
+      const rows = regSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][0]).trim() === ticketId) {
+          var colNum = 9; // Col I: Galactic Core (space)
+          if (gameId === "tetris") colNum = 10; // Col J: Mainframe Grid (tetris)
+          if (gameId === "pong") colNum = 11; // Col K: Laser Paddle (pong)
+          
+          var cell = regSheet.getRange(i + 1, colNum);
+          var currentVal = Number(cell.getValue()) || 0;
+          
+          if (scoreVal > currentVal) {
+            cell.setValue(scoreVal);
+            
+            // Auto-sort registrations to rank top high scores at the top of the sheet
+            regSheet.getRange(2, 1, regSheet.getLastRow() - 1, regSheet.getLastColumn())
+                    .sort({ column: colNum, ascending: false });
+                    
+            logTransaction("score", "SUCCESS", `New highscore registered for ${ticketId} in ${gameId}: ${scoreVal}`, null);
+            return createResponse({ status: "success", message: "New highscore successfully written!" });
+          }
+          
+          return createResponse({ status: "success", message: "Existing highscore was higher. No update required." });
+        }
+      }
+      logTransaction("score", "NOT_FOUND", "Failed to update highscore. Ticket ID not found: " + ticketId, data);
+      return createResponse({ status: "error", message: "Ticket ID not found." });
+    }
+
+    // =================================================================================
+    // ROUTE 11: JOIN TEAM / MATCHMAKING (SQUAD REGISTRATION LOG)
+    // =================================================================================
+    else if (action === "join_team") {
+      const teamId = (data.teamId || "").trim();
+      const name = (data.name || "").trim();
+      const email = (data.email || "").toLowerCase().trim();
+      const role = data.role || "developer";
+      const track = data.track || "ai";
+      
+      if (!teamId || !name || !email) {
+        logTransaction("join_team", "ERROR", "Missing parameters in registration payload", data);
+        return createResponse({ status: "error", message: "Team ID, Name, and Email are required." });
+      }
+      
+      matchSheet.appendRow([teamId, name, email, role, track, new Date().toLocaleString()]);
+      logTransaction("join_team", "SUCCESS", `Member ${name} joined squad [${teamId}]`, { teamId, name, email });
+      return createResponse({ status: "success", message: "Successfully appended matchmaking listing." });
+    }
     
-  } catch (error) {
-    return createResponse({ status: "error", message: error.toString() });
+    // =================================================================================
+    // ROUTE 12: DEFAULT REGISTER TICKET (SAVES SEAT NUMBER)
+    // =================================================================================
+    else {
+      if (!data.ticketId || !data.email) {
+        logTransaction("register", "ERROR", "Null ticket id or email", data);
+        return createResponse({ status: "error", message: "Ticket ID and Email are required." });
+      }
+
+      // Check if registration already exists
+      const rows = regSheet.getDataRange().getValues();
+      let foundIndex = -1;
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][3].toString().toLowerCase().trim() === data.email.toLowerCase().trim()) {
+          foundIndex = i + 1;
+          break;
+        }
+      }
+
+      if (foundIndex !== -1) {
+        // Update existing row
+        regSheet.getRange(foundIndex, 1).setValue(data.ticketId);
+        regSheet.getRange(foundIndex, 2).setValue(data.timestamp || new Date().toLocaleString());
+        regSheet.getRange(foundIndex, 3).setValue(data.name || "");
+        regSheet.getRange(foundIndex, 5).setValue(data.github || "");
+        regSheet.getRange(foundIndex, 6).setValue(data.role || "");
+        regSheet.getRange(foundIndex, 7).setValue(data.track || "");
+        regSheet.getRange(foundIndex, 8).setValue(data.seatNumber || "");
+        logTransaction("register", "SUCCESS", "Updated existing ticket row for: " + data.email, { ticketId: data.ticketId, email: data.email });
+      } else {
+        // Insert new row
+        regSheet.appendRow([
+          data.ticketId,
+          data.timestamp || new Date().toLocaleString(),
+          data.name,
+          data.email.toLowerCase().trim(),
+          data.github,
+          data.role,
+          data.track,
+          data.seatNumber,
+          "", "", ""
+        ]);
+        logTransaction("register", "SUCCESS", "Appended new ticket registration: " + data.ticketId, { email: data.email });
+      }
+      return createResponse({ status: "success", message: "Registration written successfully." });
+    }
+  } catch (err) {
+    logTransaction("CRITICAL", "ERROR", "Exception thrown in doPost: " + err.toString(), null);
+    return createResponse({ status: "error", message: err.toString() });
   }
 }
 
+/**
+ * Handle HTTP GET Requests. Display diagnostic HTML status screen.
+ */
 function doGet(e) {
-  return HtmlService.createHtmlOutput("<h3>Tachyon Webhook Endpoint Active</h3>");
+  const htmlOutput = 
+    `<!doctype html>
+     <html>
+       <head>
+         <title>Tachyon Database Engine</title>
+         <style>
+           body { background-color: #0A0A08; color: #6db349; font-family: monospace; padding: 30px; line-height: 1.6; }
+           .container { border: 1px solid #6db349; padding: 20px; background-color: #000000; box-shadow: 0 0 20px rgba(109,179,73,0.2); max-width: 600px; margin: auto; }
+           h1 { font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #6db349; padding-bottom: 10px; margin-top: 0; }
+           .status { color: #ffffff; background-color: #222222; padding: 5px 10px; border-radius: 3px; font-weight: bold; }
+           .details { color: #888888; font-size: 11px; margin-top: 20px; }
+         </style>
+       </head>
+       <body>
+         <div class="container">
+           <h1>[TACHYON MAINFRAME ENGINE]</h1>
+           <p>DATABASE STATUS: <span class="status">ONLINE & LINKED</span></p>
+           <p>SYSTEM ACCESS LEVEL: 0 // ACTIVE</p>
+           <p>ENDPOINT PROTOCOL: POST ROUTING READY</p>
+           <div class="details">
+             CONNECTED SPREADSHEET ID: ${ss.getId()}<br>
+             LOCALE COMPILER: APPS_SCRIPT_V8 // 2026<br>
+             CRAFT. CODE. CREATE.
+           </div>
+         </div>
+       </body>
+     </html>`;
+  return HtmlService.createHtmlOutput(htmlOutput).setTitle("Tachyon Database Engine");
 }
 
+/**
+ * Helper utility to return clean ContentService JSON strings
+ */
 function createResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+                       .setMimeType(ContentService.MimeType.JSON);
 }

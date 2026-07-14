@@ -37,9 +37,11 @@ export function AdminPanel({
   githubLink,
   setGithubLink,
   websiteLink,
-  setWebsiteLink
+  setWebsiteLink,
+  saveGlobalSetting
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
+  const [isSyncInfoOpen, setIsSyncInfoOpen] = useState(false)
   
   const [googleSheetUrl, setGoogleSheetUrl] = useState(() => {
     return localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
@@ -93,16 +95,35 @@ export function AdminPanel({
     blueprintSpecs: {}
   })
 
-  // Load registrations on mount
+  // Load registrations from Google Sheet on mount
   useEffect(() => {
-    const saved = localStorage.getItem('Tachyon_registrations')
-    if (saved) {
+    const fetchRegistrationsFromSheet = async () => {
       try {
-        setRegistrations(JSON.parse(saved))
+        const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'getRegistrations' })
+        })
+        const data = await res.json()
+        if (data.status === 'success' && data.registrations) {
+          setRegistrations(data.registrations)
+          localStorage.setItem('Tachyon_registrations', JSON.stringify(data.registrations))
+        }
       } catch (e) {
-        console.error(e)
+        console.error('Failed to fetch registrations from Google Sheet:', e)
+        // Fallback to local storage if network fails
+        const saved = localStorage.getItem('Tachyon_registrations')
+        if (saved) {
+          try {
+            setRegistrations(JSON.parse(saved))
+          } catch (err) {}
+        }
       }
     }
+
+    fetchRegistrationsFromSheet()
   }, [])
 
   // Sync track edits form state when active selection changes
@@ -169,6 +190,7 @@ export function AdminPanel({
     const updated = [...organizers, { id: 'org-' + Date.now(), ...newOrg }]
     setOrganizers(updated)
     localStorage.setItem('Tachyon_organizers', JSON.stringify(updated))
+    if (saveGlobalSetting) saveGlobalSetting('organizers', updated)
     setNewOrg({ name: '', role: '', email: '', instagram: '', image: '' })
   }
 
@@ -178,6 +200,7 @@ export function AdminPanel({
     const updated = organizers.filter(org => org.id !== id)
     setOrganizers(updated)
     localStorage.setItem('Tachyon_organizers', JSON.stringify(updated))
+    if (saveGlobalSetting) saveGlobalSetting('organizers', updated)
   }
 
   // Add Custom Sponsor Handler
@@ -192,6 +215,7 @@ export function AdminPanel({
     const updated = [...sponsors, { id: 'sp-' + Date.now(), ...newSponsor }]
     setSponsors(updated)
     localStorage.setItem('Tachyon_sponsors', JSON.stringify(updated))
+    if (saveGlobalSetting) saveGlobalSetting('sponsors', updated)
     setNewSponsor({ name: '', tier: 'core', website: '', logo: '' })
   }
 
@@ -201,6 +225,7 @@ export function AdminPanel({
     const updated = sponsors.filter(sp => sp.id !== id)
     setSponsors(updated)
     localStorage.setItem('Tachyon_sponsors', JSON.stringify(updated))
+    if (saveGlobalSetting) saveGlobalSetting('sponsors', updated)
   }
 
   // Add FAQ handler
@@ -214,6 +239,7 @@ export function AdminPanel({
     playSound('success', isMuted, volume)
     const updated = [...faqList, newFaq]
     setFaqList(updated)
+    if (saveGlobalSetting) saveGlobalSetting('faqList', updated)
     setNewFaq({ question: '', answer: '' })
   }
 
@@ -223,6 +249,7 @@ export function AdminPanel({
       playSound('error', isMuted, volume)
       const updated = faqList.filter((_, i) => i !== idx)
       setFaqList(updated)
+      if (saveGlobalSetting) saveGlobalSetting('faqList', updated)
     }
   }
 
@@ -237,6 +264,7 @@ export function AdminPanel({
     const updated = [...faqList]
     updated[idx] = editFaqData
     setFaqList(updated)
+    if (saveGlobalSetting) saveGlobalSetting('faqList', updated)
     setEditingFaqIdx(null)
   }
 
@@ -270,7 +298,8 @@ export function AdminPanel({
       return t
     })
     setTracksList(updated)
-    alert(`Track '${selectedTrackId.toUpperCase()}' configurations synchronized successfully!`)
+    if (saveGlobalSetting) saveGlobalSetting('tracksList', updated)
+    alert(`Track '${selectedTrackId.toUpperCase()}' configurations synchronized globally in cloud database!`)
   }
 
   return (
@@ -299,6 +328,27 @@ export function AdminPanel({
             className="border border-zinc-800 hover:border-zinc-650 bg-black/25 text-zinc-400 hover:text-white p-2 rounded-full cursor-pointer active:scale-95 transition-all"
           >
             <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Warning Sync Alert Banner */}
+        <div className="bg-amber-500/10 border border-amber-500/20 p-4 mb-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-left">
+          <div className="space-y-0.5">
+            <span className="block text-[10px] text-amber-400 font-bold uppercase tracking-wider">
+              ⚠️ CLOUD SYNC WARNING (FOR ALL CHANGES TO APPLY TO OTHER DEVICES)
+            </span>
+            <span className="block text-[9px] text-zinc-400 leading-normal">
+              Admin panel settings must be linked to a Google Sheets database to sync across all visitor devices globally.
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              playSound('click', isMuted, volume)
+              setIsSyncInfoOpen(true)
+            }}
+            className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30 text-[9px] font-bold px-3 py-1.5 uppercase rounded-full active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            Setup Cloud Sync
           </button>
         </div>
 
@@ -355,7 +405,8 @@ export function AdminPanel({
                   <button
                     onClick={() => {
                       playSound('success', isMuted, volume)
-                      alert('Target date updated successfully!')
+                      if (saveGlobalSetting) saveGlobalSetting('countdownDate', countdownDate)
+                      alert('Target date updated globally in cloud database!')
                     }}
                     className="bg-[#6db349] hover:bg-[#6db349]/90 text-black px-4.5 py-2 font-bold uppercase rounded-full active:scale-95 transition-all cursor-pointer"
                   >
@@ -381,7 +432,8 @@ export function AdminPanel({
                   <button
                     onClick={() => {
                       playSound('success', isMuted, volume)
-                      alert('WhatsApp Community URL updated and saved!')
+                      if (saveGlobalSetting) saveGlobalSetting('whatsappLink', whatsappLink)
+                      alert('WhatsApp Community URL updated globally in cloud database!')
                     }}
                     className="bg-[#6db349] hover:bg-[#6db349]/90 text-black px-4.5 py-2 font-bold uppercase rounded-full active:scale-95 transition-all cursor-pointer"
                   >
@@ -440,7 +492,13 @@ export function AdminPanel({
                 <button
                   onClick={() => {
                     playSound('success', isMuted, volume)
-                    alert('Social media and official platform URLs updated and saved!')
+                    if (saveGlobalSetting) {
+                      saveGlobalSetting('instagramLink', instagramLink)
+                      saveGlobalSetting('twitterLink', twitterLink)
+                      saveGlobalSetting('githubLink', githubLink)
+                      saveGlobalSetting('websiteLink', websiteLink)
+                    }
+                    alert('Platform links updated globally in cloud database!')
                   }}
                   className="w-full bg-[#6db349] hover:bg-[#6db349]/90 text-black py-2.5 font-bold uppercase rounded-full active:scale-[0.99] transition-all cursor-pointer text-xs"
                 >
@@ -546,7 +604,8 @@ export function AdminPanel({
                   onClick={() => {
                     playSound('success', isMuted, volume)
                     localStorage.setItem('Tachyon_timeline', JSON.stringify(timelineNodes))
-                    alert('Event schedule timeline updated and saved successfully!')
+                    if (saveGlobalSetting) saveGlobalSetting('timelineNodes', timelineNodes)
+                    alert('Event schedule timeline updated globally in cloud database!')
                   }}
                   className="w-full bg-[#6db349] hover:bg-[#6db349]/90 text-black py-2.5 font-bold uppercase rounded-full active:scale-[0.99] transition-all cursor-pointer text-xs mt-4"
                 >
@@ -1369,6 +1428,83 @@ export function AdminPanel({
         </div>
 
       </div>
+
+      {isSyncInfoOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 font-mono select-none text-white">
+          <div className="w-full max-w-xl border border-[#6db349]/40 bg-[#0A0A08] p-6 relative rounded-none text-left shadow-[0_0_50px_rgba(109,179,73,0.15)]">
+            
+            {/* Close button */}
+            <button
+              onClick={() => {
+                playSound('click', isMuted, volume)
+                setIsSyncInfoOpen(false)
+              }}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white text-xs cursor-pointer"
+            >
+              [CLOSE]
+            </button>
+
+            <span className="block text-[9px] text-[#6db349] font-bold uppercase tracking-widest mb-2">
+              CRITICAL CORE PROTOCOL: GLOBAL CLOUD SYNCHRONIZATION
+            </span>
+            <h3 className="text-lg font-bold uppercase text-white mb-4">
+              FOR ALL CHANGES TO GO LIVE ON EVERYONE'S DEVICE
+            </h3>
+            
+            <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+              Currently, changes made in this admin panel only save to your browser's local memory (<span className="text-white">localStorage</span>). For edits to appear on all other user devices, phones, and platforms in real-time, you must link this console to a Google Sheet database.
+            </p>
+
+            <div className="border border-zinc-800 bg-black/50 p-4 space-y-3 mb-6 text-xs text-zinc-300 rounded-lg">
+              <p className="font-bold text-white uppercase border-b border-zinc-800 pb-1.5 mb-1.5 flex items-center gap-1.5">
+                <span>📋</span> SETUP DATABASE IN 3 SIMPLE STEPS:
+              </p>
+              <ol className="list-decimal list-inside space-y-2 text-[11px] text-zinc-400">
+                <li>
+                  Open a Google Sheet, select <span className="text-white">Extensions &gt; Apps Script</span>.
+                </li>
+                <li>
+                  Paste the code from <span className="text-white font-mono">GoogleSheetsScript.js</span> (found in your project root) into the editor. Click save.
+                </li>
+                <li>
+                  Click <span className="text-white">Deploy &gt; New Deployment</span>. Set type to <span className="text-white">Web App</span>, "Execute as: <span className="text-white">Me</span>", and "Who has access: <span className="text-white">Anyone</span>". Deploy it!
+                </li>
+              </ol>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">
+                  Google Sheets Web App Webhook URL
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={googleSheetUrl}
+                    onChange={(e) => {
+                      setGoogleSheetUrl(e.target.value)
+                      localStorage.setItem('Tachyon_google_sheet_url', e.target.value)
+                    }}
+                    placeholder="https://script.google.com/macros/s/XXXXX/exec"
+                    className="flex-1 bg-black/40 border border-zinc-800 p-2.5 text-xs text-zinc-300 rounded-lg outline-none focus:border-[#6db349]/50 transition-all font-mono"
+                  />
+                  <button
+                    onClick={() => {
+                      playSound('success', isMuted, volume)
+                      alert('Webhook URL updated! Settings will now sync globally.')
+                      setIsSyncInfoOpen(false)
+                    }}
+                    className="bg-[#6db349] hover:bg-[#6db349]/90 text-black px-4 py-2 font-bold uppercase rounded-lg active:scale-95 text-xs transition-all cursor-pointer"
+                  >
+                    SAVE URL
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
