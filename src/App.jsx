@@ -59,7 +59,16 @@ export function App() {
     const saved = localStorage.getItem('Tachyon_user')
     if (saved) {
       try {
-        return JSON.parse(saved)
+        const parsed = JSON.parse(saved)
+        const defaultAdmins = ['devpriya@tachyonindia.org', 'pranjal@tachyonindia.org', 'yugam@tachyonindia.org', 'help@tachyonindia.org', 'admin@tachyonindia.org']
+        if (parsed && parsed.email) {
+          const isAdm = defaultAdmins.map(e => e.toLowerCase()).includes(parsed.email.toLowerCase())
+          if (isAdm) {
+            localStorage.removeItem('Tachyon_user')
+            return null
+          }
+        }
+        return parsed
       } catch (e) {
         console.error(e)
       }
