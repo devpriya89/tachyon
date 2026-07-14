@@ -16,7 +16,9 @@ export function Header({
   setIsRegisterModalOpen,
   user,
   setIsAuthModalOpen,
-  handleLogout
+  handleLogout,
+  openAdminPanel,
+  isAdmin
 }) {
   const [time, setTime] = useState('')
 
@@ -36,7 +38,7 @@ export function Header({
   return (
     <header className="sticky top-0 z-[80] w-full select-none bg-[#231f20]/80 backdrop-blur-md border-b border-zinc-800/80">
       {/* Main bar */}
-      <div className="w-full max-w-[1250px] mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="relative w-full max-w-[1250px] mx-auto px-6 h-14 flex items-center justify-between">
 
         {/* Logo — left */}
         <div
@@ -49,9 +51,14 @@ export function Header({
         >
           <Logo theme={siteTheme} />
           <div className="flex flex-col text-left">
-            <span className="font-semibold text-xs tracking-wider uppercase text-white group-hover:text-[#6db349] transition-colors duration-300">
-              Tachyon
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-xs tracking-wider uppercase text-white group-hover:text-[#6db349] transition-colors duration-300">
+                Tachyon
+              </span>
+              <span className="text-[9px] text-[#6db349] font-mono tracking-wider flex items-center select-none font-bold">
+                [{time}]
+              </span>
+            </div>
             <span className="text-[8px] text-zinc-500 tracking-[0.25em] uppercase hidden sm:inline-block">
               SYS:01
             </span>
@@ -59,7 +66,7 @@ export function Header({
         </div>
 
         {/* Nav — center (desktop) */}
-        <nav className="hidden lg:flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold">
+        <nav className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-1 text-[10px] uppercase tracking-wider font-semibold">
           {['overview', 'about', 'tracks', 'timeline', 'teamfinder', 'partners', 'faq'].map((section) => {
             const labelMap = {
               overview: 'HUD',
@@ -101,9 +108,7 @@ export function Header({
 
         {/* Dynamic Uptime clock, Auth actions & Register Button */}
         <div className="flex items-center gap-4 shrink-0">
-          <span className="text-[8px] text-zinc-500 tracking-wider uppercase hidden md:flex items-center gap-1.5 select-none">
-            SYS_CLOCK: {time} <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#6db349] animate-pulse"></span>
-          </span>
+
 
           {/* Authentication Status Section */}
           {user ? (
@@ -112,20 +117,21 @@ export function Header({
                 <img 
                   src={user.picture} 
                   alt={user.name} 
-                  className="w-6 h-6 border border-zinc-800 rounded-full select-none pointer-events-none" 
+                  className="w-7 h-7 border border-zinc-800 rounded-full select-none pointer-events-none" 
                 />
               ) : (
-                <div className="w-6 h-6 bg-[#6db349]/10 border border-[#6db349]/20 flex items-center justify-center font-bold text-[9px] text-[#6db349] rounded-full">
+                <div className="w-7 h-7 bg-[#6db349]/10 border border-[#6db349]/20 flex items-center justify-center font-bold text-[10px] text-[#6db349] rounded-full">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
               )}
-              <div className="hidden sm:flex flex-col text-left select-none">
-                <span className="text-[8.5px] text-zinc-300 tracking-wider truncate max-w-[80px]">
+              <div className="hidden sm:flex items-center gap-2 select-none">
+                <span className="text-[9px] font-semibold text-zinc-300 tracking-wider truncate max-w-[90px]">
                   {user.name ? user.name.split(' ')[0] : 'Builder'}
                 </span>
+                <span className="text-zinc-700 text-[9px] select-none">|</span>
                 <button
                   onClick={handleLogout}
-                  className="text-[7px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest text-left cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none"
+                  className="text-[8px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none font-bold"
                 >
                   Logout
                 </button>
@@ -143,15 +149,19 @@ export function Header({
             </button>
           )}
 
-          {/* Registration / Badge triggers */}
+          {/* Registration / Admin Panel button */}
           <button
             onClick={() => {
               playSound('click', isMuted, volume)
-              setIsRegisterModalOpen(true)
+              if (isAdmin) {
+                openAdminPanel()
+              } else {
+                setIsRegisterModalOpen(true)
+              }
             }}
             className="text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black px-5 py-1.5 rounded-full cursor-pointer transition-all duration-200 shrink-0 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)]"
           >
-            {ticketData ? 'Access Pass' : 'Register'}
+            {isAdmin ? 'Admin Panel' : (ticketData ? 'Access Pass' : 'Register')}
           </button>
         </div>
       </div>

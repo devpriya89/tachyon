@@ -33,7 +33,11 @@ export function AdminPanel({
   googleClientId,
   setGoogleClientId,
   venueLocation,
-  setVenueLocation
+  setVenueLocation,
+  githubLink,
+  setGithubLink,
+  websiteLink,
+  setWebsiteLink
 }) {
   const [activeTab, setActiveTab] = useState('milestones')
   
@@ -388,7 +392,7 @@ export function AdminPanel({
 
               {/* Social Links Setting Block */}
               <div className="border border-zinc-800 bg-black/25 p-5 rounded-xl text-left space-y-4">
-                <span className="block font-bold text-white uppercase border-b border-zinc-800/60 pb-2">🌐 Social Media Handles</span>
+                <span className="block font-bold text-white uppercase border-b border-zinc-800/60 pb-2">🌐 Social Media & Platform Links</span>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -411,16 +415,36 @@ export function AdminPanel({
                       className="w-full bg-black/40 border border-zinc-800 p-2.5 text-xs text-zinc-300 rounded-xl outline-none focus:border-[#6db349]/50 transition-all"
                     />
                   </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">GitHub Organization / Link</label>
+                    <input
+                      type="text"
+                      value={githubLink}
+                      onChange={(e) => setGithubLink(e.target.value)}
+                      placeholder="https://github.com/XXXXX"
+                      className="w-full bg-black/40 border border-zinc-800 p-2.5 text-xs text-zinc-300 rounded-xl outline-none focus:border-[#6db349]/50 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8.5px] font-bold text-zinc-500 uppercase mb-1">Official Website URL</label>
+                    <input
+                      type="text"
+                      value={websiteLink}
+                      onChange={(e) => setWebsiteLink(e.target.value)}
+                      placeholder="https://www.tachyonindia.org/"
+                      className="w-full bg-black/40 border border-zinc-800 p-2.5 text-xs text-zinc-300 rounded-xl outline-none focus:border-[#6db349]/50 transition-all"
+                    />
+                  </div>
                 </div>
 
                 <button
                   onClick={() => {
                     playSound('success', isMuted, volume)
-                    alert('Social media URLs updated and saved!')
+                    alert('Social media and official platform URLs updated and saved!')
                   }}
                   className="w-full bg-[#6db349] hover:bg-[#6db349]/90 text-black py-2.5 font-bold uppercase rounded-full active:scale-[0.99] transition-all cursor-pointer text-xs"
                 >
-                  SYNC SOCIAL MEDIA LINKS
+                  SYNC PLATFORM LINKS
                 </button>
               </div>
 
@@ -517,6 +541,40 @@ export function AdminPanel({
                     </div>
                   ))}
                 </div>
+                
+                <button
+                  onClick={() => {
+                    playSound('success', isMuted, volume)
+                    localStorage.setItem('Tachyon_timeline', JSON.stringify(timelineNodes))
+                    alert('Event schedule timeline updated and saved successfully!')
+                  }}
+                  className="w-full bg-[#6db349] hover:bg-[#6db349]/90 text-black py-2.5 font-bold uppercase rounded-full active:scale-[0.99] transition-all cursor-pointer text-xs mt-4"
+                >
+                  SYNC SCHEDULE NODES
+                </button>
+              </div>
+
+              {/* Reset Factory Defaults Block */}
+              <div className="border border-red-500/25 bg-red-500/5 p-5 rounded-xl text-left space-y-3">
+                <span className="block font-bold text-red-400 uppercase border-b border-red-500/20 pb-2">⚠️ System Restore</span>
+                <p className="text-[10px] text-zinc-400">Reset all database configuration values (tracks, FAQs, milestones, sponsors, crew) back to system source defaults.</p>
+                <button
+                  onClick={() => {
+                    if (window.confirm('Reset all website configuration parameters back to code defaults? This will overwrite your custom modifications.')) {
+                      playSound('error', isMuted, volume)
+                      localStorage.removeItem('Tachyon_tracks')
+                      localStorage.removeItem('Tachyon_faqs')
+                      localStorage.removeItem('Tachyon_timeline')
+                      localStorage.removeItem('Tachyon_organizers')
+                      localStorage.removeItem('Tachyon_sponsors')
+                      alert('Local configuration cache flushed! Please reload the page to apply defaults.')
+                      window.location.reload()
+                    }
+                  }}
+                  className="bg-red-500/20 hover:bg-red-500/35 text-red-400 border border-red-500/35 px-4.5 py-2 font-bold uppercase rounded-full active:scale-95 transition-all cursor-pointer text-xs"
+                >
+                  RESTORE FACTORY DEFAULTS
+                </button>
               </div>
             </div>
           )}

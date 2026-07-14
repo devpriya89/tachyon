@@ -193,7 +193,7 @@ export function App() {
     return [
       {
         question: 'Who is eligible to participate?',
-        answer: 'Any student or individual under the age of 18 (born after August 2008) is welcome to register! Whether you are a builder, hacker, or designer, Tachyon is open to you.'
+        answer: 'Any student, professional, or builder is welcome to register! Whether you are a developer, hacker, designer, or creator, Tachyon is completely open to all age groups and skill levels.'
       },
       {
         question: 'Is it a team or solo event?',
@@ -445,9 +445,25 @@ export function App() {
     return localStorage.getItem('Tachyon_venue_location') || 'New Delhi Central, Delhi, India'
   })
 
+  const [githubLink, setGithubLink] = useState(() => {
+    return localStorage.getItem('Tachyon_github_link') || 'https://github.com/tachyon-delhi'
+  })
+
+  const [websiteLink, setWebsiteLink] = useState(() => {
+    return localStorage.getItem('Tachyon_website_link') || 'https://www.tachyonindia.org/'
+  })
+
   useEffect(() => {
     localStorage.setItem('Tachyon_venue_location', venueLocation)
   }, [venueLocation])
+
+  useEffect(() => {
+    localStorage.setItem('Tachyon_github_link', githubLink)
+  }, [githubLink])
+
+  useEffect(() => {
+    localStorage.setItem('Tachyon_website_link', websiteLink)
+  }, [websiteLink])
 
   // Detect environment specs on load
   useEffect(() => {
@@ -558,27 +574,40 @@ export function App() {
       setSiteTheme(savedTheme)
       setTicketColorTheme(savedTheme)
     }
+
+    // Auto-migrate eligibility FAQ answer if cached with old under-18 info
+    setFaqList(prev => {
+      return prev.map(faq => {
+        if (faq.question === 'Who is eligible to participate?' && faq.answer.includes('under the age of 18')) {
+          return {
+            ...faq,
+            answer: 'Any student, professional, or builder is welcome to register! Whether you are a developer, hacker, designer, or creator, Tachyon is completely open to all age groups and skill levels.'
+          }
+        }
+        return faq
+      })
+    })
   }, [])
 
   // Sync admin state overrides
   useEffect(() => {
-    localStorage.setItem('tachyon_countdown_date', countdownDate)
+    localStorage.setItem('Tachyon_countdown_date', countdownDate)
   }, [countdownDate])
 
   useEffect(() => {
-    localStorage.setItem('tachyon_timeline', JSON.stringify(timelineNodes))
+    localStorage.setItem('Tachyon_timeline', JSON.stringify(timelineNodes))
   }, [timelineNodes])
 
   useEffect(() => {
-    localStorage.setItem('tachyon_team_listings', JSON.stringify(teamListings))
+    localStorage.setItem('Tachyon_team_listings', JSON.stringify(teamListings))
   }, [teamListings])
 
   useEffect(() => {
-    localStorage.setItem('tachyon_organizers', JSON.stringify(organizers))
+    localStorage.setItem('Tachyon_organizers', JSON.stringify(organizers))
   }, [organizers])
 
   useEffect(() => {
-    localStorage.setItem('tachyon_sponsors', JSON.stringify(sponsors))
+    localStorage.setItem('Tachyon_sponsors', JSON.stringify(sponsors))
   }, [sponsors])
 
   useEffect(() => {
@@ -609,7 +638,7 @@ export function App() {
     Object.entries(themeColors).forEach(([variable, value]) => {
       document.documentElement.style.setProperty(variable, value)
     })
-    localStorage.setItem('tachyon_custom_colors', JSON.stringify(themeColors))
+    localStorage.setItem('Tachyon_custom_colors', JSON.stringify(themeColors))
   }, [themeColors])
 
   // Countdown timer logic targeting countdownDate
@@ -1060,6 +1089,8 @@ export function App() {
           user={user}
           setIsAuthModalOpen={setIsUserAuthModalOpen}
           handleLogout={handleLogout}
+          openAdminPanel={handleOpenAdminSecurely}
+          isAdmin={user && adminEmails.map(e => e.toLowerCase()).includes(user.email.toLowerCase())}
         />
 
         {/* Hero Section */}
@@ -1071,6 +1102,8 @@ export function App() {
           ticketData={ticketData}
           setIsRegisterModalOpen={handleOpenRegisterModalSecurely}
           whatsappLink={whatsappLink}
+          isAdmin={user && adminEmails.map(e => e.toLowerCase()).includes(user.email.toLowerCase())}
+          openAdminPanel={handleOpenAdminSecurely}
         />
 
         {/* Marquee Tape */}
@@ -1080,7 +1113,7 @@ export function App() {
             <span>·</span>
             <span>DELHI SATELLITE HACKATHON</span>
             <span>·</span>
-            <span>UNDER-18 BUILDERS</span>
+            <span>ALL BUILDERS WELCOME</span>
             <span>·</span>
             <span>PRECISION OVER HYPE</span>
             <span>·</span>
@@ -1090,7 +1123,7 @@ export function App() {
             <span>·</span>
             <span>DELHI SATELLITE HACKATHON</span>
             <span>·</span>
-            <span>UNDER-18 BUILDERS</span>
+            <span>ALL BUILDERS WELCOME</span>
             <span>·</span>
             <span>PRECISION OVER HYPE</span>
             <span>·</span>
@@ -1156,6 +1189,7 @@ export function App() {
           openAdminPanel={handleOpenAdminSecurely}
           instagramLink={instagramLink}
           twitterLink={twitterLink}
+          githubLink={githubLink}
         />
 
         {/* Registration multi-step Modal wizard */}
@@ -1209,6 +1243,10 @@ export function App() {
             setGoogleClientId={setGoogleClientId}
             venueLocation={venueLocation}
             setVenueLocation={setVenueLocation}
+            githubLink={githubLink}
+            setGithubLink={setGithubLink}
+            websiteLink={websiteLink}
+            setWebsiteLink={setWebsiteLink}
           />
         )}
 

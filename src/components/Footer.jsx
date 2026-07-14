@@ -2,7 +2,7 @@ import React from 'react'
 import { Github, Mail, Instagram, Twitter } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
-export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLink, twitterLink }) {
+export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLink, twitterLink, githubLink }) {
 
   // Custom synth triggers for footer Launchpad audio pads
   const pianoKeys = [
@@ -79,7 +79,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLi
           {/* Social links row */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-zinc-400 font-bold">
             <a
-              href="https://github.com/Tachyon"
+              href={githubLink || 'https://github.com/Tachyon'}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playSound('click', isMuted, volume)}
@@ -137,7 +137,7 @@ export function Footer({ siteTheme, isMuted, volume, openAdminPanel, instagramLi
 
       {/* Bottom row */}
       <div className="max-w-7xl mx-auto flex justify-between items-center pt-6 text-zinc-600 font-bold">
-        <span>ZERO-FLUFF PROTOCOL // BUILT BY BUILDERS UNDER 18</span>
+        <span>ZERO-FLUFF PROTOCOL // OPEN FOR ALL BUILDERS</span>
         <span className="hidden md:inline">48.8566°N, 2.3522°E — SIGNAL:ACTIVE</span>
       </div>
 

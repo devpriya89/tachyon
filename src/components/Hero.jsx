@@ -2,7 +2,7 @@ import React from 'react'
 import { ArrowRight, ExternalLink, Clock } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
-export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRegisterModalOpen, whatsappLink }) {
+export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRegisterModalOpen, whatsappLink, isAdmin, openAdminPanel }) {
 
   return (
     <section
@@ -25,7 +25,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
         {/* Protocol Label */}
         <div className="inline-flex items-center gap-3 text-[#6db349] bg-[#6db349]/10 px-4 py-1.5 rounded-full mb-8 select-none text-[10px] md:text-xs uppercase tracking-widest font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6db349] animate-ping"></span>
-          <span>Protocol: Active // Delhi // Under-18 // 2026</span>
+          <span>Protocol: Active // Delhi // Open-to-All // 2026</span>
         </div>
 
         {/* Title with Gradient */}
@@ -36,7 +36,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
         </div>
 
         <p className="mt-2 text-sm md:text-base max-w-2xl text-zinc-400 leading-relaxed select-none mb-10">
-          A high-performance innovation-driven hackathon for builders under 18 in Delhi. Secure your pass, select your track, and start building.
+          A high-performance innovation-driven hackathon for builders in Delhi. Secure your pass, select your track, and start building.
         </p>
 
         {/* CTAs */}
@@ -44,11 +44,15 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
           <button
             onClick={() => {
               playSound('click', isMuted, volume)
-              setIsRegisterModalOpen(true)
+              if (isAdmin) {
+                openAdminPanel()
+              } else {
+                setIsRegisterModalOpen(true)
+              }
             }}
             className="group flex items-center justify-center gap-2 bg-[#6db349] hover:bg-[#6db349]/90 text-black font-bold text-sm px-8 py-3.5 rounded-full active:scale-95 cursor-pointer transition-all uppercase tracking-wider shadow-[0_0_20px_rgba(109,179,73,0.35)] hover:shadow-[0_0_30px_rgba(109,179,73,0.6)] duration-300 border-0"
           >
-            {ticketData ? 'Access Your Pass' : 'Initialize Registry'}
+            {isAdmin ? 'Open Admin Panel' : (ticketData ? 'Access Your Pass' : 'Initialize Registry')}
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </button>
           
