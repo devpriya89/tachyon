@@ -6,9 +6,9 @@ export function Logo({ theme = 'takumi' }) {
       {/* Main logo block — brutalist flat */}
       <div className="relative border border-white/10 bg-transparent p-[2px] flex items-center justify-center w-8 h-8">
         <div 
-          className="w-full h-full flex items-center justify-center font-bold text-xs text-[#F8F7F4] select-none font-sans"
+          className="w-full h-full flex items-center justify-center font-extrabold text-sm text-[#F8F7F4] select-none font-mono"
         >
-          創
+          T
         </div>
       </div>
     </div>

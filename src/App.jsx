@@ -244,6 +244,7 @@ export function App() {
   })
 
   // Lifted Administrative States
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
   const [isAdminOpen, setIsAdminOpen] = useState(false)
   const [countdownDate, setCountdownDate] = useState(() => {
     return localStorage.getItem('Tachyon_countdown_date') || '2026-07-24T00:00:00+05:30'
@@ -621,6 +622,32 @@ export function App() {
           localStorage.setItem('Tachyon_team_listings', JSON.stringify(listingsArray))
         }
       }
+
+      // Fetch Organizers from Sheet
+      const orgsRes = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'getOrganizers' })
+      })
+      const orgsData = await orgsRes.json()
+      if (orgsData.status === 'success' && orgsData.organizers && orgsData.organizers.length > 0) {
+        setOrganizers(orgsData.organizers)
+        localStorage.setItem('Tachyon_organizers', JSON.stringify(orgsData.organizers))
+      }
+
+      // Fetch Sponsors from Sheet
+      const spsRes = await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'getSponsors' })
+      })
+      const spsData = await spsRes.json()
+      if (spsData.status === 'success' && spsData.sponsors) {
+        setSponsors(spsData.sponsors)
+        localStorage.setItem('Tachyon_sponsors', JSON.stringify(spsData.sponsors))
+      }
     } catch (e) {
       console.error('Failed to sync global settings on load:', e)
     }
@@ -629,15 +656,19 @@ export function App() {
   const saveGlobalSettingToSheet = async (key, value) => {
     try {
       const webhookUrl = localStorage.getItem('Tachyon_google_sheet_url') || 'https://script.google.com/macros/s/AKfycby40ehtUvqJPfnMCovD0XohcTSb5kaMcAqEsLwvvdzJvvhqazLJSkrZOn_pxgpepPLf/exec'
+      
+      let payload = { action: 'saveSettings', key, value }
+      if (key === 'organizers') {
+        payload = { action: 'saveOrganizers', organizers: value }
+      } else if (key === 'sponsors') {
+        payload = { action: 'saveSponsors', sponsors: value }
+      }
+
       await fetch(webhookUrl, {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          action: 'saveSettings',
-          key,
-          value
-        })
+        body: JSON.stringify(payload)
       })
     } catch (e) {
       console.error(`Failed to save global setting [${key}] to Sheet:`, e)
@@ -1069,7 +1100,7 @@ export function App() {
 
             {/* Kanji Branding */}
             <div className="text-center select-none pt-4 flex flex-col items-center">
-              <span className="font-syne font-black text-white/[0.02] text-[80px] leading-none select-none block">創</span>
+              <span className="font-syne font-black text-white/[0.02] text-[80px] leading-none select-none block">T</span>
               
               {/* ASCII Logo Banner */}
               <pre className="text-[7px] leading-none text-[#10b981] font-mono select-none my-2 font-bold max-w-full overflow-hidden text-center block">
@@ -1142,7 +1173,7 @@ export function App() {
       {crtPower === 'STANDBY' && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0A0A08] z-[9999] select-none">
           <div className="text-center max-w-sm space-y-8">
-            <div className="font-syne font-bold text-white/[0.03] text-[120px] select-none pointer-events-none">創</div>
+            <div className="font-syne font-bold text-white/[0.03] text-[120px] select-none pointer-events-none">T</div>
             <span className="block font-mono text-[10px] tracking-[0.3em] text-white/20 uppercase">
               SYSTEM STANDBY
             </span>
@@ -1179,12 +1210,15 @@ export function App() {
           user={user}
           setIsAuthModalOpen={setIsUserAuthModalOpen}
           handleLogout={handleLogout}
-          openAdminPanel={handleOpenAdminSecurely}
+           openAdminPanel={handleOpenAdminSecurely}
           isAdmin={user && adminEmails.map(e => e.toLowerCase()).includes(user.email.toLowerCase())}
+          isSidebarCollapsed={isSidebarCollapsed}
+          setIsSidebarCollapsed={setIsSidebarCollapsed}
         />
 
-        {/* Hero Section */}
-        <Hero
+        <div className={`flex-1 ${isSidebarCollapsed ? 'lg:pl-28' : 'lg:pl-76'} flex flex-col min-h-0 transition-all duration-300 ease-in-out`}>
+          {/* Hero Section */}
+          <Hero
           timeLeft={timeLeft}
           siteTheme={siteTheme}
           isMuted={isMuted}
@@ -1281,6 +1315,7 @@ export function App() {
           twitterLink={twitterLink}
           githubLink={githubLink}
         />
+        </div>
 
         {/* Registration multi-step Modal wizard */}
         {isRegisterModalOpen && (

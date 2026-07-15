@@ -16,9 +16,7 @@ export function Hero({ timeLeft, siteTheme, isMuted, volume, ticketData, setIsRe
       <div className="absolute top-6 right-6 text-[9px] text-zinc-600 tracking-widest z-20 select-none uppercase font-semibold">
         28°38′N 77°13′E
       </div>
-      <div className="absolute font-extrabold text-zinc-950/20 select-none pointer-events-none z-0 text-[180px] sm:text-[25vw] md:text-[300px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        創
-      </div>
+
 
       <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center text-center">
         

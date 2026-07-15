@@ -49,6 +49,12 @@ function initializeAndVerifyDatabase() {
     "Settings": [
       "KEY", "VALUE"
     ],
+    "Organizers": [
+      "Name", "Role", "Image URL", "Social Link", "Timestamp"
+    ],
+    "Sponsors": [
+      "Name", "Logo URL", "Website", "Tier", "Timestamp"
+    ],
     "System_Logs": [
       "Log ID", "Timestamp", "Action Type", "Status", "Details", "Payload Summary"
     ]
@@ -125,6 +131,22 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
     
+    // Helper to get or create sheet (available inside doPost scope)
+    function getOrCreateSheet(name, defaultHeaders) {
+      var sheet = ss.getSheetByName(name);
+      if (!sheet) {
+        sheet = ss.insertSheet(name);
+        sheet.appendRow(defaultHeaders);
+        sheet.getRange(1, 1, 1, defaultHeaders.length)
+             .setFontWeight("bold")
+             .setBackground("#222222")
+             .setFontColor("#ffffff")
+             .setHorizontalAlignment("center");
+        sheet.setFrozenRows(1);
+      }
+      return sheet;
+    }
+
     const regSheet = ss.getSheetByName("Registrations");
     const authSheet = ss.getSheetByName("Email_Password");
     const matchSheet = ss.getSheetByName("Matchmaking");
@@ -390,7 +412,117 @@ function doPost(e) {
     }
 
     // =================================================================================
-    // ROUTE 10: SCORE (UPDATE INDIVIDUAL ARCADE HIGHSCORES)
+    // ROUTE 10A: SAVE ORGANIZERS (WRITE CREW LIST TO DEDICATED SHEET)
+    // =================================================================================
+    else if (action === "saveOrganizers") {
+      const organizers = data.organizers;
+      if (!organizers || !Array.isArray(organizers)) {
+        logTransaction("saveOrganizers", "ERROR", "Invalid organizers payload", data);
+        return createResponse({ status: "error", message: "Organizers array is required." });
+      }
+
+      const orgSheet = getOrCreateSheet("Organizers", ["Name", "Role", "Image URL", "Social Link", "Timestamp"]);
+      
+      // Clear existing data (keep headers)
+      if (orgSheet.getLastRow() > 1) {
+        orgSheet.getRange(2, 1, orgSheet.getLastRow() - 1, orgSheet.getLastColumn()).clearContent();
+      }
+      
+      // Write all organizers
+      for (let i = 0; i < organizers.length; i++) {
+        const org = organizers[i];
+        orgSheet.appendRow([
+          org.name || "",
+          org.role || "",
+          org.image || "",
+          org.social || org.link || "",
+          new Date().toLocaleString()
+        ]);
+      }
+      
+      logTransaction("saveOrganizers", "SUCCESS", "Saved " + organizers.length + " organizers to sheet", null);
+      return createResponse({ status: "success", message: "Organizers saved globally." });
+    }
+
+    // =================================================================================
+    // ROUTE 10B: GET ORGANIZERS (RETRIEVE CREW LIST FROM DEDICATED SHEET)
+    // =================================================================================
+    else if (action === "getOrganizers") {
+      const orgSheet = getOrCreateSheet("Organizers", ["Name", "Role", "Image URL", "Social Link", "Timestamp"]);
+      const rows = orgSheet.getDataRange().getValues();
+      const organizers = [];
+      
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString().trim() !== "") {
+          organizers.push({
+            name: rows[i][0],
+            role: rows[i][1],
+            image: rows[i][2],
+            social: rows[i][3]
+          });
+        }
+      }
+      return createResponse({ status: "success", organizers: organizers });
+    }
+
+    // =================================================================================
+    // ROUTE 10C: SAVE SPONSORS (WRITE SPONSOR LIST TO DEDICATED SHEET)
+    // =================================================================================
+    else if (action === "saveSponsors") {
+      const sponsors = data.sponsors;
+      if (!sponsors || !Array.isArray(sponsors)) {
+        logTransaction("saveSponsors", "ERROR", "Invalid sponsors payload", data);
+        return createResponse({ status: "error", message: "Sponsors array is required." });
+      }
+
+      const spSheet = getOrCreateSheet("Sponsors", ["Name", "Logo URL", "Website", "Tier", "Timestamp"]);
+      
+      // Clear existing data (keep headers)
+      if (spSheet.getLastRow() > 1) {
+        spSheet.getRange(2, 1, spSheet.getLastRow() - 1, spSheet.getLastColumn()).clearContent();
+      }
+      
+      // Write all sponsors
+      for (let i = 0; i < sponsors.length; i++) {
+        const sp = sponsors[i];
+        spSheet.appendRow([
+          sp.name || "",
+          sp.logo || sp.image || "",
+          sp.website || sp.link || "",
+          sp.tier || "standard",
+          new Date().toLocaleString()
+        ]);
+      }
+      
+      logTransaction("saveSponsors", "SUCCESS", "Saved " + sponsors.length + " sponsors to sheet", null);
+      return createResponse({ status: "success", message: "Sponsors saved globally." });
+    }
+
+    // =================================================================================
+    // ROUTE 10D: GET SPONSORS (RETRIEVE SPONSOR LIST FROM DEDICATED SHEET)
+    // =================================================================================
+    else if (action === "getSponsors") {
+      const spSheet = getOrCreateSheet("Sponsors", ["Name", "Logo URL", "Website", "Tier", "Timestamp"]);
+      const rows = spSheet.getDataRange().getValues();
+      const sponsors = [];
+      
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0].toString().trim() !== "") {
+          sponsors.push({
+            name: rows[i][0],
+            logo: rows[i][1],
+            image: rows[i][1],
+            website: rows[i][2],
+            link: rows[i][2],
+            tier: rows[i][3]
+          });
+        }
+      }
+      return createResponse({ status: "success", sponsors: sponsors });
+    }
+
+    // =================================================================================
+    // ROUTE 11: SCORE (UPDATE INDIVIDUAL ARCADE HIGHSCORES)
     // =================================================================================
     else if (action === "score") {
       const ticketId = (data.ticketId || "").toString().trim();
