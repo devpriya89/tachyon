@@ -100,15 +100,15 @@ export function Header({
             setActiveSection('overview')
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className={`flex items-center cursor-pointer group shrink-0 lg:mb-2 w-full justify-center ${
-            isSidebarCollapsed ? 'gap-0 lg:px-0' : 'gap-3 lg:px-4'
-          }`}
+          className={`flex items-center cursor-pointer group shrink-0 lg:mb-2 lg:w-full lg:justify-center ${
+            isSidebarCollapsed ? 'lg:gap-0 lg:px-0' : 'lg:gap-3 lg:px-4'
+          } gap-3`}
         >
           <div className="flex items-center justify-center shrink-0">
             <Logo theme={siteTheme} />
           </div>
           <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap flex flex-col text-left ${
-            isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-36 opacity-100 max-w-[150px]'
+            isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-36 lg:opacity-100 lg:max-w-[150px]'
           }`}>
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-xs tracking-wider uppercase text-white group-hover:text-[#6db349] transition-colors duration-300">
@@ -150,14 +150,14 @@ export function Header({
                   isActive
                     ? 'text-[#6db349] border-l-[#6db349] border-r-transparent bg-[#6db349]/5'
                     : 'text-zinc-400 border-l-transparent border-r-transparent hover:text-white hover:bg-white/[0.02]'
-                } ${isSidebarCollapsed ? 'justify-center px-0' : 'px-5'}`}
+                } ${isSidebarCollapsed ? 'lg:justify-center lg:px-0' : 'lg:px-5'} justify-start px-0`}
                 title={labelMap[section]}
               >
                 <div className="flex items-center justify-center w-full lg:w-auto">
                   <IconComponent className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isActive ? 'text-[#6db349]' : 'text-zinc-400'} ${isHovered ? 'scale-110' : ''}`} />
                   <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap flex items-center gap-1 ${
-                    isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-48 opacity-100 max-w-[200px] pl-3'
-                  }`}>
+                    isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-48 lg:opacity-100 lg:max-w-[200px] lg:pl-3'
+                  } pl-0`}>
                     {labelMap[section]}
                     {isHovered && (
                       <span className="animate-ping ml-1 text-[#6db349] font-bold">_</span>
@@ -190,7 +190,7 @@ export function Header({
         {/* Auth & CTAs — desktop bottom / mobile right */}
         <div className={`flex lg:flex-col items-center lg:items-center gap-4 shrink-0 lg:mt-auto w-auto lg:w-full ${
           isSidebarCollapsed ? 'lg:px-2' : 'lg:px-4'
-        } transition-all duration-300`}>
+        } px-0 transition-all duration-300`}>
           {user ? (
             <div className={`flex lg:flex-col items-center gap-3 border-r lg:border-r-0 lg:border-b border-zinc-800/80 pr-4 lg:pr-0 lg:pb-4 w-full justify-center ${
               isSidebarCollapsed ? 'lg:items-center' : 'lg:items-start'
@@ -208,8 +208,8 @@ export function Header({
                   </div>
                 )}
                 <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap flex flex-col text-left ${
-                  isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-36 opacity-100 max-w-[150px] pl-3'
-                }`}>
+                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-36 lg:opacity-100 lg:max-w-[150px] lg:pl-3'
+                } pl-3`}>
                   <span className="text-[9px] font-semibold text-zinc-300 tracking-wider truncate">
                     {user.name ? user.name.split(' ')[0] : 'Builder'}
                   </span>
@@ -220,12 +220,12 @@ export function Header({
               </div>
               <button
                 onClick={handleLogout}
-                className="text-[8px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none font-bold lg:mt-1 flex items-center gap-1.5 justify-center w-full"
+                className="text-[8px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none font-bold lg:mt-1 flex items-center gap-1.5 justify-center lg:w-full"
                 title="Logout Account"
               >
                 <LogOut className="w-3.5 h-3.5 lg:w-3 lg:h-3 shrink-0" />
                 <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
-                  isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-auto opacity-100'
+                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
                 }`}>
                   Logout
                 </span>
@@ -237,14 +237,14 @@ export function Header({
                 playSound('click', isMuted, volume)
                 setIsAuthModalOpen(true)
               }}
-              className={`text-[10px] uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-lg cursor-pointer transition-all duration-300 hover:bg-white/5 font-semibold shrink-0 flex items-center justify-center ${
-                isSidebarCollapsed ? 'gap-0 w-10 h-10 p-0' : 'gap-2 w-full py-2.5 px-4'
-              }`}
+              className={`text-[10px] uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 hover:bg-white/5 font-semibold shrink-0 flex items-center justify-center px-4 py-1.5 lg:px-0 lg:py-0 ${
+                isSidebarCollapsed ? 'lg:gap-0 lg:w-10 lg:h-10 lg:p-0' : 'lg:gap-2 lg:w-full lg:py-2.5 lg:px-4'
+              } gap-2`}
               title="Sign In"
             >
               <LogIn className="w-4 h-4 shrink-0" />
               <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
-                isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-auto opacity-100'
+                isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
               }`}>
                 Sign In
               </span>
@@ -260,16 +260,16 @@ export function Header({
                 setIsRegisterModalOpen(true)
               }
             }}
-            className={`text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black rounded-lg cursor-pointer transition-all duration-300 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)] flex items-center justify-center ${
-              isSidebarCollapsed ? 'gap-0 w-10 h-10 p-0' : 'gap-2 w-full py-2.5 px-4'
-            }`}
+            className={`text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)] flex items-center justify-center px-5 py-1.5 lg:px-0 lg:py-0 ${
+              isSidebarCollapsed ? 'lg:gap-0 lg:w-10 lg:h-10 lg:p-0' : 'lg:gap-2 lg:w-full lg:py-2.5 lg:px-4'
+            } gap-2`}
             title={isAdmin ? 'Admin Panel' : (ticketData ? 'Access Pass' : 'Register')}
           >
             {isAdmin ? (
               <>
                 <ShieldAlert className="w-4 h-4 shrink-0" />
                 <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
-                  isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-auto opacity-100'
+                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
                 }`}>
                   Admin Panel
                 </span>
@@ -278,7 +278,7 @@ export function Header({
               <>
                 <Ticket className="w-4 h-4 shrink-0" />
                 <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
-                  isSidebarCollapsed ? 'w-0 opacity-0 max-w-0' : 'w-auto opacity-100'
+                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
                 }`}>
                   {ticketData ? 'Access Pass' : 'Register'}
                 </span>
