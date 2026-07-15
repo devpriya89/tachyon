@@ -1,11 +1,43 @@
 import React, { useState } from 'react'
-import { Cpu, Shield, Gamepad, Globe, Code, Download, CheckSquare, Square } from 'lucide-react'
+import { Cpu, Shield, Gamepad, Globe, Code, Download, Sparkles, CheckSquare, Square } from 'lucide-react'
 import { playSound } from '../utils/audio'
 
-export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksList = [] }) {
+export function TracksSection({ siteTheme: _siteTheme, isMuted, volume }) {
   const [selectedTrackTab, setSelectedTrackTab] = useState('ALL')
   const [cardName, setCardName] = useState('')
   const [selectedTechs, setSelectedTechs] = useState([])
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    e.currentTarget.style.setProperty('--mouse-x', `${x}px`)
+    e.currentTarget.style.setProperty('--mouse-y', `${y}px`)
+  }
+
+  const [previewTilt, setPreviewTilt] = useState({ transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)', glareX: 0, glareY: 0 })
+  const handlePreviewMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left - rect.width / 2
+    const y = e.clientY - rect.top - rect.height / 2
+    const degX = -(y / (rect.height / 2)) * 12
+    const degY = (x / (rect.width / 2)) * 12
+    const glareX = (x / (rect.width / 2)) * 40
+    const glareY = (y / (rect.height / 2)) * 40
+    setPreviewTilt({
+      transform: `perspective(1000px) rotateX(${degX}deg) rotateY(${degY}deg)`,
+      glareX,
+      glareY,
+      transition: 'transform 0.05s ease-out'
+    })
+  }
+  const handlePreviewMouseLeave = () => {
+    setPreviewTilt({
+      transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
+      glareX: 0,
+      glareY: 0,
+      transition: 'transform 0.35s ease-out'
+    })
+  }
 
   // Interactive Project Blueprint States
   const [blueprintChecklist, setBlueprintChecklist] = useState({
@@ -15,13 +47,153 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
     web: { offline: false, peer: false, sync: false, logger: false }
   })
 
-  // Derive TRACKS_DATA from the dynamic tracksList props
   const TRACKS_DATA = {
-    ALL: tracksList,
-    AI: tracksList.filter(t => t.id === 'ai'),
-    CYBER: tracksList.filter(t => t.id === 'cyber'),
-    GAME: tracksList.filter(t => t.id === 'game'),
-    WEB: tracksList.filter(t => t.id === 'web')
+    ALL: [
+      {
+        id: 'ai',
+        icon: Cpu,
+        title: 'AI & Intelligent Agents',
+        tagLine: 'BUILD AUTONOMOUS ENTITIES AND SMART WORKFLOWS',
+        prize: '50,000 INR Pool',
+        details: 'Create intelligent systems that go beyond simple chat interfaces. Build autonomous agents, LLM-powered tools, code generation scrapers, or sensory processing apps.',
+        ideas: [
+          'An AI agent that crawls GitHub repos, reads code, and opens PRs with unit test fixes.',
+          'A local-first browser extension that synthesizes research papers as you read.',
+          'An autonomous developer assistant that learns your keyboard shortcuts.'
+        ]
+      },
+      {
+        id: 'cyber',
+        icon: Shield,
+        title: 'Cybersecurity & Exploits',
+        tagLine: 'OFFENSIVE SCRIPTS, DEFENSIVE SHIELDS, AND CTF TECH',
+        prize: '40,000 INR Pool',
+        details: 'Push the limits of digital systems. Build penetration testing automation, network analysis tools, cryptography visualizers, or custom system monitors.',
+        ideas: [
+          'A web-based visual network package mapper parsing Wireshark logs in real-time.',
+          'A local open-port mapping tool equipped with clean diagnostic logs dashboard.',
+          'An educational CTF platform modeling real hardware-level stack overflows.'
+        ]
+      },
+      {
+        id: 'game',
+        icon: Gamepad,
+        title: 'Retro & Immersive Game Dev',
+        tagLine: 'ENGINES, KEYBOARD ARCADES, AND HARDWARE INTERFACES',
+        prize: '30,000 INR Pool',
+        details: 'Craft retro arcade games, physics sandbox simulations, or multiplayer keyboard arenas. Challenge standard engine frameworks and prioritize pure gameplay.',
+        ideas: [
+          'A local co-op arcade game with responsive custom keyboard mapping controls.',
+          'A low-level retro canvas game engine written entirely in pure TypeScript.',
+          'A space physics simulator charting real-time gravitational node pulls.'
+        ]
+      },
+      {
+        id: 'web',
+        icon: Globe,
+        title: 'Web & Forked Platforms',
+        tagLine: 'OFFLINE-FIRST WEBS, LOCAL P2PS, AND SERVERLESS LOGS',
+        prize: '30,000 INR Pool',
+        details: 'Construct WebRTC P2P networks, decentralized chat systems, offline-first client tools, or high-performance browser databases.',
+        ideas: [
+          'A secure peer-to-peer browser chat platform functioning entirely client-side.',
+          'A reactive offline-first builder tool featuring automatic local storage syncing.',
+          'A dashboard widget monitoring system clock anomalies across multiple nodes.'
+        ]
+      }
+    ],
+    AI: [
+      {
+        id: 'ai',
+        icon: Cpu,
+        title: 'AI & Intelligent Agents',
+        tagLine: 'BUILD AUTONOMOUS ENTITIES AND SMART WORKFLOWS',
+        prize: '50,000 INR Pool',
+        details: 'Create intelligent systems that go beyond simple chat interfaces. Build autonomous agents, LLM-powered tools, code generation scrapers, or sensory processing apps.',
+        ideas: [
+          'An AI agent that crawls GitHub repos, reads code, and opens PRs with unit test fixes.',
+          'A local-first browser extension that synthesizes research papers as you read.',
+          'An autonomous developer assistant that learns your keyboard shortcuts.'
+        ],
+        techs: ['Python', 'HuggingFace', 'PyTorch', 'LangChain', 'OpenAI API', 'VectorDBs'],
+        criteria: 'Autonomy, latency optimization, safety bounds, and practical API orchestration.',
+        blueprintSpecs: {
+          memory: 'Context memory buffer state',
+          tools: 'Autonomous tools executor agent',
+          fallback: 'Offline local-first processing',
+          ui: 'Diagnostic telemetry dashboard'
+        }
+      }
+    ],
+    CYBER: [
+      {
+        id: 'cyber',
+        icon: Shield,
+        title: 'Cybersecurity & Exploits',
+        tagLine: 'OFFENSIVE SCRIPTS, DEFENSIVE SHIELDS, AND CTF TECH',
+        prize: '40,000 INR Pool',
+        details: 'Push the limits of digital systems. Build penetration testing automation, network analysis tools, cryptography visualizers, or custom system monitors.',
+        ideas: [
+          'A web-based visual network package mapper parsing Wireshark logs in real-time.',
+          'A local open-port mapping tool equipped with clean diagnostic logs dashboard.',
+          'An educational CTF platform modeling real hardware-level stack overflows.'
+        ],
+        techs: ['Rust', 'Go', 'Python', 'Wireshark API', 'Scapy', 'CTF Cryptography'],
+        criteria: 'Exploit accuracy, security defense resilience, log visual diagnostics, and script speed.',
+        blueprintSpecs: {
+          interceptor: 'Network packets logs collector',
+          scanner: 'Diagnostic port mapper engine',
+          payload: 'Custom hex-payload compiler',
+          ui: 'Security telemetry board'
+        }
+      }
+    ],
+    GAME: [
+      {
+        id: 'game',
+        icon: Gamepad,
+        title: 'Retro & Immersive Game Dev',
+        tagLine: 'ENGINES, KEYBOARD ARCADES, AND HARDWARE INTERFACES',
+        prize: '30,000 INR Pool',
+        details: 'Craft retro arcade games, physics sandbox simulations, or multiplayer keyboard arenas. Challenge standard engine frameworks and prioritize pure gameplay.',
+        ideas: [
+          'A local co-op arcade game with responsive custom keyboard mapping controls.',
+          'A low-level retro canvas game engine written entirely in pure TypeScript.',
+          'A space physics simulator charting real-time gravitational node pulls.'
+        ],
+        techs: ['Phaser.js', 'Godot Engine', 'TypeScript', 'Aseprite Pixel Art', 'Chiptune Synthesizer'],
+        criteria: 'Input response speed, physics consistency, retro art design, and pure gameplay fun factor.',
+        blueprintSpecs: {
+          controller: 'Custom keyboard mapper controls',
+          particles: 'Pixel particle emitter sandbox',
+          score: 'High-score local storage registry',
+          soundtrack: 'Built-in synth chiptune driver'
+        }
+      }
+    ],
+    WEB: [
+      {
+        id: 'web',
+        icon: Globe,
+        title: 'Web & Forked Platforms',
+        tagLine: 'OFFLINE-FIRST WEBS, LOCAL P2PS, AND SERVERLESS LOGS',
+        prize: '30,000 INR Pool',
+        details: 'Construct WebRTC P2P networks, decentralized chat systems, offline-first client tools, or high-performance browser databases.',
+        ideas: [
+          'A secure peer-to-peer browser chat platform functioning entirely client-side.',
+          'A reactive offline-first builder tool featuring automatic local storage syncing.',
+          'A dashboard widget monitoring system clock anomalies across multiple nodes.'
+        ],
+        techs: ['WebRTC', 'IndexedDB', 'SQLite WASM', 'Next.js', 'WebSockets', 'Service Workers'],
+        criteria: 'Offline resilience, peer signalling stability, speed indexing metrics, and sync reliability.',
+        blueprintSpecs: {
+          offline: 'Service Workers local cache core',
+          peer: 'P2P WebRTC signalling gateway',
+          sync: 'Automatic local-to-sheets database sync',
+          logger: 'Fader volume/system state logger'
+        }
+      }
+    ]
   }
 
   const TECH_STACK_OPTIONS = [
@@ -49,6 +221,7 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
     }))
   }
 
+  // Export card profile badge canvas drawing
   const handleExportTechCard = () => {
     playSound('success', isMuted, volume)
     
@@ -57,38 +230,54 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
     canvas.height = 250
     const ctx = canvas.getContext('2d')
 
-    // Background color: NIDAR dark black
-    ctx.fillStyle = '#1e1a1b'
+    // Deep space-dark base
+    ctx.fillStyle = '#030712'
     ctx.fillRect(0, 0, 400, 250)
 
-    // Border: NIDAR brand green
-    ctx.strokeStyle = 'rgba(109, 179, 73, 0.2)'
-    ctx.lineWidth = 1
+    // Inner fine border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'
+    ctx.lineWidth = 2
     ctx.strokeRect(8, 8, 384, 234)
 
-    // Header bar: semi-transparent green
-    ctx.fillStyle = 'rgba(109, 179, 73, 0.05)'
+    // micro dots matrix
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
+    for (let x = 20; x < 400; x += 24) {
+      for (let y = 20; y < 250; y += 24) {
+        ctx.fillRect(x, y, 1.5, 1.5)
+      }
+    }
+
+    // Header segment
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.02)'
     ctx.fillRect(10, 10, 380, 50)
-    ctx.strokeStyle = 'rgba(109, 179, 73, 0.1)'
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(10, 60)
     ctx.lineTo(390, 60)
     ctx.stroke()
 
-    ctx.font = 'bold 11px sans-serif'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText('SYS:TECH_CORE // PROFILE', 24, 28)
-    ctx.font = 'bold 8px sans-serif'
-    ctx.fillStyle = '#6db349'
-    ctx.fillText('DIAGNOSTIC STATUS // STACK_ACTIVE', 24, 42)
+    // Header branding
+    ctx.fillStyle = '#6366f1' // Indigo Glow
+    ctx.fillRect(24, 20, 10, 10)
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+    ctx.strokeRect(24, 20, 10, 10)
 
-    ctx.font = 'bold 13px sans-serif'
+    ctx.font = 'bold 11px monospace'
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText('Tachyon TECH CORE PROFILE', 44, 28)
+    ctx.font = 'bold 8.5px monospace'
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+    ctx.fillText('DIAGNOSTIC STATUS // STACK_ACTIVE', 44, 42)
+
+    // Builder Name
+    ctx.font = 'bold 13px monospace'
     ctx.fillStyle = '#ffffff'
     ctx.fillText(`BUILDER: ${cardName ? cardName.toUpperCase() : 'GUEST_HACKER'}`, 25, 95)
 
-    ctx.font = 'bold 9px sans-serif'
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+    // Selection tags
+    ctx.font = 'bold 9.5px monospace'
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
     ctx.fillText('LOADED TECHNOLOGY CORES:', 25, 128)
 
     const startX = 25
@@ -97,105 +286,66 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
     const rowHeight = 32
 
     selectedTechs.forEach((tech) => {
-      ctx.font = 'bold 9px sans-serif'
+      ctx.font = 'bold 9.5px monospace'
       const textWidth = ctx.measureText(tech).width
       const paddingX = 12
       const boxWidth = textWidth + paddingX * 2
       const boxHeight = 18
 
+      // Wrap check
       if (currentX + boxWidth > 370) {
         currentX = startX
         currentY += rowHeight
       }
 
-      ctx.fillStyle = 'rgba(109, 179, 73, 0.08)'
+      // Draw tag container
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)'
       ctx.fillRect(currentX, currentY, boxWidth, boxHeight)
-      ctx.strokeStyle = 'rgba(109, 179, 73, 0.2)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'
       ctx.lineWidth = 1
       ctx.strokeRect(currentX, currentY, boxWidth, boxHeight)
 
-      ctx.fillStyle = '#6db349'
+      // Draw text
+      ctx.fillStyle = '#38bdf8' // cyan light
       ctx.fillText(tech, currentX + paddingX, currentY + 12)
 
       currentX += boxWidth + 10
     })
 
-    ctx.font = 'bold 7px sans-serif'
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+    // Footer signature
+    ctx.font = 'bold 7.5px monospace'
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'
     ctx.fillText('VERIFICATION CODE: HL-STK-OK', 25, 222)
 
+    // Export image download trigger
     const link = document.createElement('a')
     link.download = `tech_core_${cardName ? cardName.toLowerCase() : 'builder'}.png`
     link.href = canvas.toDataURL()
     link.click()
   }
 
-  const getIcon = (id) => {
-    switch (id) {
-      case 'ai': return Cpu
-      case 'cyber': return Shield
-      case 'game': return Gamepad
-      case 'web': return Globe
-      default: return Code
-    }
-  }
-
-  const activeTracksList = TRACKS_DATA[selectedTrackTab] || []
-
-  const trackIndexMap = { ai: '01', cyber: '02', game: '03', web: '04' }
-
-  // High-fidelity dynamic colors for each track
-  const trackColors = {
-    ai: {
-      text: 'text-[#d946ef]',
-      bgLight: 'bg-[#d946ef]/5',
-      borderLight: 'border-[#d946ef]/20',
-      badge: 'border-[#d946ef]/30 text-[#d946ef]',
-      hoverBorder: 'hover:border-[#d946ef]/40'
-    },
-    cyber: {
-      text: 'text-[#10b981]',
-      bgLight: 'bg-[#10b981]/5',
-      borderLight: 'border-[#10b981]/20',
-      badge: 'border-[#10b981]/30 text-[#10b981]',
-      hoverBorder: 'hover:border-[#10b981]/40'
-    },
-    game: {
-      text: 'text-[#ff9f1c]',
-      bgLight: 'bg-[#ff9f1c]/5',
-      borderLight: 'border-[#ff9f1c]/20',
-      badge: 'border-[#ff9f1c]/30 text-[#ff9f1c]',
-      hoverBorder: 'hover:border-[#ff9f1c]/40'
-    },
-    web: {
-      text: 'text-[#06b6d4]',
-      bgLight: 'bg-[#06b6d4]/5',
-      borderLight: 'border-[#06b6d4]/20',
-      badge: 'border-[#06b6d4]/30 text-[#06b6d4]',
-      hoverBorder: 'hover:border-[#06b6d4]/40'
-    }
-  }
+  const activeTracksList = TRACKS_DATA[selectedTrackTab]
 
   return (
-    <section id="tracks" className="py-24 border-b border-zinc-800/80 bg-transparent relative max-w-[1400px] mx-auto w-full">
+    <section id="tracks" className="py-24 border-b border-white/5 bg-transparent relative max-w-[1400px] mx-auto w-full">
       <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16 select-none text-left">
           <div className="text-left">
-            <div className="text-[10px] uppercase tracking-widest text-[#6db349] font-extrabold mb-4">
-              SYS:03 — CORE CATEGORIES // TRACKS
+            <div className="inline-block border border-white/10 bg-white/5 text-zinc-300 font-mono text-[10px] font-bold uppercase px-3 py-1 shadow-md rounded-full mb-4">
+              CORE CATEGORIES // TRACKS
             </div>
-            <h2 className="text-3xl font-extrabold uppercase text-white">
-              Tracks & Prizes
+            <h2 className="text-4xl sm:text-6xl font-syne font-black uppercase tracking-tight text-white">
+              TRACKS & PRIZES
             </h2>
-            <p className="mt-3 text-sm text-zinc-400 max-w-md leading-relaxed">
+            <p className="mt-3 text-sm font-bold text-zinc-500 max-w-md font-mono leading-relaxed">
               Explore the four core engineering tracks. Match your build ideas to the correct diagnostic domain.
             </p>
           </div>
 
-          {/* Tab bar switcher - rounded pills */}
-          <div className="flex items-center gap-1 border border-zinc-800 bg-[#231f20]/60 p-1 rounded-full text-[9px] uppercase tracking-wider select-none font-semibold">
+          {/* Table Tab bar switcher */}
+          <div className="flex items-center gap-1 bg-white/5 border border-white/5 p-1 px-2.5 rounded-full font-mono text-[10.5px] uppercase font-bold select-none overflow-x-auto scrollbar-none max-w-full lg:min-w-[320px] justify-center">
             {['ALL', 'AI', 'CYBER', 'GAME', 'WEB'].map((tab) => (
               <button
                 key={tab}
@@ -203,10 +353,10 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
                   playSound('click', isMuted, volume)
                   setSelectedTrackTab(tab)
                 }}
-                className={`px-4 py-1.5 rounded-full transition-all duration-200 cursor-pointer ${
+                className={`px-4.5 py-1.5 font-mono text-[10px] md:text-xs font-bold uppercase rounded-full transition-all cursor-pointer shrink-0 ${
                   selectedTrackTab === tab 
-                    ? 'bg-[#6db349] text-black font-bold' 
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-white text-black font-extrabold shadow-md scale-[1.01]' 
+                    : 'text-zinc-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 {tab}
@@ -215,59 +365,65 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
           </div>
         </div>
 
-        {/* Tracks Grid */}
+        {/* Tracks Grid / Split Panel Detail Layout conditional renderer */}
         {selectedTrackTab === 'ALL' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+          /* ALL tracks grid (default column style) */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mb-20">
             {activeTracksList.map((track) => {
-              const IconComp = getIcon(track.id)
-              const idx = trackIndexMap[track.id] || '00'
-              const cMap = trackColors[track.id] || { text: 'text-white/20', bgLight: 'bg-white/[0.02]', borderLight: 'border-white/5', badge: 'border-white/8 text-white/30', hoverBorder: '' }
+              const IconComp = track.icon
+              const trackThemeMap = {
+                ai: { border: 'border-yellow-500/20 hover:border-yellow-500/40 hover:shadow-[0_0_30px_rgba(234,179,8,0.08)]', text: 'text-yellow-400', bg: 'bg-yellow-500/5' },
+                cyber: { border: 'border-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_30px_rgba(239,68,68,0.08)]', text: 'text-red-400', bg: 'bg-red-500/5' },
+                game: { border: 'border-green-500/20 hover:border-green-500/40 hover:shadow-[0_0_30px_rgba(74,222,128,0.08)]', text: 'text-green-400', bg: 'bg-green-500/5' },
+                web: { border: 'border-blue-500/20 hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.08)]', text: 'text-blue-400', bg: 'bg-blue-500/5' }
+              }
+              const currentTheme = trackThemeMap[track.id] || trackThemeMap.ai
               
               return (
                 <div
                   key={track.id}
-                  className={`bg-[#231f20]/30 p-6 md:p-8 flex flex-col justify-between text-left rounded-2xl border border-zinc-800/80 hover:border-[#6db349]/40 hover:shadow-[0_10px_35px_rgba(109,179,73,0.08)] transition-all duration-300`}
+                  onMouseMove={handleMouseMove}
+                  className={`relative bg-zinc-900/30 border p-6 md:p-8 flex flex-col justify-between transition-all duration-300 rounded-2xl group text-left overflow-hidden cyber-glass-interactive ${currentTheme.border}`}
                 >
-                  <div>
+                  {/* Indigo Radial Glow Backdrop */}
+                  <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-indigo-500/10 blur-[50px] group-hover:scale-150 transition-transform duration-500 pointer-events-none z-0"></div>
+                  <div className="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-cyan-500/5 blur-[50px] group-hover:scale-150 transition-transform duration-500 pointer-events-none z-0"></div>
+
+                  <div className="relative z-10">
                     {/* Top tags */}
-                    <div className="flex justify-between items-start mb-6 select-none">
-                      <div className="w-10 h-10 rounded-full bg-[#6db349]/10 text-[#6db349] flex items-center justify-center">
-                        <IconComp className="w-5 h-5" strokeWidth={1.5} />
+                    <div className="flex justify-between items-start mb-6 select-none mt-2">
+                      <div className={`p-3 border border-white/10 rounded-xl bg-white/5 text-white shadow-xl`}>
+                        <IconComp className="w-6 h-6" />
                       </div>
-                      <div className="flex flex-col items-end gap-1 text-right">
-                        <span className="border border-[#6db349]/30 bg-[#6db349]/5 px-2.5 py-0.5 rounded-full text-[9px] font-bold text-[#6db349] tracking-wider">
+                      <div className="flex flex-col items-end gap-1 font-mono text-right">
+                        <span className={`border ${currentTheme.border} ${currentTheme.bg} ${currentTheme.text} px-2.5 py-0.5 text-[9.5px] font-black uppercase rounded-full shadow-lg`}>
                           {track.prize}
                         </span>
-                        <span className="text-[8px] text-zinc-500 tracking-wider mt-1.5 font-bold">NODE:{idx}</span>
+                        <span className="text-[9px] font-bold text-zinc-500 tracking-wider mt-1">TRACK // {track.id.toUpperCase()}</span>
                       </div>
                     </div>
 
-                    <h3 className="font-extrabold text-lg text-white uppercase mb-2">
-                       {track.title}
+                    <h3 className="text-2xl sm:text-3xl font-syne font-bold uppercase leading-none text-white mb-2 break-words">
+                      {track.title}
                     </h3>
                     
-                    <p className="text-[9px] text-[#6db349] uppercase mb-4 tracking-widest font-bold">
+                    <p className="font-mono text-xs font-bold text-zinc-400 uppercase mb-4 tracking-wider">
                       {track.tagLine}
                     </p>
 
-                    <div className="border-t border-zinc-800/60 pt-4 mb-6">
-                      <p className="text-zinc-400 text-xs leading-relaxed">
-                        {track.details}
-                      </p>
-                    </div>
+                    <p className="text-sm font-normal text-zinc-300 leading-relaxed mb-6 border-t border-white/5 pt-4 font-mono">
+                      {track.details}
+                    </p>
                   </div>
 
                   {/* Example ideas list */}
-                  <div className="p-4 mt-4 border border-zinc-800/60 bg-black/20 rounded-xl">
-                    <span className="block text-[8px] uppercase tracking-widest text-[#6db349] font-extrabold mb-3">
-                      PROTOCOL: BUILD_CONCEPTS
+                  <div className="bg-white/5 border border-white/5 p-4 rounded-xl mt-4 relative z-10">
+                    <span className="block font-mono text-[9px] font-bold uppercase tracking-wider text-zinc-400 mb-2">
+                      Example Build Concepts:
                     </span>
-                    <ul className="space-y-2 text-zinc-400 text-xs leading-relaxed">
-                      {track.ideas && track.ideas.map((idea, ideaIdx) => (
-                        <li key={ideaIdx} className="flex gap-2">
-                          <span className="text-[#6db349] shrink-0 font-bold">—</span>
-                          <span>{idea}</span>
-                        </li>
+                    <ul className="space-y-2 text-[11px] font-normal text-zinc-400 list-disc pl-4 leading-normal font-mono">
+                      {track.ideas.map((idea, idx) => (
+                        <li key={idx} className="hover:text-white transition-colors">{idea}</li>
                       ))}
                     </ul>
                   </div>
@@ -276,85 +432,103 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
             })}
           </div>
         ) : (
-          /* Split detailed layout when a single track is selected */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-20 items-stretch">
+          /* Split detailed layout console when a single track is selected */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-20">
+            
+            {/* Left Card: Track Core Info Card */}
             {activeTracksList.map((track) => {
-              const IconComp = getIcon(track.id)
-              const idx = trackIndexMap[track.id] || '00'
+              const IconComp = track.icon
+              const trackThemeMap = {
+                ai: { border: 'border-yellow-500/20 shadow-[0_0_30px_rgba(234,179,8,0.05)]', text: 'text-yellow-400', bg: 'bg-yellow-500/5' },
+                cyber: { border: 'border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.05)]', text: 'text-red-400', bg: 'bg-red-500/5' },
+                game: { border: 'border-green-500/20 shadow-[0_0_30px_rgba(74,222,128,0.05)]', text: 'text-green-400', bg: 'bg-green-500/5' },
+                web: { border: 'border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.05)]', text: 'text-blue-400', bg: 'bg-blue-500/5' }
+              }
+              const currentTheme = trackThemeMap[track.id] || trackThemeMap.ai
               const trackChecklist = blueprintChecklist[track.id] || {}
-              const cMap = trackColors[track.id] || { text: 'text-white/20', bgLight: 'bg-white/[0.02]', borderLight: 'border-white/5', badge: 'border-white/8 text-white/30', hoverBorder: '' }
 
               return (
                 <React.Fragment key={track.id}>
-                  {/* Left Column */}
-                  <div className="lg:col-span-5 bg-[#231f20]/30 p-6 md:p-8 flex flex-col justify-between text-left rounded-2xl border border-zinc-800/80">
-                    <div>
-                      <div className="flex justify-between items-start mb-6 select-none">
-                        <div className="w-10 h-10 rounded-full bg-[#6db349]/10 text-[#6db349] flex items-center justify-center">
-                          <IconComp className="w-5 h-5" strokeWidth={1.5} />
+                  {/* Left Column container (col-span-5) */}
+                   <div
+                     onMouseMove={handleMouseMove}
+                     className={`lg:col-span-5 relative bg-zinc-900/30 border p-6 md:p-8 flex flex-col justify-between rounded-2xl group text-left overflow-hidden cyber-glass-interactive ${currentTheme.border}`}
+                   >
+                    <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-indigo-500/10 blur-[50px] pointer-events-none z-0"></div>
+                    <div className="absolute -bottom-24 -right-24 w-48 h-48 rounded-full bg-cyan-500/5 blur-[50px] pointer-events-none z-0"></div>
+
+                    <div className="relative z-10">
+                      {/* Top tags */}
+                      <div className="flex justify-between items-start mb-6 select-none mt-2">
+                        <div className={`p-3 border border-white/10 rounded-xl bg-white/5 text-white shadow-xl`}>
+                          <IconComp className="w-6 h-6" />
                         </div>
-                        <div className="flex flex-col items-end gap-1 text-right">
-                          <span className="border border-[#6db349]/30 bg-[#6db349]/5 px-2.5 py-0.5 rounded-full text-[9px] font-bold text-[#6db349] tracking-wider">
+                        <div className="flex flex-col items-end gap-1 font-mono text-right">
+                          <span className={`border ${currentTheme.border} ${currentTheme.bg} ${currentTheme.text} px-2.5 py-0.5 text-[9.5px] font-black uppercase rounded-full shadow-lg`}>
                             {track.prize}
                           </span>
-                          <span className="text-[8px] text-zinc-500 tracking-wider mt-1.5 font-bold">NODE:{idx}</span>
+                          <span className="text-[9px] font-bold text-zinc-500 tracking-wider mt-1">TRACK // {track.id.toUpperCase()}</span>
                         </div>
                       </div>
 
-                      <h3 className="font-extrabold text-lg text-white uppercase mb-2">
+                      <h3 className="text-3xl font-syne font-bold uppercase leading-tight text-white mb-2 break-words">
                         {track.title}
                       </h3>
                       
-                      <p className="text-[9px] text-[#6db349] uppercase mb-4 tracking-widest font-bold">
+                      <p className="font-mono text-[10.5px] font-bold text-zinc-400 uppercase mb-4 tracking-wider">
                         {track.tagLine}
                       </p>
 
-                      <div className="border-t border-zinc-800/60 pt-4 mb-6">
-                        <p className="text-zinc-400 text-xs leading-relaxed">
-                          {track.details}
-                        </p>
-                      </div>
+                      <p className="text-sm font-normal text-zinc-300 leading-relaxed mb-6 border-t border-white/5 pt-4 font-mono">
+                        {track.details}
+                      </p>
                     </div>
 
                     {/* Example ideas list */}
-                    <div className="p-4 mt-4 border border-zinc-800/60 bg-black/20 rounded-xl">
-                      <span className="block text-[8px] uppercase tracking-widest text-[#6db349] font-extrabold mb-3">
-                        PROTOCOL: BUILD_CONCEPTS
+                    <div className="bg-white/5 border border-white/5 p-4 rounded-xl mt-4 relative z-10">
+                      <span className="block font-mono text-[9px] font-bold uppercase tracking-wider text-zinc-400 mb-2">
+                        Example Build Concepts:
                       </span>
-                      <ul className="space-y-2 text-zinc-400 text-xs leading-relaxed">
-                        {track.ideas && track.ideas.map((idea, ideaIdx) => (
-                          <li key={ideaIdx} className="flex gap-2">
-                            <span className="text-[#6db349] shrink-0 font-bold">—</span>
-                            <span>{idea}</span>
-                          </li>
+                      <ul className="space-y-2 text-[11px] font-normal text-zinc-400 list-disc pl-4 leading-normal font-mono">
+                        {track.ideas.map((idea, idx) => (
+                          <li key={idx} className="hover:text-white transition-colors">{idea}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
 
-                  {/* Right Column - Extended Details */}
-                  <div className="lg:col-span-7 bg-[#231f20]/30 p-6 md:p-8 flex flex-col justify-between text-left rounded-2xl border border-zinc-800/80">
+                  {/* Right Column container (col-span-7) - MUCH MORE DETAILS */}
+                  <div 
+                    onMouseMove={handleMouseMove}
+                    className={`lg:col-span-7 bg-zinc-900/20 border border-white/5 p-6 md:p-8 rounded-2xl flex flex-col justify-between text-left backdrop-blur-md relative overflow-hidden cyber-glass-interactive`}
+                  >
                     
-                    <div className="space-y-6">
+                    {/* Corner backlighting glow */}
+                    <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-indigo-500/5 blur-[50px] pointer-events-none z-0"></div>
+
+                    <div className="space-y-6 relative z-10">
                       
                       {/* Header bar */}
-                      <div className="flex justify-between items-center border-b border-zinc-800/60 pb-3">
-                        <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold">
-                          EXTENDED DIAGNOSTIC CONSOLE
-                        </span>
-                        <span className="text-[8px] text-[#6db349] tracking-wider font-extrabold">STATE: LOADED</span>
+                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className={`w-4 h-4 ${currentTheme.text} animate-pulse`} />
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                            Extended Core Diagnostic Console
+                          </span>
+                        </div>
+                        <span className="font-mono text-[9px] text-zinc-650">STATE: LOADED</span>
                       </div>
 
-                      {/* Target technologies */}
+                      {/* Targeted skills and tools */}
                       <div>
-                        <span className="block text-[9px] uppercase tracking-widest text-zinc-400 font-bold mb-3">
-                          TARGET TECHNOLOGIES
+                        <span className="block font-mono text-[10.5px] font-bold text-zinc-400 uppercase mb-2.5">
+                          🔧 Target Technologies & APIs:
                         </span>
                         <div className="flex flex-wrap gap-1.5">
                           {track.techs && track.techs.map((tech) => (
                             <span
                               key={tech}
-                              className="px-2.5 py-1 border border-zinc-850 bg-black/45 text-zinc-400 uppercase text-[9px] tracking-wider rounded-md font-semibold"
+                              className={`px-2.5 py-1 border ${currentTheme.border} ${currentTheme.bg} ${currentTheme.text} font-mono text-[10px] font-bold uppercase rounded-lg shadow-sm`}
                             >
                               {tech}
                             </span>
@@ -363,46 +537,56 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
                       </div>
 
                       {/* Judging details */}
-                      <div className="border border-zinc-800 bg-[#6db349]/5 p-5 rounded-xl">
-                        <span className="block text-[9px] uppercase tracking-widest text-[#6db349] font-extrabold mb-2">
-                          EVALUATION CRITERIA
+                      <div className="border border-white/5 bg-zinc-950/40 p-4.5 rounded-xl">
+                        <span className="block font-mono text-[10.5px] font-bold text-zinc-400 uppercase mb-1.5">
+                          🏆 Track Evaluation & Judging Criteria:
                         </span>
-                        <p className="text-zinc-300 text-xs leading-relaxed">
-                          Submission deliverables will be evaluated against: <strong className="text-white">{track.criteria}</strong> The core code repositories will be audited to verify working binaries and zero slide-deck marketing fluff.
+                        <p className="text-xs font-normal text-zinc-300 leading-relaxed font-mono">
+                          Submission deliverables will be evaluated against: <strong className="text-white font-bold">{track.criteria}</strong> The core code repositories will be audited to verify working binaries and zero slide-deck marketing fluff.
                         </p>
                       </div>
 
                       {/* Interactive project blueprint tool */}
                       <div className="space-y-3">
                         <div>
-                          <span className="block text-[9px] uppercase tracking-widest text-zinc-400 font-bold">
-                            PROJECT BLUEPRINT BUILDER
+                          <span className="block font-mono text-[10.5px] font-bold text-zinc-400 uppercase">
+                            ⚙️ Interactive Project Blueprint builder:
                           </span>
-                          <span className="block text-[8px] text-zinc-500 mt-1 tracking-wider font-semibold">
+                          <span className="block font-mono text-[9px] text-zinc-650 mt-0.5">
                             Toggle core nodes to construct a custom build blueprint.
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 select-none">
-                          {track.blueprintSpecs && Object.entries(track.blueprintSpecs).map(([key, label]) => {
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 select-none">
+                          {Object.entries(track.blueprintSpecs).map(([key, label]) => {
                             const isChecked = trackChecklist[key]
+                            
+                            // Map toggle theme glow classes
+                            const checkGlowMap = {
+                              ai: 'border-yellow-500/30 bg-yellow-500/5 text-yellow-300',
+                              cyber: 'border-red-500/30 bg-red-500/5 text-red-300',
+                              game: 'border-green-500/30 bg-green-500/5 text-green-300',
+                              web: 'border-blue-500/30 bg-blue-500/5 text-blue-300'
+                            }
+                            const checkGlow = checkGlowMap[track.id] || 'border-indigo-500/30 bg-indigo-500/5 text-indigo-300'
+                            const checkIconColor = isChecked ? (track.id === 'ai' ? 'text-yellow-400' : track.id === 'cyber' ? 'text-red-400' : track.id === 'game' ? 'text-green-400' : 'text-blue-400') : 'text-zinc-600'
 
                             return (
                               <div
                                 key={key}
                                 onClick={() => toggleBlueprintItem(track.id, key)}
-                                className={`flex items-center gap-3 p-3.5 cursor-pointer rounded-xl border transition-all ${
+                                className={`flex items-center gap-3 border p-3 rounded-xl cursor-pointer transition-all duration-200 ${
                                   isChecked 
-                                    ? 'bg-[#6db349]/10 border-[#6db349]/40 text-white' 
-                                    : 'bg-black/30 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                                    ? `${checkGlow} shadow-md` 
+                                    : 'border-white/5 bg-white/5 text-zinc-400 hover:border-white/10 hover:bg-white/10'
                                 }`}
                               >
                                 {isChecked ? (
-                                  <CheckSquare className="w-4 h-4 shrink-0 text-[#6db349]" />
+                                  <CheckSquare className={`w-4 h-4 ${checkIconColor} shrink-0`} />
                                 ) : (
-                                  <Square className="w-4 h-4 text-zinc-800 shrink-0" />
+                                  <Square className="w-4 h-4 text-zinc-600 shrink-0" />
                                 )}
-                                <span className="text-[9px] uppercase tracking-wider font-bold">{label}</span>
+                                <span className="font-mono text-xs font-bold uppercase tracking-wider">{label}</span>
                               </div>
                             )
                           })}
@@ -412,45 +596,46 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
                     </div>
 
                     {/* Blueprint code verification status footer */}
-                    <div className="border-t border-zinc-800/60 pt-4 mt-6 flex justify-between items-center select-none text-[8px] tracking-wider font-semibold text-zinc-500">
-                      <div>
-                        BLUEPRINT: <span className="text-[#6db349] font-bold">HL-{track.id.toUpperCase()}-{
+                    <div className="border-t border-white/5 pt-4 mt-6 flex justify-between items-center select-none font-mono text-[10px]">
+                      <div className="text-zinc-500">
+                        BLUEPRINT CODE: <span className="text-zinc-300 font-bold">HL-{track.id.toUpperCase()}-{
                           Object.values(trackChecklist).filter(Boolean).length
                         }/4</span>
                       </div>
-                      <span>ENCRYPTED // SHA-256</span>
+                      <span className="text-zinc-600">ENCRYPTED // SHA-256</span>
                     </div>
 
                   </div>
                 </React.Fragment>
               )
             })}
+
           </div>
         )}
 
         {/* Tech Configurator Widget */}
-        <div className="border border-zinc-800 bg-[#231f20]/30 rounded-3xl p-6 md:p-10 mt-16 shadow-[0_10px_35px_rgba(0,0,0,0.3)] text-left">
+        <div onMouseMove={handleMouseMove} className="bg-zinc-900/30 border border-white/5 p-6 md:p-10 shadow-2xl relative rounded-3xl mt-12 text-left backdrop-blur-md cyber-glass-interactive">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4 items-center">
             
             {/* Form & Selection side */}
             <div className="lg:col-span-7 space-y-6">
               <div>
-                <span className="text-[9px] uppercase tracking-widest text-[#6db349] font-extrabold block mb-3">
-                  SYS:CONFIGURATOR
+                <span className="inline-block border border-white/10 bg-white/5 text-zinc-300 font-mono text-[10px] font-bold uppercase px-3 py-1 shadow-md rounded-full mb-3">
+                  Interactive Stack Configurator
                 </span>
-                <h3 className="text-2xl font-extrabold uppercase text-white">
-                  Generate Tech Stack Badge
+                <h3 className="text-2xl md:text-3xl font-syne font-bold uppercase text-white">
+                  GENERATE TECH STACK BADGE
                 </h3>
-                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
-                  Select up to 6 tools or languages you plan to write code with to download a diagnostic builder badge.
+                <p className="text-xs font-bold text-zinc-500 mt-1 font-mono">
+                  Select up to 6 tools or languages you plan to write code with to download a high-fidelity diagnostic builder badge.
                 </p>
               </div>
 
               {/* Input builder name */}
               <div className="flex flex-col">
-                <label className="text-[9px] uppercase tracking-widest text-zinc-400 font-bold mb-2 flex items-center gap-2 select-none">
-                  <Code className="w-3.5 h-3.5 text-zinc-500" strokeWidth={1.5} /> BUILDER NICKNAME
+                <label className="font-mono text-xs font-bold text-zinc-400 uppercase mb-2 flex items-center gap-1.5 select-none">
+                  <Code className="w-4 h-4 text-zinc-400" /> Builder Nickname
                 </label>
                 <input
                   type="text"
@@ -458,26 +643,26 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value)}
                   placeholder="e.g. CORE_HACKER"
-                  className="bg-black/45 border border-zinc-800 p-3 rounded-xl text-xs outline-none focus:border-[#6db349]/50 text-white uppercase transition-colors w-full placeholder:text-zinc-700 font-semibold"
+                  className="bg-zinc-950/60 border border-white/5 p-3 rounded-xl font-mono text-xs outline-none focus:border-white text-white uppercase transition-all shadow-inner w-full"
                 />
               </div>
 
               {/* Selection list */}
               <div>
-                <span className="block text-[9px] uppercase tracking-widest text-zinc-400 font-bold mb-3 select-none">
-                  SELECT TOOLS ({selectedTechs.length}/6)
+                <span className="block font-mono text-xs font-bold text-zinc-400 mb-2 select-none">
+                  SELECT TOOLS ({selectedTechs.length}/6):
                 </span>
-                <div className="flex flex-wrap gap-1.5 select-none">
+                <div className="flex flex-wrap gap-2 select-none">
                   {TECH_STACK_OPTIONS.map((tech) => {
                     const isSelected = selectedTechs.includes(tech)
                     return (
                       <button
                         key={tech}
                         onClick={() => toggleTech(tech)}
-                        className={`px-3.5 py-1.5 rounded-full text-[10px] border transition-all cursor-pointer ${
+                        className={`px-3.5 py-2 font-mono text-xs font-bold cursor-pointer rounded-full transition-all border ${
                           isSelected
-                            ? 'bg-[#6db349] border-[#6db349] text-black font-bold'
-                            : 'bg-black/30 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600'
+                            ? 'bg-indigo-500/10 border-indigo-500/50 text-indigo-300 shadow-[0_0_12px_rgba(99,102,241,0.25)] scale-[1.02]'
+                            : 'bg-white/5 border-white/5 text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/10'
                         }`}
                       >
                         {tech}
@@ -488,34 +673,49 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
               </div>
             </div>
 
-            {/* Card preview side */}
+            {/* Graphic card side */}
             <div className="lg:col-span-5 flex flex-col items-center w-full">
-              <div className="w-full max-w-sm border border-zinc-800 bg-black/60 text-white p-6 rounded-2xl shadow-2xl relative">
+              <div
+                onMouseMove={handlePreviewMouseMove}
+                onMouseLeave={handlePreviewMouseLeave}
+                style={{
+                  transform: previewTilt.transform,
+                  transition: previewTilt.transition
+                }}
+                className="w-full max-w-sm border border-white/10 bg-zinc-950/60 text-white p-5.5 font-mono text-xs rounded-2xl shadow-2xl relative select-none overflow-hidden transition-all duration-200"
+              >
+                {/* Holographic light reflection glare overlay */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-60 pointer-events-none z-20 mix-blend-overlay"
+                  style={{
+                    background: `radial-gradient(circle 200px at ${50 + (previewTilt.glareX || 0)}% ${50 + (previewTilt.glareY || 0)}%, rgba(255, 255, 255, 0.12), transparent 70%)`
+                  }}
+                />
 
-                <div className="border-b border-zinc-800/60 pb-3 mb-4 flex justify-between items-center">
-                  <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold">
-                    SYS:TECH_CORE // PROFILE
+                <div className="border-b border-white/5 pb-3 mb-4 flex justify-between items-center mt-1">
+                  <span className="font-black text-indigo-400 uppercase tracking-wider text-[9.5px]">
+                    Tachyon TECH CORE PROFILE
                   </span>
-                  <span className="w-1.5 h-1.5 bg-[#6db349] inline-block animate-pulse"></span>
+                  <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
                 </div>
 
-                <div className="border border-zinc-800 bg-black/40 p-4 rounded-xl text-left mb-4">
-                  <span className="block text-[8px] text-zinc-500 uppercase tracking-wider mb-1 font-bold">BUILDER PROFILE</span>
-                  <span className="text-[11px] text-white block tracking-wider uppercase font-bold select-all">
+                <div className="border border-white/5 bg-white/5 p-4 rounded-xl text-left mb-4">
+                  <span className="block text-[8px] text-zinc-500 font-bold uppercase mb-0.5">BUILDER PROFILE</span>
+                  <span className="text-sm font-bold text-white block tracking-wide uppercase select-all">
                     {cardName ? cardName : 'GUEST_HACKER'}
                   </span>
                 </div>
 
                 <div className="space-y-2 text-left mb-6">
-                  <span className="block text-[8px] text-zinc-500 uppercase tracking-wider font-bold">LOADED CORES:</span>
+                  <span className="block text-[8.5px] text-zinc-500 font-bold uppercase">LOADED CORES:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedTechs.length === 0 ? (
-                      <span className="text-zinc-650 text-[9px] tracking-wider">No technologies selected.</span>
+                      <span className="text-zinc-600 italic text-[10px]">No technologies selected.</span>
                     ) : (
                       selectedTechs.map((tech) => (
                         <span
                           key={tech}
-                          className="px-2.5 py-0.5 border border-[#6db349]/35 bg-[#6db349]/5 text-[#6db349] uppercase text-[8px] tracking-wider rounded-md font-bold"
+                          className="px-2.5 py-0.5 border border-white/10 bg-white/5 text-cyan-400 font-bold uppercase text-[8.5px] rounded-lg shadow-sm"
                         >
                           {tech}
                         </span>
@@ -524,14 +724,14 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-800/60 pt-4 mt-4 flex justify-between items-center select-none">
+                <div className="border-t border-white/5 pt-3 mt-4 flex justify-between items-center select-none">
                   <button
                     onClick={handleExportTechCard}
-                    className="flex items-center gap-1.5 bg-[#6db349] hover:bg-[#6db349]/90 text-black font-bold text-[9px] uppercase tracking-wider px-4 py-2 rounded-full cursor-pointer transition-all shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)]"
+                    className="flex items-center gap-1.5 border border-white/10 bg-white text-black font-bold text-[9px] px-3.5 py-1.5 rounded-full active:scale-95 shadow-md cursor-pointer hover:bg-zinc-100 transition-all"
                   >
-                    <Download className="w-3.5 h-3.5" strokeWidth={2} /> Export Badge
+                    <Download className="w-3.5 h-3.5" /> EXPORT BADGE
                   </button>
-                  <span className="text-[7px] text-zinc-500 uppercase tracking-wider font-semibold">VERIFIED // OK</span>
+                  <span className="text-[8px] text-zinc-500 uppercase font-bold">SECURITY VERIFIED // OK</span>
                 </div>
               </div>
             </div>
@@ -544,3 +744,4 @@ export function TracksSection({ siteTheme: _siteTheme, isMuted, volume, tracksLi
   )
 }
 export default TracksSection
+
