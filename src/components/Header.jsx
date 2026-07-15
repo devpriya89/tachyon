@@ -207,9 +207,9 @@ export function Header({
                     {user.name ? user.name[0].toUpperCase() : 'U'}
                   </div>
                 )}
-                <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap flex flex-col text-left ${
-                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-36 lg:opacity-100 lg:max-w-[150px] lg:pl-3'
-                } pl-3`}>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap flex flex-col text-left pl-3 ${
+                  isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0 lg:pl-0' : 'lg:w-36 lg:opacity-100 lg:max-w-[150px] lg:pl-3'
+                }`}>
                   <span className="text-[9px] font-semibold text-zinc-300 tracking-wider truncate">
                     {user.name ? user.name.split(' ')[0] : 'Builder'}
                   </span>
@@ -220,7 +220,9 @@ export function Header({
               </div>
               <button
                 onClick={handleLogout}
-                className="text-[8px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none font-bold lg:mt-1 flex items-center gap-1.5 justify-center lg:w-full"
+                className={`text-[8px] text-[#6db349]/60 hover:text-[#6db349] uppercase tracking-widest cursor-pointer transition-colors border-0 p-0 bg-transparent outline-none font-bold lg:mt-1 flex items-center justify-center lg:w-full ${
+                  isSidebarCollapsed ? 'lg:gap-0' : 'lg:gap-1.5'
+                } gap-1.5`}
                 title="Logout Account"
               >
                 <LogOut className="w-3.5 h-3.5 lg:w-3 lg:h-3 shrink-0" />
@@ -237,13 +239,13 @@ export function Header({
                 playSound('click', isMuted, volume)
                 setIsAuthModalOpen(true)
               }}
-              className={`text-[10px] uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 hover:bg-white/5 font-semibold shrink-0 flex items-center justify-center px-4 py-1.5 lg:px-0 lg:py-0 ${
+              className={`text-[10px] uppercase tracking-wider text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 hover:bg-white/5 font-semibold shrink-0 flex items-center justify-center px-3 py-1.5 sm:px-4 lg:px-0 lg:py-0 ${
                 isSidebarCollapsed ? 'lg:gap-0 lg:w-10 lg:h-10 lg:p-0' : 'lg:gap-2 lg:w-full lg:py-2.5 lg:px-4'
               } gap-2`}
               title="Sign In"
             >
               <LogIn className="w-4 h-4 shrink-0" />
-              <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
+              <span className={`hidden sm:inline lg:inline-block transition-all duration-300 overflow-hidden whitespace-nowrap ${
                 isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
               }`}>
                 Sign In
@@ -260,7 +262,7 @@ export function Header({
                 setIsRegisterModalOpen(true)
               }
             }}
-            className={`text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)] flex items-center justify-center px-5 py-1.5 lg:px-0 lg:py-0 ${
+            className={`text-[10px] uppercase tracking-wider bg-[#6db349] hover:bg-[#6db349]/90 text-black rounded-full lg:rounded-lg cursor-pointer transition-all duration-300 font-bold shadow-[0_0_12px_rgba(109,179,73,0.3)] hover:shadow-[0_0_18px_rgba(109,179,73,0.45)] flex items-center justify-center px-3.5 py-1.5 sm:px-5 lg:px-0 lg:py-0 ${
               isSidebarCollapsed ? 'lg:gap-0 lg:w-10 lg:h-10 lg:p-0' : 'lg:gap-2 lg:w-full lg:py-2.5 lg:px-4'
             } gap-2`}
             title={isAdmin ? 'Admin Panel' : (ticketData ? 'Access Pass' : 'Register')}
@@ -268,7 +270,7 @@ export function Header({
             {isAdmin ? (
               <>
                 <ShieldAlert className="w-4 h-4 shrink-0" />
-                <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
+                <span className={`hidden sm:inline lg:inline-block transition-all duration-300 overflow-hidden whitespace-nowrap ${
                   isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
                 }`}>
                   Admin Panel
@@ -277,7 +279,7 @@ export function Header({
             ) : (
               <>
                 <Ticket className="w-4 h-4 shrink-0" />
-                <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${
+                <span className={`hidden sm:inline lg:inline-block transition-all duration-300 overflow-hidden whitespace-nowrap ${
                   isSidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:max-w-0' : 'lg:w-auto lg:opacity-100'
                 }`}>
                   {ticketData ? 'Access Pass' : 'Register'}
