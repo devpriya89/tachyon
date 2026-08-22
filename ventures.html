@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Past Ventures - Tachyon Ventures</title>
+    <meta name="description" content="Explore Tachyon Ventures events and programs including Takumi Delhi, AAROH, Build Guild Delhi, Beyond Horizons, Campfire Delhi, and Metamorphosis.">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script src="assets/app.js" defer></script>
+  </head>
+  <body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="site-shell">
+      <header class="topbar topbar--solid">
+        <a class="brand" href="index.html" data-magnetic>
+          <span class="brand-mark">T</span>
+          <span>Tachyon</span>
+        </a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="index.html" data-magnetic>Home</a>
+          <a href="team.html" data-magnetic>Team</a>
+          <a href="ventures.html" aria-current="page" data-magnetic>Past Ventures</a>
+          <a href="programs.html" data-magnetic>Programs</a>
+          <a href="contact.html" data-magnetic>Contact</a>
+        </nav>
+        <a class="header-cta" href="contact.html" data-magnetic>Collaborate <span class="arrow">→</span></a>
+      </header>
+
+      <main>
+        <section class="page-hero page-hero--image">
+          <div class="page-hero__inner">
+            <span class="page-kicker">Past Ventures</span>
+            <h1 class="page-title">The archive of things built.</h1>
+            <p class="page-lede">A living record of Tachyon events, partner collaborations, outreach sessions, and developing initiatives across software, hardware, robotics, astronomy, and student innovation.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-grid">
+            <span class="section-label">Filter archive</span>
+            <div>
+              <h2 class="section-title reveal">Browse by build mode.</h2>
+              <div class="search-box reveal">
+                <input type="text" id="ventureSearch" placeholder="Search past ventures by title, tag, or technology..." aria-label="Search past ventures">
+              </div>
+              <div class="filterbar" data-filter-group=".venture-row">
+                <button class="is-active" type="button" data-filter="all" data-magnetic>All</button>
+                <button type="button" data-filter="hackathon" data-magnetic>Hackathons</button>
+                <button type="button" data-filter="hardware" data-magnetic>Hardware</button>
+                <button type="button" data-filter="space" data-magnetic>Space</button>
+                <button type="button" data-filter="community" data-magnetic>Community</button>
+                <button type="button" data-filter="robotics" data-magnetic>Robotics</button>
+              </div>
+
+              <div class="venture-list">
+                <article class="venture-row reveal" id="takumi" data-track="hackathon software game community">
+                  <div class="venture-date">May 2-3, 2026</div>
+                  <div class="venture-main">
+                    <h2>Takumi Delhi</h2>
+                    <p>A 24-hour offline game-development hackathon for under-18 builders in Delhi, created around craftsmanship, precision, technical iteration, workshops, mentorship, and final presentations. Built in collaboration with DoE.</p>
+                    <div class="tag-list">
+                      <span class="tag">~1,000 registrations</span>
+                      <span class="tag">~800 participants</span>
+                      <span class="tag">Under 18</span>
+                      <span class="tag">Game development</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="takumi" data-magnetic>Details</button>
+                    <a class="mini-link" href="https://www.takumidelhi.com/" target="_blank" rel="noreferrer" data-magnetic>Website</a>
+                    <a class="mini-link" href="https://drive.google.com/drive/folders/1CCVeyGwToEXQIxz5g55AaG9CGSqqWF0A?usp=drive_link" target="_blank" rel="noreferrer" data-magnetic>Media 01</a>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="aaroh" data-track="hackathon software hardware robotics community">
+                  <div class="venture-date">Aug 1-2, 2026</div>
+                  <div class="venture-main">
+                    <h2>AAROH 2026</h2>
+                    <p>A Delhi NCR student innovation hackathon at IIIT Delhi for participants aged 15+. Teams identify a real problem, understand a real user, build something testable, iterate, and launch the path forward.</p>
+                    <div class="tag-list">
+                      <span class="tag">200+ builders</span>
+                      <span class="tag">4 tracks</span>
+                      <span class="tag">Teams of 2-3</span>
+                      <span class="tag">IIIT Delhi</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="aaroh" data-magnetic>Details</button>
+                    <a class="mini-link" href="https://aarohindia.com/" target="_blank" rel="noreferrer" data-magnetic>Website</a>
+                    <a class="mini-link" href="https://photos.app.goo.gl/ipECCr2Dz9jkjKfM9" target="_blank" rel="noreferrer" data-magnetic>Photos</a>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="build-guild" data-track="hardware community">
+                  <div class="venture-date">Apr 18, 2025</div>
+                  <div class="venture-main">
+                    <h2>Build Guild Delhi</h2>
+                    <p>A one-day hardware meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, PCBs, soldering, competitions, showcases, and community activities.</p>
+                    <div class="tag-list">
+                      <span class="tag">Hack Club</span>
+                      <span class="tag">PCB workshop</span>
+                      <span class="tag">Soldering</span>
+                      <span class="tag">Project showcase</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="build-guild" data-magnetic>Details</button>
+                    <a class="mini-link" href="https://buildguilddelhi.space/" target="_blank" rel="noreferrer" data-magnetic>Website</a>
+                    <a class="mini-link" href="https://photos.app.goo.gl/cGwG4F5jWQhAVyFx6" target="_blank" rel="noreferrer" data-magnetic>Photos</a>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="beyond-horizons" data-track="space community">
+                  <div class="venture-date">Outreach</div>
+                  <div class="venture-main">
+                    <h2>Beyond Horizons</h2>
+                    <p>An astronomy and space exploration initiative in partnership with Fotocart. The model combines accessible theory, equipment exposure, guided telescope observation where feasible, and student discussion.</p>
+                    <div class="tag-list">
+                      <span class="tag">CM SHRI Nand Nagri</span>
+                      <span class="tag">IIIT Delhi</span>
+                      <span class="tag">Astronomy</span>
+                      <span class="tag">Telescope interaction</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="beyond-horizons" data-magnetic>Details</button>
+                    <span class="mini-link">Website soon</span>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="campfire" data-track="community hardware software">
+                  <div class="venture-date">Collaboration</div>
+                  <div class="venture-main">
+                    <h2>Campfire Delhi</h2>
+                    <p>A community collaboration with Hack Club and Master's Union, included here as part of the Tachyon ecosystem and media archive.</p>
+                    <div class="tag-list">
+                      <span class="tag">Hack Club</span>
+                      <span class="tag">Master's Union</span>
+                      <span class="tag">Delhi</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <a class="mini-link" href="https://drive.google.com/drive/folders/1Sw3rm1HqWhFqRtno79cSkpN7cug8-z_7" target="_blank" rel="noreferrer" data-magnetic>Media</a>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="metamorphosis" data-track="community hackathon">
+                  <div class="venture-date">IIT Delhi</div>
+                  <div class="venture-main">
+                    <h2>Metamorphosis</h2>
+                    <p>A teammate-led initiative that happened at IIT Delhi in collaboration with IITD. It sits in the archive as a connected team venture and proof of Tachyon's broader student network.</p>
+                    <div class="tag-list">
+                      <span class="tag">IIT Delhi</span>
+                      <span class="tag">Team-led</span>
+                      <span class="tag">Collaboration</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="metamorphosis" data-magnetic>Details</button>
+                    <a class="mini-link" href="https://drive.google.com/drive/folders/1bm8WlXUhC-PBbkCQ1u3LrhPAwNSaoEt3" target="_blank" rel="noreferrer" data-magnetic>Media</a>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="robotics" data-track="robotics hardware community">
+                  <div class="venture-date">In development</div>
+                  <div class="venture-main">
+                    <h2>Robotics / Electronics Initiative</h2>
+                    <p>A new robotics competition and student hardware network being developed in collaboration with IIT Bombay and its student network. The current target is up to 50 teams, with a long-term direction toward building the community and technical infrastructure needed for FRC-style participation.</p>
+                    <div class="tag-list">
+                      <span class="tag">Robotics</span>
+                      <span class="tag">Electronics</span>
+                      <span class="tag">Embedded systems</span>
+                      <span class="tag">Up to 50 teams</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="robotics" data-magnetic>Details</button>
+                    <span class="mini-link">Website soon</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div>
+            <strong>The work keeps expanding.</strong>
+            <p>Each venture adds another route for students to build, test, present, and continue.</p>
+          </div>
+          <nav class="footer-nav" aria-label="Footer navigation">
+            <a href="index.html">Home</a>
+            <a href="team.html">Team</a>
+            <a href="programs.html">Programs</a>
+            <a href="contact.html">Contact</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Drawer Slide-over Modal -->
+    <div class="drawer-overlay" id="ventureDrawerOverlay" aria-hidden="true">
+      <div class="drawer-panel">
+        <button class="drawer-close" id="drawerClose" type="button" aria-label="Close drawer">&times;</button>
+        <div class="drawer-content" id="drawerContent"></div>
+      </div>
+    </div>
+
+    <div class="cursor is-hidden" aria-hidden="true"></div>
+    <div class="page-wipe" aria-hidden="true"></div>
+  </body>
+</html>
