@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Past Ventures - Tachyon Ventures</title>
-    <meta name="description" content="Explore Tachyon Ventures events and programs including Takumi Delhi, AAROH, Build Guild Delhi, Beyond Horizons, Campfire Delhi, and Metamorphosis.">
+    <title>Programs &amp; Ventures - Tachyon</title>
+    <meta name="description" content="Tachyon Programs, Ventures, and Events across student innovation, autonomous drones, hardware, robotics, astronomy, and hackathons.">
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/styles.css">
     <script src="assets/app.js" defer></script>
@@ -20,68 +20,242 @@
         <nav class="nav" aria-label="Primary navigation">
           <a href="index.html" data-magnetic>Home</a>
           <a href="team.html" data-magnetic>Team</a>
-          <a href="ventures.html" aria-current="page" data-magnetic>Past Ventures</a>
-          <a href="programs.html" data-magnetic>Programs</a>
+          <a href="ventures.html" aria-current="page" data-magnetic>Programs &amp; Ventures</a>
           <a href="contact.html" data-magnetic>Contact</a>
         </nav>
         <a class="header-cta" href="contact.html" data-magnetic>Collaborate <span class="arrow">→</span></a>
       </header>
 
       <main>
+        <!-- Page Hero -->
         <section class="page-hero page-hero--image">
           <div class="page-hero__inner">
-            <span class="page-kicker">Past Ventures</span>
-            <h1 class="page-title">The archive of things built.</h1>
-            <p class="page-lede">A living record of Tachyon events, partner collaborations, outreach sessions, and developing initiatives across software, hardware, robotics, astronomy, and student innovation.</p>
+            <span class="page-kicker">Ecosystem &amp; Directory</span>
+            <h1 class="page-title">Programs &amp; Ventures.</h1>
+            <p class="page-lede">Tachyon builds across the complete spectrum of youth innovation: from hands-on builder programs and hackathons to long-term hardware initiatives and defense aerospace startups.</p>
+            
+            <!-- Quick Sub-navigation Jump Links -->
+            <div class="filterbar" style="margin-top: 24px;">
+              <a href="#programs" class="mini-link is-active" data-magnetic>01 Programs &amp; Tracks ↓</a>
+              <a href="#ventures-section" class="mini-link" data-magnetic>02 Ventures &amp; Startups ↓</a>
+              <a href="#events-archive" class="mini-link" data-magnetic>03 Events Archive ↓</a>
+              <a href="#media-gallery" class="mini-link" data-magnetic>04 Media Gallery ↓</a>
+            </div>
           </div>
         </section>
 
-        <section class="section">
+        <!-- SECTION 1: PROGRAMS & BUILDER TRACKS -->
+        <section class="section" id="programs">
           <div class="section-grid">
-            <span class="section-label">Filter archive</span>
+            <span class="section-label">01 // Programs</span>
             <div>
-              <h2 class="section-title reveal">Browse by build mode.</h2>
-              <div class="search-box reveal">
-                <input type="text" id="ventureSearch" placeholder="Search past ventures by title, tag, or technology..." aria-label="Search past ventures">
+              <h2 class="section-title reveal">Connected build tracks, not isolated workshops.</h2>
+              <p class="body-large reveal">Four distinct builder formats covering the complete cycle from ideation, electronics, and game code to telescope observation and high-stakes prototype launches.</p>
+              
+              <div class="program-grid">
+                <article class="program-card reveal" style="--accent: var(--lime)" data-cursor="Student">
+                  <div class="card-topline"><span>Track 01</span><span>Innovation</span></div>
+                  <h3>Student Innovation</h3>
+                  <p>AAROH-style hackathon format where teams discover authentic problems, interview users, build functional prototypes, and pitch viable solutions.</p>
+                  <span class="card-accent"></span>
+                </article>
+                <article class="program-card reveal" style="--accent: var(--orange)" data-cursor="Games">
+                  <div class="card-topline"><span>Track 02</span><span>Software</span></div>
+                  <h3>Game Development</h3>
+                  <p>Takumi-style 24-hour sprints for under-18 creators to turn game mechanics, original art, code, and systems into playable releases.</p>
+                  <span class="card-accent"></span>
+                </article>
+                <article class="program-card reveal" style="--accent: var(--blue)" data-cursor="Hardware">
+                  <div class="card-topline"><span>Track 03</span><span>Hardware</span></div>
+                  <h3>Hardware Culture</h3>
+                  <p>Build Guild hands-on breadboards, hardware hackathons, soldering stations, embedded systems, and live hardware showcases.</p>
+                  <span class="card-accent"></span>
+                </article>
+                <article class="program-card reveal" style="--accent: var(--cyan)" data-cursor="Space">
+                  <div class="card-topline"><span>Track 04</span><span>Astronomy</span></div>
+                  <h3>Astronomy Outreach</h3>
+                  <p>Beyond Horizons delivers telescope hardware exposure, celestial observation nights, and deep astrophysics discussions for young minds.</p>
+                  <span class="card-accent"></span>
+                </article>
               </div>
-              <div class="filterbar" data-filter-group=".venture-row">
-                <button class="is-active" type="button" data-filter="all" data-magnetic>All</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Interactive Program Delivery Model (Dark Band) -->
+        <section class="section section--dark section--wide">
+          <div class="section">
+            <div class="section-grid">
+              <span class="section-label">Program model</span>
+              <div>
+                <h2 class="section-title reveal">Think, build, launch, then keep going.</h2>
+                <div class="tabbar" data-tab-group="program-model">
+                  <button class="is-active" type="button" data-tab="think" data-magnetic>Think</button>
+                  <button type="button" data-tab="build" data-magnetic>Build</button>
+                  <button type="button" data-tab="launch" data-magnetic>Launch</button>
+                  <button type="button" data-tab="continue" data-magnetic>Continue</button>
+                </div>
+                <div class="program-copy tab-panel" data-tab-panel="program-model" data-tab-id="think">
+                  <h2>Find the sharp version of the problem.</h2>
+                  <ul>
+                    <li>Observe the user and real context before choosing a technical solution.</li>
+                    <li>Ask questions that reduce vague ideas into crisp, testable needs.</li>
+                    <li>Challenge assumptions early, when pivoting direction is still fast and inexpensive.</li>
+                  </ul>
+                </div>
+                <div class="program-copy tab-panel" data-tab-panel="program-model" data-tab-id="build" hidden>
+                  <h2>Make the idea visible and testable.</h2>
+                  <ul>
+                    <li>Prototype quickly with experienced hardware and software mentors nearby.</li>
+                    <li>Use micro-workshops to unlock specific technical skills at the moment they matter.</li>
+                    <li>Iterate the design rapidly when physical evidence demands it.</li>
+                  </ul>
+                </div>
+                <div class="program-copy tab-panel" data-tab-panel="program-model" data-tab-id="launch" hidden>
+                  <h2>Show what works and what comes next.</h2>
+                  <ul>
+                    <li>Demonstrate working prototypes and demos rather than theoretical slide decks.</li>
+                    <li>Explain what was learned, where failure occurred, and the roadmap forward.</li>
+                    <li>Evaluate clarity, technical depth, feasibility, and presentation quality.</li>
+                  </ul>
+                </div>
+                <div class="program-copy tab-panel" data-tab-panel="program-model" data-tab-id="continue" hidden>
+                  <h2>Build the infrastructure after the event.</h2>
+                  <ul>
+                    <li>Keep builders connected to peers, lab tools, mentors, components, and next-stage funding.</li>
+                    <li>Grow permanent technical communities around robotics, embedded systems, and aerospace.</li>
+                    <li>Use each program cohort as a node in the expanding Tachyon builder network.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2 & 3: VENTURES & EVENTS DIRECTORY -->
+        <section class="section" id="ventures-section">
+          <div class="section-grid">
+            <span class="section-label">Directory &amp; Archive</span>
+            <div>
+              <h2 class="section-title reveal">Ventures, startups &amp; past events.</h2>
+              <p class="body-large reveal">Search and filter across independent technology startups, competitive robotics infrastructure, and on-ground hackathons.</p>
+              
+              <div class="search-box reveal">
+                <input type="text" id="ventureSearch" placeholder="Search ventures or events by title, tag, or technology..." aria-label="Search archive">
+              </div>
+              
+              <div class="filterbar" data-filter-group=".venture-row" id="events-archive">
+                <button class="is-active" type="button" data-filter="all" data-magnetic>All (9)</button>
+                <button type="button" data-filter="venture" data-magnetic style="font-weight: 800; border-color: var(--ink);">✦ Ventures &amp; Startups (3)</button>
+                <button type="button" data-filter="event" data-magnetic style="font-weight: 800; border-color: var(--ink);">⚡ Events &amp; Exhibits (6)</button>
+                <button type="button" data-filter="hardware" data-magnetic>Hardware &amp; Drones</button>
                 <button type="button" data-filter="hackathon" data-magnetic>Hackathons</button>
-                <button type="button" data-filter="hardware" data-magnetic>Hardware</button>
-                <button type="button" data-filter="space" data-magnetic>Space</button>
-                <button type="button" data-filter="community" data-magnetic>Community</button>
-                <button type="button" data-filter="robotics" data-magnetic>Robotics</button>
+                <button type="button" data-filter="space" data-magnetic>Astronomy</button>
               </div>
 
               <div class="venture-list">
-                <article class="venture-row reveal" id="takumi" data-track="hackathon software game community">
-                  <div class="venture-date">May 2-3, 2026</div>
+                
+                <!-- Category 1: Ventures & Startups -->
+                <div class="category-divider reveal" style="margin: 28px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline;">
+                  <strong style="font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.04em;">01 // Ventures &amp; Startups</strong>
+                  <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted);">3 Active Initiatives</span>
+                </div>
+
+                <article class="venture-row reveal" id="vector-aerotech" data-track="venture drones aerospace defense hardware">
+                  <div class="venture-date"><span style="color: var(--cyan); font-weight: 800;">VENTURE</span><br>Drones &amp; Defense</div>
+                  <div class="venture-main">
+                    <h2>Vector Aerotech</h2>
+                    <p>An advanced autonomous aerial systems and defense robotics startup originated within the Tachyon ecosystem. Vector Aerotech develops custom flight controllers, tactical reconnaissance UAVs, encrypted mesh datalinks, and heavy-payload multirotors. The venture has secured and executed mission-critical contracts across private enterprise infrastructure inspection, governmental geospatial surveillance, and defense/military aerospace applications.</p>
+                    <div class="tag-list">
+                      <span class="tag" style="background: var(--ink); color: white;">Startup Venture</span>
+                      <span class="tag">Autonomous Drones</span>
+                      <span class="tag">Defense &amp; Military</span>
+                      <span class="tag">Government Contracts</span>
+                      <span class="tag">Tactical Avionics</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="vector-aerotech" data-magnetic>Details</button>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="robotics" data-track="venture robotics hardware community">
+                  <div class="venture-date"><span style="color: var(--lime); font-weight: 800;">VENTURE</span><br>Platform</div>
+                  <div class="venture-main">
+                    <h2>Robotics / Electronics Initiative</h2>
+                    <p>A long-term robotics competition platform and student hardware engineering network being developed in collaboration with IIT Bombay and its student network. The current target is up to 50 teams, with a long-term direction toward building the technical infrastructure needed for FRC-style competitive participation.</p>
+                    <div class="tag-list">
+                      <span class="tag" style="background: var(--ink); color: white;">Hardware Platform</span>
+                      <span class="tag">Robotics</span>
+                      <span class="tag">Embedded systems</span>
+                      <span class="tag">IIT Bombay Network</span>
+                      <span class="tag">FRC Trajectory</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="robotics" data-magnetic>Details</button>
+                    <span class="mini-link">Website soon</span>
+                  </div>
+                </article>
+
+                <article class="venture-row reveal" id="beyond-horizons" data-track="venture space community">
+                  <div class="venture-date"><span style="color: var(--orange); font-weight: 800;">VENTURE</span><br>Space &amp; Optics</div>
+                  <div class="venture-main">
+                    <h2>Beyond Horizons</h2>
+                    <p>An astronomy outreach and optical equipment platform in partnership with Fotocart. The initiative deploys high-end optical gear, Celestron AstroMaster and SkyMaster telescopes, and guided observation nights paired with astrophysics discussion for students.</p>
+                    <div class="tag-list">
+                      <span class="tag" style="background: var(--ink); color: white;">Outreach Venture</span>
+                      <span class="tag">Astronomy</span>
+                      <span class="tag">Fotocart Partnership</span>
+                      <span class="tag">Telescope Interaction</span>
+                    </div>
+                  </div>
+                  <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="beyond-horizons" data-magnetic>Details</button>
+                    <span class="mini-link">Website soon</span>
+                  </div>
+                </article>
+
+                <!-- Category 2: Events & Hackathons -->
+                <div class="category-divider reveal" style="margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline;">
+                  <strong style="font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.04em;">02 // Events &amp; Exhibits</strong>
+                  <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted);">6 Recorded Events</span>
+                </div>
+
+                <!-- Takumi Delhi -->
+                <article class="venture-row reveal" id="takumi" data-track="event hackathon software game community">
+                  <div class="venture-date"><span style="color: var(--lime); font-weight: 800;">EVENT</span><br>May 2-3, 2026</div>
                   <div class="venture-main">
                     <h2>Takumi Delhi</h2>
-                    <p>A 24-hour offline game-development hackathon for under-18 builders in Delhi, created around craftsmanship, precision, technical iteration, workshops, mentorship, and final presentations. Built in collaboration with DoE.</p>
+                    <p>A 24-hour offline game-development hackathon for under-18 builders in Delhi, created around craftsmanship, precision, technical iteration, workshops, mentorship, and final presentations. <strong>In collaboration with Directorate of Education (DoE).</strong></p>
                     <div class="tag-list">
+                      <span class="tag" style="background: var(--lime); color: var(--ink); font-weight: 800;">Hackathon</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with DoE</span>
                       <span class="tag">~1,000 registrations</span>
                       <span class="tag">~800 participants</span>
                       <span class="tag">Under 18</span>
-                      <span class="tag">Game development</span>
+                      <span class="tag">Game Dev</span>
                     </div>
                   </div>
                   <div class="venture-actions">
                     <button class="mini-link" type="button" data-drawer-id="takumi" data-magnetic>Details</button>
                     <a class="mini-link" href="https://www.takumidelhi.com/" target="_blank" rel="noreferrer" data-magnetic>Website</a>
                     <a class="mini-link" href="https://drive.google.com/drive/folders/1CCVeyGwToEXQIxz5g55AaG9CGSqqWF0A?usp=drive_link" target="_blank" rel="noreferrer" data-magnetic>Media 01</a>
+                    <a class="mini-link" href="https://drive.google.com/drive/folders/1qF369Ml_Ky67np3veoC4voD8tO7Ve5VD?usp=drive_link" target="_blank" rel="noreferrer" data-magnetic>Media 02</a>
                   </div>
                 </article>
 
-                <article class="venture-row reveal" id="aaroh" data-track="hackathon software hardware robotics community">
-                  <div class="venture-date">Aug 1-2, 2026</div>
+                <!-- AAROH 2026 -->
+                <article class="venture-row reveal" id="aaroh" data-track="event hackathon software hardware robotics community">
+                  <div class="venture-date"><span style="color: var(--orange); font-weight: 800;">EVENT</span><br>Aug 1-2, 2026</div>
                   <div class="venture-main">
                     <h2>AAROH 2026</h2>
-                    <p>A Delhi NCR student innovation hackathon at IIIT Delhi for participants aged 15+. Teams identify a real problem, understand a real user, build something testable, iterate, and launch the path forward.</p>
+                    <p>A Delhi NCR student innovation hackathon for participants aged 15+. Teams identify a real problem, understand a real user, build something testable, iterate, and launch the path forward. <strong>In collaboration with IIIT Delhi (IIITD).</strong></p>
                     <div class="tag-list">
+                      <span class="tag" style="background: var(--orange); color: white; font-weight: 800;">Hackathon</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with IIITD</span>
                       <span class="tag">200+ builders</span>
                       <span class="tag">4 tracks</span>
-                      <span class="tag">Teams of 2-3</span>
                       <span class="tag">IIIT Delhi</span>
                     </div>
                   </div>
@@ -92,16 +266,17 @@
                   </div>
                 </article>
 
-                <article class="venture-row reveal" id="build-guild" data-track="hardware community">
-                  <div class="venture-date">Apr 18, 2025</div>
+                <!-- Build Guild Delhi -->
+                <article class="venture-row reveal" id="build-guild" data-track="event hardware community">
+                  <div class="venture-date"><span style="color: var(--blue); font-weight: 800;">EVENT</span><br>Apr 18, 2025</div>
                   <div class="venture-main">
                     <h2>Build Guild Delhi</h2>
-                    <p>A one-day hardware meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, PCBs, soldering, competitions, showcases, and community activities.</p>
+                    <p>A one-day hardware enthusiast meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, microcontrollers, soldering, competitions, showcases, and hardware hackathons. <strong>In collaboration with Hack Club.</strong></p>
                     <div class="tag-list">
-                      <span class="tag">Hack Club</span>
-                      <span class="tag">PCB workshop</span>
+                      <span class="tag" style="background: var(--blue); color: white; font-weight: 800;">Meetup</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with Hack Club</span>
+                      <span class="tag">Hardware Hackathon</span>
                       <span class="tag">Soldering</span>
-                      <span class="tag">Project showcase</span>
                     </div>
                   </div>
                   <div class="venture-actions">
@@ -111,49 +286,36 @@
                   </div>
                 </article>
 
-                <article class="venture-row reveal" id="beyond-horizons" data-track="space community">
-                  <div class="venture-date">Outreach</div>
-                  <div class="venture-main">
-                    <h2>Beyond Horizons</h2>
-                    <p>An astronomy and space exploration initiative in partnership with Fotocart. The model combines accessible theory, equipment exposure, guided telescope observation where feasible, and student discussion.</p>
-                    <div class="tag-list">
-                      <span class="tag">CM SHRI Nand Nagri</span>
-                      <span class="tag">IIIT Delhi</span>
-                      <span class="tag">Astronomy</span>
-                      <span class="tag">Telescope interaction</span>
-                    </div>
-                  </div>
-                  <div class="venture-actions">
-                    <button class="mini-link" type="button" data-drawer-id="beyond-horizons" data-magnetic>Details</button>
-                    <span class="mini-link">Website soon</span>
-                  </div>
-                </article>
-
-                <article class="venture-row reveal" id="campfire" data-track="community hardware software">
-                  <div class="venture-date">Collaboration</div>
+                <!-- Campfire Delhi -->
+                <article class="venture-row reveal" id="campfire" data-track="event community hardware software">
+                  <div class="venture-date"><span style="color: var(--violet); font-weight: 800;">EVENT</span><br>Collaboration</div>
                   <div class="venture-main">
                     <h2>Campfire Delhi</h2>
-                    <p>A community collaboration with Hack Club and Master's Union, included here as part of the Tachyon ecosystem and media archive.</p>
+                    <p>A collaborative community gathering and student sprint for creators and builders. <strong>In collaboration with Hack Club and Master's Union.</strong></p>
                     <div class="tag-list">
-                      <span class="tag">Hack Club</span>
+                      <span class="tag" style="background: var(--violet); color: white; font-weight: 800;">Sprint</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with Hack Club &amp; Master's Union</span>
                       <span class="tag">Master's Union</span>
                       <span class="tag">Delhi</span>
                     </div>
                   </div>
                   <div class="venture-actions">
+                    <button class="mini-link" type="button" data-drawer-id="campfire" data-magnetic>Details</button>
                     <a class="mini-link" href="https://drive.google.com/drive/folders/1Sw3rm1HqWhFqRtno79cSkpN7cug8-z_7" target="_blank" rel="noreferrer" data-magnetic>Media</a>
                   </div>
                 </article>
 
-                <article class="venture-row reveal" id="metamorphosis" data-track="community hackathon">
-                  <div class="venture-date">IIT Delhi</div>
+                <!-- Metamorphosis -->
+                <article class="venture-row reveal" id="metamorphosis" data-track="event venture hardware software community">
+                  <div class="venture-date"><span style="color: var(--pink); font-weight: 800;">EVENT</span><br>IIT Delhi Collab</div>
                   <div class="venture-main">
                     <h2>Metamorphosis</h2>
-                    <p>A teammate-led initiative that happened at IIT Delhi in collaboration with IITD. It sits in the archive as a connected team venture and proof of Tachyon's broader student network.</p>
+                    <p>A hands-on student innovation and prototyping platform organized by one of our teammates. <strong>Done in collaboration with IIT Delhi (IITD).</strong></p>
                     <div class="tag-list">
-                      <span class="tag">IIT Delhi</span>
-                      <span class="tag">Team-led</span>
-                      <span class="tag">Collaboration</span>
+                      <span class="tag" style="background: var(--pink); color: white; font-weight: 800;">Affiliate Initiative</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with IITD</span>
+                      <span class="tag">Teammate Project</span>
+                      <span class="tag">Innovation &amp; Prototyping</span>
                     </div>
                   </div>
                   <div class="venture-actions">
@@ -162,24 +324,82 @@
                   </div>
                 </article>
 
-                <article class="venture-row reveal" id="robotics" data-track="robotics hardware community">
-                  <div class="venture-date">In development</div>
+                <!-- Delhi AI Impact Summit -->
+                <article class="venture-row reveal" id="delhi-ai-summit" data-track="event venture hardware robotics ai community">
+                  <div class="venture-date"><span style="color: var(--cyan); font-weight: 800;">EXHIBIT LEAD</span><br>Govt of Delhi Collab</div>
                   <div class="venture-main">
-                    <h2>Robotics / Electronics Initiative</h2>
-                    <p>A new robotics competition and student hardware network being developed in collaboration with IIT Bombay and its student network. The current target is up to 50 teams, with a long-term direction toward building the community and technical infrastructure needed for FRC-style participation.</p>
+                    <h2>Delhi AI Impact Summit — AI Innovation Pavilion</h2>
+                    <p>Our team served as the official <strong>Head &amp; Curator for the Government of NCT of Delhi Exhibit &amp; AI Innovation Pavilion</strong> at the Delhi AI Impact Summit. We presented breakthrough student AI projects, autonomous UAV avionics, edge-vision drone payloads, and experiential technology directly to state leadership, dignitaries, and industry delegates.</p>
                     <div class="tag-list">
-                      <span class="tag">Robotics</span>
-                      <span class="tag">Electronics</span>
-                      <span class="tag">Embedded systems</span>
-                      <span class="tag">Up to 50 teams</span>
+                      <span class="tag" style="background: var(--cyan); color: var(--ink); font-weight: 800;">Exhibit Head</span>
+                      <span class="tag" style="border-color: var(--ink);">In collab with Govt of NCT of Delhi</span>
+                      <span class="tag">AI Innovation Pavilion</span>
+                      <span class="tag">Autonomous Drones</span>
+                      <span class="tag">Edge AI</span>
                     </div>
                   </div>
                   <div class="venture-actions">
-                    <button class="mini-link" type="button" data-drawer-id="robotics" data-magnetic>Details</button>
-                    <span class="mini-link">Website soon</span>
+                    <button class="mini-link" type="button" data-drawer-id="delhi-ai-summit" data-magnetic>Details</button>
                   </div>
                 </article>
               </div>
+
+              <!-- SECTION 4: MEDIA & HIGHLIGHTS -->
+              <div id="media-gallery" style="margin-top: 72px;">
+                <h3 class="section-title reveal" style="font-size: 2.5rem;">Event Media &amp; Highlights</h3>
+                <p class="body-large reveal">Direct photo documentation from Tachyon campus events, state pavilions, astronomy observation nights, and prototype showcases.</p>
+                <div class="gallery-grid">
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/delhi-ai-impact-summit-pavilion.jpg" alt="Government of NCT of Delhi AI Innovation Pavilion" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--cyan); color: var(--ink); font-weight: 800;">Delhi AI Impact Summit</span>
+                      <h4 class="gallery-card__title">AI Innovation Pavilion — Govt of Delhi</h4>
+                      <p class="gallery-card__desc">Tachyon team leading the Government of NCT of Delhi exhibit alongside state dignitaries and leadership.</p>
+                    </div>
+                  </div>
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/tactical-drone-hardware.jpg" alt="Autonomous Drone & Vision Systems Hardware" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--lime); color: var(--ink); font-weight: 800;">Hardware &amp; AI Demo</span>
+                      <h4 class="gallery-card__title">Autonomous Drone &amp; Vision Systems</h4>
+                      <p class="gallery-card__desc">Custom carbon-frame tactical quadcopter with onboard telemetry, flight controllers, and edge-AI vision payloads.</p>
+                    </div>
+                  </div>
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/aaroh-team-stage.jpg" alt="AAROH Keynote Stage" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--orange);">AAROH 2026</span>
+                      <h4 class="gallery-card__title">Live Presentations &amp; Judging</h4>
+                      <p class="gallery-card__desc">Teams presenting problem definitions and live prototypes to jury at IIIT Delhi.</p>
+                    </div>
+                  </div>
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/students-telescope-setup.jpg" alt="Beyond Horizons Astronomy Night" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--cyan);">Beyond Horizons</span>
+                      <h4 class="gallery-card__title">Hands-on Telescope Sessions</h4>
+                      <p class="gallery-card__desc">Students configuring Celestron optical equipment for planetary and deep-sky observation.</p>
+                    </div>
+                  </div>
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/build-guild-night-session.jpg" alt="Build Guild Hardware Enthusiast Meetup" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--blue);">Build Guild</span>
+                      <h4 class="gallery-card__title">Hardware Enthusiast Meetup &amp; Soldering</h4>
+                      <p class="gallery-card__desc">Late-night hardware workbench sessions, microcontrollers, and collaborative building.</p>
+                    </div>
+                  </div>
+                  <div class="gallery-card gallery-card--span-6 reveal" data-cursor="View">
+                    <img class="gallery-card__img" src="assets/astronomy-equipment.jpg" alt="High-End Astronomical Gear" loading="lazy">
+                    <div class="gallery-card__overlay">
+                      <span class="gallery-card__tag" style="background: var(--lime);">Optics &amp; Gear</span>
+                      <h4 class="gallery-card__title">Professional Optical Platforms</h4>
+                      <p class="gallery-card__desc">High-precision tripods, finderscopes, and optical tubes deployed for student discovery.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -188,13 +408,13 @@
       <footer class="footer">
         <div class="footer-inner">
           <div>
-            <strong>The work keeps expanding.</strong>
-            <p>Each venture adds another route for students to build, test, present, and continue.</p>
+            <strong>Build something real.</strong>
+            <p>Student platforms for software, hardware, astronomy, robotics, and maker culture.</p>
           </div>
           <nav class="footer-nav" aria-label="Footer navigation">
             <a href="index.html">Home</a>
             <a href="team.html">Team</a>
-            <a href="programs.html">Programs</a>
+            <a href="ventures.html">Programs &amp; Ventures</a>
             <a href="contact.html">Contact</a>
           </nav>
         </div>

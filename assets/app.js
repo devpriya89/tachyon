@@ -335,13 +335,13 @@ const ventureDataMap = {
   },
   "build-guild": {
     title: "Build Guild Delhi",
-    tag: "03 / Hardware & PCB",
+    tag: "03 / Hardware Enthusiast Meetup",
     date: "Apr 18, 2025 • CP Delhi",
-    body: "A one-day hardware meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, PCBs, soldering, competitions, showcases, and community activities.",
+    body: "A one-day hardware enthusiast meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, microcontrollers, soldering, competitions, showcases, and hardware hackathon activities.",
     meta: [
       { label: "Partner", value: "Hack Club" },
       { label: "Age Group", value: "13 - 18" },
-      { label: "Focus", value: "PCB & Soldering" },
+      { label: "Focus", value: "Hardware Hackathon" },
       { label: "Venue", value: "Connaught Place" }
     ],
     links: [
@@ -362,18 +362,20 @@ const ventureDataMap = {
     ],
     links: []
   },
-  metamorphosis: {
-    title: "Metamorphosis",
-    tag: "05 / IIT Delhi",
-    date: "Campus Venture • IIT Delhi",
-    body: "A teammate-led initiative that happened at IIT Delhi in collaboration with IITD. It sits in the archive as a connected team venture and proof of Tachyon's broader student network.",
+  "vector-aerotech": {
+    title: "Vector Aerotech",
+    tag: "05 / Aerial Robotics & Defense",
+    date: "Autonomous UAVs • Defense & Enterprise",
+    body: "Vector Aerotech is an advanced autonomous drone and aerospace defense startup born out of the Tachyon builder collective. Engineering proprietary flight controllers, autonomous swarming algorithms, encrypted long-range mesh comms, and heavy-payload tactical multirotors, Vector Aerotech has secured and deployed critical systems across private enterprise, governmental, and military defense contracts.\n\nFrom high-altitude surveillance, border geospatial intelligence, and tactical reconnaissance to infrastructure pipeline scanning and GPS-denied autonomous flight, Vector Aerotech serves as proof of taking young hardware engineers directly from workbench prototypes to industrial and military defense grade aerospace deployment.",
     meta: [
-      { label: "Location", value: "IIT Delhi" },
-      { label: "Type", value: "Team-led" },
-      { label: "Network", value: "Campus Ecosystem" }
+      { label: "Domain", value: "Autonomous Drones & Defense" },
+      { label: "Contracts", value: "Private, Gov & Military" },
+      { label: "Avionics", value: "Custom Flight Controllers" },
+      { label: "Payloads", value: "Thermal / Edge-AI Vision" },
+      { label: "Ecosystem", value: "Tachyon Venture" }
     ],
     links: [
-      { label: "Media Archive", url: "https://drive.google.com/drive/folders/1bm8WlXUhC-PBbkCQ1u3LrhPAwNSaoEt3" }
+      { label: "Venture Overview", url: "ventures.html#vector-aerotech" }
     ]
   },
   robotics: {
@@ -387,6 +389,51 @@ const ventureDataMap = {
       { label: "Direction", value: "FRC Robotics" }
     ],
     links: []
+  },
+  campfire: {
+    title: "Campfire Delhi",
+    tag: "07 / Community & Sprint",
+    date: "Collaborative Gathering • Delhi",
+    body: "A collaborative community sprint and student builder gathering organized in collaboration with Hack Club and Master's Union.",
+    meta: [
+      { label: "Partner 01", value: "Hack Club" },
+      { label: "Partner 02", value: "Master's Union" },
+      { label: "Format", value: "Community Sprint" },
+      { label: "City", value: "Delhi" }
+    ],
+    links: [
+      { label: "Drive Media", url: "https://drive.google.com/drive/folders/1Sw3rm1HqWhFqRtno79cSkpN7cug8-z_7" }
+    ]
+  },
+  metamorphosis: {
+    title: "Metamorphosis",
+    tag: "08 / Teammate Initiative",
+    date: "In collaboration with IIT Delhi (IITD)",
+    body: "A transformative student builder and technical innovation initiative led by one of our teammates in collaboration with IIT Delhi (IITD).",
+    meta: [
+      { label: "Collaboration", value: "IIT Delhi (IITD)" },
+      { label: "Lead", value: "Tachyon Teammate" },
+      { label: "Focus", value: "Innovation & Build" },
+      { label: "Ecosystem", value: "Affiliate Initiative" }
+    ],
+    links: [
+      { label: "Drive Media", url: "https://drive.google.com/drive/folders/1bm8WlXUhC-PBbkCQ1u3LrhPAwNSaoEt3" }
+    ]
+  },
+  "delhi-ai-summit": {
+    title: "Delhi AI Impact Summit — AI Innovation Pavilion",
+    tag: "09 / Government Exhibit Head",
+    date: "Govt of NCT of Delhi Collaboration",
+    body: "Our team was appointed as the official Head for the Government of NCT of Delhi Exhibit and AI Innovation Pavilion at the Delhi AI Impact Summit. We curated and demonstrated cutting-edge student artificial intelligence projects, autonomous UAV flight avionics, and edge computing robotics directly to government leadership, state dignitaries, and industry delegates.",
+    meta: [
+      { label: "Role", value: "Exhibit Head & Lead" },
+      { label: "Partner", value: "Govt of NCT of Delhi" },
+      { label: "Focus", value: "AI & Autonomous Drones" },
+      { label: "Summit", value: "Delhi AI Impact Summit" }
+    ],
+    links: [
+      { label: "Exhibit Overview", url: "ventures.html#delhi-ai-summit" }
+    ]
   }
 }
 
@@ -493,4 +540,413 @@ if (contactForm) {
     }
   })
 }
+
+// 7. Minimal Avant-Garde Menu & Live Clock System
+const minimalMenuBtn = document.getElementById("minimalMenuBtn")
+const minimalMenuClose = document.getElementById("minimalMenuClose")
+const minimalMenuOverlay = document.getElementById("minimalMenuOverlay")
+
+const openMinimalMenu = () => {
+  if (!minimalMenuOverlay) return
+  minimalMenuOverlay.classList.add("is-open")
+  minimalMenuOverlay.setAttribute("aria-hidden", "false")
+  document.body.style.overflow = "hidden"
+}
+
+const closeMinimalMenu = () => {
+  if (!minimalMenuOverlay) return
+  minimalMenuOverlay.classList.remove("is-open")
+  minimalMenuOverlay.setAttribute("aria-hidden", "true")
+  document.body.style.overflow = ""
+}
+
+if (minimalMenuBtn) {
+  minimalMenuBtn.addEventListener("click", openMinimalMenu)
+}
+
+if (minimalMenuClose) {
+  minimalMenuClose.addEventListener("click", closeMinimalMenu)
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && minimalMenuOverlay && minimalMenuOverlay.classList.contains("is-open")) {
+    closeMinimalMenu()
+  }
+})
+
+// Close menu when clicking outside or clicking any nav link
+if (minimalMenuOverlay) {
+  minimalMenuOverlay.querySelectorAll(".menu-nav-item").forEach(link => {
+    link.addEventListener("click", () => {
+      closeMinimalMenu()
+    })
+  })
+}
+
+// Live Delhi NCR Clock (IST / UTC+5:30)
+const heroLiveClock = document.getElementById("heroLiveClock")
+const menuLiveClock = document.getElementById("menuLiveClock")
+
+const updateDelhiClock = () => {
+  const now = new Date()
+  const options = {
+    timeZone: "Asia/Kolkata",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  }
+  const timeString = new Intl.DateTimeFormat([], options).format(now)
+  if (heroLiveClock) heroLiveClock.textContent = `${timeString} IST`
+  if (menuLiveClock) menuLiveClock.textContent = `${timeString} IST`
+}
+
+updateDelhiClock()
+setInterval(updateDelhiClock, 1000)
+
+// 8. Interactive 3D Quadcopter Drone Model (Three.js - Proportional & Distortion-Free)
+const init3DDrone = () => {
+  const container = document.getElementById("droneContainer")
+  const canvas = document.getElementById("droneCanvas")
+  
+  if (!container || !canvas || typeof THREE === "undefined") return
+
+  // Precise container dimension reader
+  const getSize = () => {
+    const rect = container.getBoundingClientRect()
+    return {
+      w: rect.width || container.clientWidth || 400,
+      h: rect.height || container.clientHeight || 400
+    }
+  }
+
+  let { w, h } = getSize()
+
+  // Scene setup with distortion-free 35-degree cinematic FOV & ample breathing room
+  const scene = new THREE.Scene()
+  const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 1000)
+  camera.position.set(0, 2.8, 9.2)
+  camera.lookAt(0, 0, 0)
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    alpha: true,
+    antialias: true,
+    powerPreference: "high-performance"
+  })
+  renderer.setSize(w, h, false)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9)
+  scene.add(ambientLight)
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.3)
+  dirLight.position.set(5, 10, 7)
+  dirLight.castShadow = true
+  scene.add(dirLight)
+
+  const rimLight = new THREE.DirectionalLight(0x4d7cff, 0.7)
+  rimLight.position.set(-6, -4, -6)
+  scene.add(rimLight)
+
+  const accentLight = new THREE.PointLight(0xdfff32, 0.5, 12)
+  accentLight.position.set(0, 2, 0)
+  scene.add(accentLight)
+
+  // Drone Group
+  const droneGroup = new THREE.Group()
+  scene.add(droneGroup)
+
+  // Materials
+  const carbonMat = new THREE.MeshStandardMaterial({
+    color: 0x141414,
+    roughness: 0.35,
+    metalness: 0.85
+  })
+
+  const stealthMat = new THREE.MeshStandardMaterial({
+    color: 0x242424,
+    roughness: 0.4,
+    metalness: 0.6
+  })
+
+  const accentLimeMat = new THREE.MeshBasicMaterial({ color: 0xdfff32 })
+  const ledGreenMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
+  const ledRedMat = new THREE.MeshBasicMaterial({ color: 0xff5c2b })
+  const lensGlowMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff })
+  const copperMat = new THREE.MeshStandardMaterial({ color: 0xb87333, metalness: 0.9, roughness: 0.2 })
+
+  // 1. Balanced Central Hull / Fuselage (Symmetrical & Sleek)
+  const hullGeo = new THREE.BoxGeometry(1.5, 0.38, 1.6)
+  const hullMesh = new THREE.Mesh(hullGeo, carbonMat)
+  droneGroup.add(hullMesh)
+
+  // Top Aerodynamic Canopy
+  const canopyGeo = new THREE.ConeGeometry(0.75, 0.32, 4)
+  const canopyMesh = new THREE.Mesh(canopyGeo, stealthMat)
+  canopyMesh.rotation.y = Math.PI / 4
+  canopyMesh.position.y = 0.3
+  droneGroup.add(canopyMesh)
+
+  // Status Beacon on top
+  const beaconGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.08, 16)
+  const beaconMesh = new THREE.Mesh(beaconGeo, accentLimeMat)
+  beaconMesh.position.set(0, 0.48, 0)
+  droneGroup.add(beaconMesh)
+
+  // 2. Camera Gimbal Assembly (Tracks Mouse)
+  const gimbalGroup = new THREE.Group()
+  gimbalGroup.position.set(0, -0.16, 0.9)
+  droneGroup.add(gimbalGroup)
+
+  const gimbalBaseGeo = new THREE.SphereGeometry(0.24, 16, 16)
+  const gimbalBase = new THREE.Mesh(gimbalBaseGeo, carbonMat)
+  gimbalGroup.add(gimbalBase)
+
+  const lensGeo = new THREE.CylinderGeometry(0.12, 0.14, 0.2, 16)
+  const lensMesh = new THREE.Mesh(lensGeo, stealthMat)
+  lensMesh.rotation.x = Math.PI / 2
+  lensMesh.position.z = 0.15
+  gimbalGroup.add(lensMesh)
+
+  const eyeGeo = new THREE.CircleGeometry(0.08, 16)
+  const eyeMesh = new THREE.Mesh(eyeGeo, lensGlowMat)
+  eyeMesh.position.set(0, 0, 0.26)
+  gimbalGroup.add(eyeMesh)
+
+  // 3. Four Symmetrical Diagonal Carbon Arms
+  const armCoords = [
+    { x: -1.4, z: -1.4, isFront: false, isLeft: true },
+    { x: 1.4, z: -1.4, isFront: false, isLeft: false },
+    { x: -1.4, z: 1.4, isFront: true, isLeft: true },
+    { x: 1.4, z: 1.4, isFront: true, isLeft: false }
+  ]
+
+  const propellers = []
+
+  armCoords.forEach((coord) => {
+    // Arm strut
+    const armLength = Math.sqrt(coord.x * coord.x + coord.z * coord.z)
+    const armAngle = Math.atan2(coord.x, coord.z)
+    
+    const armGeo = new THREE.BoxGeometry(0.15, 0.1, armLength)
+    const armMesh = new THREE.Mesh(armGeo, carbonMat)
+    armMesh.position.set(coord.x / 2, 0, coord.z / 2)
+    armMesh.rotation.y = armAngle
+    droneGroup.add(armMesh)
+
+    // Motor Mount Base
+    const motorBaseGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.2, 16)
+    const motorBase = new THREE.Mesh(motorBaseGeo, carbonMat)
+    motorBase.position.set(coord.x, 0.08, coord.z)
+    droneGroup.add(motorBase)
+
+    // Copper stator ring
+    const statorGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.06, 16)
+    const stator = new THREE.Mesh(statorGeo, copperMat)
+    stator.position.set(coord.x, 0.14, coord.z)
+    droneGroup.add(stator)
+
+    // Arm tip navigation strobe LED
+    const ledGeo = new THREE.SphereGeometry(0.05, 12, 12)
+    const ledMat = coord.isFront ? ledGreenMat : ledRedMat
+    const led = new THREE.Mesh(ledGeo, ledMat)
+    led.position.set(coord.x * 1.12, 0.04, coord.z * 1.12)
+    droneGroup.add(led)
+
+    // Propeller Assembly
+    const propGroup = new THREE.Group()
+    propGroup.position.set(coord.x, 0.24, coord.z)
+    droneGroup.add(propGroup)
+
+    // Propeller Hub
+    const propHubGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.1, 12)
+    const propHub = new THREE.Mesh(propHubGeo, stealthMat)
+    propGroup.add(propHub)
+
+    // Two Aerodynamic Blades
+    const bladeGeo = new THREE.BoxGeometry(1.35, 0.02, 0.12)
+    const bladeMesh = new THREE.Mesh(bladeGeo, stealthMat)
+    propGroup.add(bladeMesh)
+
+    // Semi-transparent spinning prop blur disk
+    const discGeo = new THREE.CircleGeometry(0.72, 24)
+    const discMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide
+    })
+    const discMesh = new THREE.Mesh(discGeo, discMat)
+    discMesh.rotation.x = Math.PI / 2
+    discMesh.position.y = 0.02
+    propGroup.add(discMesh)
+
+    propellers.push({
+      group: propGroup,
+      dir: (coord.isFront === coord.isLeft) ? 1 : -1,
+      speed: 0.45 + Math.random() * 0.05
+    })
+  })
+
+  // 4. Landing Skids (Legs)
+  const skidMat = stealthMat
+  ;[-0.75, 0.75].forEach(x => {
+    const skidGeo = new THREE.CylinderGeometry(0.035, 0.035, 1.8, 12)
+    const skid = new THREE.Mesh(skidGeo, skidMat)
+    skid.rotation.x = Math.PI / 2
+    skid.position.set(x, -0.55, 0)
+    droneGroup.add(skid)
+
+    // Vertical struts
+    ;[-0.55, 0.55].forEach(z => {
+      const strutGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.38, 8)
+      const strut = new THREE.Mesh(strutGeo, skidMat)
+      strut.position.set(x, -0.32, z)
+      droneGroup.add(strut)
+    })
+  })
+
+  // 5. Contact Shadow (Soft Feathered Radial Drop Shadow)
+  const shadowCanvas = document.createElement("canvas")
+  shadowCanvas.width = 128
+  shadowCanvas.height = 128
+  const sCtx = shadowCanvas.getContext("2d")
+  const gradient = sCtx.createRadialGradient(64, 64, 0, 64, 64, 64)
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0.18)")
+  gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.05)")
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
+  sCtx.fillStyle = gradient
+  sCtx.fillRect(0, 0, 128, 128)
+
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas)
+  const shadowGeo = new THREE.PlaneGeometry(3.6, 3.6)
+  const shadowMat = new THREE.MeshBasicMaterial({
+    map: shadowTex,
+    transparent: true,
+    depthWrite: false
+  })
+  const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat)
+  shadowMesh.rotation.x = -Math.PI / 2
+  shadowMesh.position.y = -1.8
+  scene.add(shadowMesh)
+
+  // Interaction State
+  let mouseX = 0
+  let mouseY = 0
+  let targetX = 0
+  let targetY = 0
+
+  let isDragging = false
+  let prevPointerX = 0
+  let prevPointerY = 0
+  let manualRotX = 0.2
+  let manualRotY = -0.4
+
+  const onPointerMove = (e) => {
+    const rect = container.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
+    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
+
+    targetX = Math.max(-1, Math.min(1, x))
+    targetY = Math.max(-1, Math.min(1, y))
+
+    if (isDragging) {
+      const deltaX = e.clientX - prevPointerX
+      const deltaY = e.clientY - prevPointerY
+      manualRotY += deltaX * 0.008
+      manualRotX += deltaY * 0.008
+      prevPointerX = e.clientX
+      prevPointerY = e.clientY
+    }
+  }
+
+  const onPointerDown = (e) => {
+    isDragging = true
+    prevPointerX = e.clientX
+    prevPointerY = e.clientY
+  }
+
+  const onPointerUp = () => {
+    isDragging = false
+  }
+
+  window.addEventListener("pointermove", onPointerMove)
+  canvas.addEventListener("pointerdown", onPointerDown)
+  window.addEventListener("pointerup", onPointerUp)
+
+  // Robust Resize Handler with sync
+  const updateSize = () => {
+    const size = getSize()
+    if (size.w === 0 || size.h === 0) return
+    camera.aspect = size.w / size.h
+    camera.updateProjectionMatrix()
+    renderer.setSize(size.w, size.h, false)
+  }
+
+  window.addEventListener("resize", updateSize)
+
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => {
+      updateSize()
+    })
+    ro.observe(container)
+  }
+
+  // Animation Loop
+  let clock = new THREE.Clock()
+
+  const animate = () => {
+    requestAnimationFrame(animate)
+
+    const delta = clock.getDelta()
+    const elapsed = clock.getElapsedTime()
+
+    // High-speed propeller rotation
+    propellers.forEach(p => {
+      p.group.rotation.y += p.dir * p.speed
+    })
+
+    // Smooth mouse interpolation
+    mouseX += (targetX - mouseX) * 0.06
+    mouseY += (targetY - mouseY) * 0.06
+
+    // Realistic Aerodynamic Drone Hovering Physics
+    const hoverY = Math.sin(elapsed * 2.8) * 0.18 + Math.cos(elapsed * 4.4) * 0.04
+    const hoverBank = Math.sin(elapsed * 1.9) * 0.03
+    const hoverPitch = Math.cos(elapsed * 2.3) * 0.03
+
+    droneGroup.position.y = hoverY
+    shadowMesh.scale.setScalar(1 - hoverY * 0.1)
+
+    // Combine manual drag rotation with aerodynamic banking toward mouse
+    const leanRoll = -mouseX * 0.3 + hoverBank
+    const leanPitch = mouseY * 0.22 + hoverPitch
+
+    droneGroup.rotation.y = manualRotY + mouseX * 0.22
+    droneGroup.rotation.x = manualRotX + leanPitch
+    droneGroup.rotation.z = leanRoll
+
+    // Camera gimbal follows cursor
+    gimbalGroup.rotation.y = mouseX * 0.5
+    gimbalGroup.rotation.x = -mouseY * 0.45
+
+    renderer.render(scene, camera)
+  }
+
+  animate()
+}
+
+// Initialize on DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init3DDrone)
+} else {
+  init3DDrone()
+}
+
+
+
 
