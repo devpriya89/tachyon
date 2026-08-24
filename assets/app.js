@@ -312,9 +312,7 @@ const ventureDataMap = {
       { label: "Format", value: "24H Offline" }
     ],
     links: [
-      { label: "Website", url: "https://www.takumidelhi.com/" },
-      { label: "Media 01", url: "https://drive.google.com/drive/folders/1CCVeyGwToEXQIxz5g55AaG9CGSqqWF0A?usp=drive_link" },
-      { label: "Media 02", url: "https://drive.google.com/drive/folders/1qF369Ml_Ky67np3veoC4voD8tO7Ve5VD?usp=drive_link" }
+      { label: "Website", url: "https://www.takumidelhi.com/" }
     ]
   },
   aaroh: {
@@ -329,24 +327,23 @@ const ventureDataMap = {
       { label: "Venue", value: "IIIT Delhi" }
     ],
     links: [
-      { label: "Website", url: "https://aarohindia.com/" },
-      { label: "Photos", url: "https://photos.app.goo.gl/ipECCr2Dz9jkjKfM9" }
+      { label: "Website", url: "https://aarohindia.com/" }
     ]
   },
   "build-guild": {
     title: "Build Guild Delhi",
     tag: "03 / Hardware Enthusiast Meetup",
     date: "Apr 18, 2025 • CP Delhi",
-    body: "A one-day hardware enthusiast meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. Students aged 13-18 built with breadboards, microcontrollers, soldering, competitions, showcases, and hardware hackathon activities.",
+    body: "A one-day hardware enthusiast meetup at Pinnacle Space, Connaught Place, conducted as part of Hack Club Blueprint's global Build Guild week. 150 students aged 13-18 built with breadboards, microcontrollers, soldering, competitions, showcases, and hardware hackathon activities.",
     meta: [
+      { label: "Participants", value: "150 Builders" },
       { label: "Partner", value: "Hack Club" },
       { label: "Age Group", value: "13 - 18" },
       { label: "Focus", value: "Hardware Hackathon" },
       { label: "Venue", value: "Connaught Place" }
     ],
     links: [
-      { label: "Website", url: "https://buildguilddelhi.space/" },
-      { label: "Photos", url: "https://photos.app.goo.gl/cGwG4F5jWQhAVyFx6" }
+      { label: "Website", url: "https://buildguilddelhi.space/" }
     ]
   },
   "beyond-horizons": {
@@ -360,7 +357,9 @@ const ventureDataMap = {
       { label: "Subject", value: "Astronomy & Optics" },
       { label: "Tools", value: "Telescopes" }
     ],
-    links: []
+    links: [
+      { label: "Overview", url: "ventures.html#beyond-horizons" }
+    ]
   },
   "vector-aerotech": {
     title: "Vector Aerotech",
@@ -388,21 +387,24 @@ const ventureDataMap = {
       { label: "Partner", value: "IIT Bombay Network" },
       { label: "Direction", value: "FRC Robotics" }
     ],
-    links: []
+    links: [
+      { label: "Platform Overview", url: "ventures.html#robotics" }
+    ]
   },
   campfire: {
     title: "Campfire Delhi",
     tag: "07 / Community & Sprint",
     date: "Collaborative Gathering • Delhi",
-    body: "A collaborative community sprint and student builder gathering organized in collaboration with Hack Club and Master's Union.",
+    body: "A collaborative community sprint and student builder gathering bringing together 100+ creators, organized in collaboration with Hack Club and Master's Union.",
     meta: [
+      { label: "Participants", value: "100+ Builders" },
       { label: "Partner 01", value: "Hack Club" },
       { label: "Partner 02", value: "Master's Union" },
       { label: "Format", value: "Community Sprint" },
       { label: "City", value: "Delhi" }
     ],
     links: [
-      { label: "Drive Media", url: "https://drive.google.com/drive/folders/1Sw3rm1HqWhFqRtno79cSkpN7cug8-z_7" }
+      { label: "Overview", url: "ventures.html#campfire" }
     ]
   },
   metamorphosis: {
@@ -417,7 +419,7 @@ const ventureDataMap = {
       { label: "Ecosystem", value: "Affiliate Initiative" }
     ],
     links: [
-      { label: "Drive Media", url: "https://drive.google.com/drive/folders/1bm8WlXUhC-PBbkCQ1u3LrhPAwNSaoEt3" }
+      { label: "Overview", url: "ventures.html#metamorphosis" }
     ]
   },
   "delhi-ai-summit": {
@@ -530,10 +532,24 @@ if (contactForm) {
     event.preventDefault()
     const data = new FormData(contactForm)
     const name = String(data.get("name") || "Builder").trim()
+    const email = String(data.get("email") || "").trim()
+    const intent = String(data.get("intent") || "Collaboration").trim()
+    const message = String(data.get("message") || "").trim()
+
+    const subject = encodeURIComponent(`[Tachyon Inquiry] ${intent} - ${name}`)
+    const body = encodeURIComponent(`Hi Tachyon Team,\n\nName: ${name}\nEmail: ${email}\nPrimary Intent: ${intent}\n\nMessage:\n${message}\n\n--\nSent via Tachyon Platform Contact Form`)
+    const mailtoUrl = `mailto:tachyon.inquiry@gmail.com?subject=${subject}&body=${body}`
+
     if (note) {
-      note.style.color = "#4d7cff"
-      note.textContent = `✓ Thank you ${name}! Your collaboration request has been received. We'll be in touch soon.`
+      note.style.color = "#11110f"
+      note.style.fontWeight = "600"
+      note.innerHTML = `✓ Request formatted for <strong>tachyon.inquiry@gmail.com</strong>. Opening your email client... If it doesn't open automatically, <a href="${mailtoUrl}" style="text-decoration: underline; font-weight: 800; color: #ff5c2b;">click here to send email</a>.`
     }
+
+    window.setTimeout(() => {
+      window.location.href = mailtoUrl
+    }, 400)
+
     contactForm.reset()
     if (intentPillsContainer) {
       intentPillsContainer.querySelectorAll(".intent-pill").forEach(p => p.classList.remove("is-selected"))
