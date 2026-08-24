@@ -624,10 +624,9 @@ setInterval(updateDelhiClock, 1000)
 const init3DDrone = () => {
   const container = document.getElementById("droneContainer")
   const canvas = document.getElementById("droneCanvas")
-  
+
   if (!container || !canvas || typeof THREE === "undefined") return
 
-  // Precise container dimension reader
   const getSize = () => {
     const rect = container.getBoundingClientRect()
     return {
@@ -638,14 +637,13 @@ const init3DDrone = () => {
 
   let { w, h } = getSize()
 
-  // Scene setup with distortion-free 35-degree cinematic FOV & ample breathing room
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 1000)
-  camera.position.set(0, 2.8, 9.2)
-  camera.lookAt(0, 0, 0)
+  const camera = new THREE.PerspectiveCamera(34, w / h, 0.1, 1000)
+  camera.position.set(0, 1.25, 18)
+  camera.lookAt(0, 0.4, 0)
 
   const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
+    canvas,
     alpha: true,
     antialias: true,
     powerPreference: "high-performance"
@@ -655,235 +653,85 @@ const init3DDrone = () => {
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.05)
   scene.add(ambientLight)
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.3)
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.15)
   dirLight.position.set(5, 10, 7)
   dirLight.castShadow = true
   scene.add(dirLight)
 
-  const rimLight = new THREE.DirectionalLight(0x4d7cff, 0.7)
-  rimLight.position.set(-6, -4, -6)
+  const rimLight = new THREE.DirectionalLight(0x4d7cff, 0.9)
+  rimLight.position.set(-8, 2, -8)
   scene.add(rimLight)
 
-  const accentLight = new THREE.PointLight(0xdfff32, 0.5, 12)
+  const fillLight = new THREE.PointLight(0x2fe6ff, 0.55, 18)
+  fillLight.position.set(-3, 1.5, 4)
+  scene.add(fillLight)
+
+  const accentLight = new THREE.PointLight(0xdfff32, 0.7, 12)
   accentLight.position.set(0, 2, 0)
   scene.add(accentLight)
 
-  // Drone Group
   const droneGroup = new THREE.Group()
+  droneGroup.scale.set(1.15, 1.15, 1.15)
   scene.add(droneGroup)
 
-  // Materials
-  const carbonMat = new THREE.MeshStandardMaterial({
-    color: 0x141414,
-    roughness: 0.35,
-    metalness: 0.85
-  })
-
-  const stealthMat = new THREE.MeshStandardMaterial({
-    color: 0x242424,
-    roughness: 0.4,
-    metalness: 0.6
-  })
-
-  const accentLimeMat = new THREE.MeshBasicMaterial({ color: 0xdfff32 })
-  const ledGreenMat = new THREE.MeshBasicMaterial({ color: 0x10b981 })
-  const ledRedMat = new THREE.MeshBasicMaterial({ color: 0xff5c2b })
-  const lensGlowMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff })
-  const copperMat = new THREE.MeshStandardMaterial({ color: 0xb87333, metalness: 0.9, roughness: 0.2 })
-
-  // 1. Balanced Central Hull / Fuselage (Symmetrical & Sleek)
-  const hullGeo = new THREE.BoxGeometry(1.5, 0.38, 1.6)
-  const hullMesh = new THREE.Mesh(hullGeo, carbonMat)
-  droneGroup.add(hullMesh)
-
-  // Top Aerodynamic Canopy
-  const canopyGeo = new THREE.ConeGeometry(0.75, 0.32, 4)
-  const canopyMesh = new THREE.Mesh(canopyGeo, stealthMat)
-  canopyMesh.rotation.y = Math.PI / 4
-  canopyMesh.position.y = 0.3
-  droneGroup.add(canopyMesh)
-
-  // Status Beacon on top
-  const beaconGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.08, 16)
-  const beaconMesh = new THREE.Mesh(beaconGeo, accentLimeMat)
-  beaconMesh.position.set(0, 0.48, 0)
-  droneGroup.add(beaconMesh)
-
-  // 2. Camera Gimbal Assembly (Tracks Mouse)
-  const gimbalGroup = new THREE.Group()
-  gimbalGroup.position.set(0, -0.16, 0.9)
-  droneGroup.add(gimbalGroup)
-
-  const gimbalBaseGeo = new THREE.SphereGeometry(0.24, 16, 16)
-  const gimbalBase = new THREE.Mesh(gimbalBaseGeo, carbonMat)
-  gimbalGroup.add(gimbalBase)
-
-  const lensGeo = new THREE.CylinderGeometry(0.12, 0.14, 0.2, 16)
-  const lensMesh = new THREE.Mesh(lensGeo, stealthMat)
-  lensMesh.rotation.x = Math.PI / 2
-  lensMesh.position.z = 0.15
-  gimbalGroup.add(lensMesh)
-
-  const eyeGeo = new THREE.CircleGeometry(0.08, 16)
-  const eyeMesh = new THREE.Mesh(eyeGeo, lensGlowMat)
-  eyeMesh.position.set(0, 0, 0.26)
-  gimbalGroup.add(eyeMesh)
-
-  // 3. Four Symmetrical Diagonal Carbon Arms
-  const armCoords = [
-    { x: -1.4, z: -1.4, isFront: false, isLeft: true },
-    { x: 1.4, z: -1.4, isFront: false, isLeft: false },
-    { x: -1.4, z: 1.4, isFront: true, isLeft: true },
-    { x: 1.4, z: 1.4, isFront: true, isLeft: false }
-  ]
-
-  const propellers = []
-
-  armCoords.forEach((coord) => {
-    // Arm strut
-    const armLength = Math.sqrt(coord.x * coord.x + coord.z * coord.z)
-    const armAngle = Math.atan2(coord.x, coord.z)
-    
-    const armGeo = new THREE.BoxGeometry(0.15, 0.1, armLength)
-    const armMesh = new THREE.Mesh(armGeo, carbonMat)
-    armMesh.position.set(coord.x / 2, 0, coord.z / 2)
-    armMesh.rotation.y = armAngle
-    droneGroup.add(armMesh)
-
-    // Motor Mount Base
-    const motorBaseGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.2, 16)
-    const motorBase = new THREE.Mesh(motorBaseGeo, carbonMat)
-    motorBase.position.set(coord.x, 0.08, coord.z)
-    droneGroup.add(motorBase)
-
-    // Copper stator ring
-    const statorGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.06, 16)
-    const stator = new THREE.Mesh(statorGeo, copperMat)
-    stator.position.set(coord.x, 0.14, coord.z)
-    droneGroup.add(stator)
-
-    // Arm tip navigation strobe LED
-    const ledGeo = new THREE.SphereGeometry(0.05, 12, 12)
-    const ledMat = coord.isFront ? ledGreenMat : ledRedMat
-    const led = new THREE.Mesh(ledGeo, ledMat)
-    led.position.set(coord.x * 1.12, 0.04, coord.z * 1.12)
-    droneGroup.add(led)
-
-    // Propeller Assembly
-    const propGroup = new THREE.Group()
-    propGroup.position.set(coord.x, 0.24, coord.z)
-    droneGroup.add(propGroup)
-
-    // Propeller Hub
-    const propHubGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.1, 12)
-    const propHub = new THREE.Mesh(propHubGeo, stealthMat)
-    propGroup.add(propHub)
-
-    // Two Aerodynamic Blades
-    const bladeGeo = new THREE.BoxGeometry(1.35, 0.02, 0.12)
-    const bladeMesh = new THREE.Mesh(bladeGeo, stealthMat)
-    propGroup.add(bladeMesh)
-
-    // Semi-transparent spinning prop blur disk
-    const discGeo = new THREE.CircleGeometry(0.72, 24)
-    const discMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.18,
-      side: THREE.DoubleSide
-    })
-    const discMesh = new THREE.Mesh(discGeo, discMat)
-    discMesh.rotation.x = Math.PI / 2
-    discMesh.position.y = 0.02
-    propGroup.add(discMesh)
-
-    propellers.push({
-      group: propGroup,
-      dir: (coord.isFront === coord.isLeft) ? 1 : -1,
-      speed: 0.45 + Math.random() * 0.05
-    })
-  })
-
-  // 4. Landing Skids (Legs)
-  const skidMat = stealthMat
-  ;[-0.75, 0.75].forEach(x => {
-    const skidGeo = new THREE.CylinderGeometry(0.035, 0.035, 1.8, 12)
-    const skid = new THREE.Mesh(skidGeo, skidMat)
-    skid.rotation.x = Math.PI / 2
-    skid.position.set(x, -0.55, 0)
-    droneGroup.add(skid)
-
-    // Vertical struts
-    ;[-0.55, 0.55].forEach(z => {
-      const strutGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.38, 8)
-      const strut = new THREE.Mesh(strutGeo, skidMat)
-      strut.position.set(x, -0.32, z)
-      droneGroup.add(strut)
-    })
-  })
-
-  // 5. Contact Shadow (Soft Feathered Radial Drop Shadow)
   const shadowCanvas = document.createElement("canvas")
   shadowCanvas.width = 128
   shadowCanvas.height = 128
   const sCtx = shadowCanvas.getContext("2d")
   const gradient = sCtx.createRadialGradient(64, 64, 0, 64, 64, 64)
   gradient.addColorStop(0, "rgba(0, 0, 0, 0.18)")
-  gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.05)")
+  gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.06)")
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
   sCtx.fillStyle = gradient
   sCtx.fillRect(0, 0, 128, 128)
 
   const shadowTex = new THREE.CanvasTexture(shadowCanvas)
-  const shadowGeo = new THREE.PlaneGeometry(3.6, 3.6)
   const shadowMat = new THREE.MeshBasicMaterial({
     map: shadowTex,
     transparent: true,
-    depthWrite: false
+    depthWrite: false,
+    side: THREE.DoubleSide
   })
-  const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat)
+  const shadowMesh = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), shadowMat)
   shadowMesh.rotation.x = -Math.PI / 2
-  shadowMesh.position.y = -1.8
+  shadowMesh.position.y = -2.2
   scene.add(shadowMesh)
 
-  // Interaction State
   let mouseX = 0
   let mouseY = 0
   let targetX = 0
   let targetY = 0
-
   let isDragging = false
   let prevPointerX = 0
   let prevPointerY = 0
   let manualRotX = 0.2
   let manualRotY = -0.4
 
-  const onPointerMove = (e) => {
+  const onPointerMove = (event) => {
     const rect = container.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
-    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1)
+    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    const y = -(((event.clientY - rect.top) / rect.height) * 2 - 1)
 
     targetX = Math.max(-1, Math.min(1, x))
     targetY = Math.max(-1, Math.min(1, y))
 
     if (isDragging) {
-      const deltaX = e.clientX - prevPointerX
-      const deltaY = e.clientY - prevPointerY
+      const deltaX = event.clientX - prevPointerX
+      const deltaY = event.clientY - prevPointerY
       manualRotY += deltaX * 0.008
       manualRotX += deltaY * 0.008
-      prevPointerX = e.clientX
-      prevPointerY = e.clientY
+      prevPointerX = event.clientX
+      prevPointerY = event.clientY
     }
   }
 
-  const onPointerDown = (e) => {
+  const onPointerDown = (event) => {
     isDragging = true
-    prevPointerX = e.clientX
-    prevPointerY = e.clientY
+    prevPointerX = event.clientX
+    prevPointerY = event.clientY
   }
 
   const onPointerUp = () => {
@@ -894,7 +742,6 @@ const init3DDrone = () => {
   canvas.addEventListener("pointerdown", onPointerDown)
   window.addEventListener("pointerup", onPointerUp)
 
-  // Robust Resize Handler with sync
   const updateSize = () => {
     const size = getSize()
     if (size.w === 0 || size.h === 0) return
@@ -906,49 +753,84 @@ const init3DDrone = () => {
   window.addEventListener("resize", updateSize)
 
   if (window.ResizeObserver) {
-    const ro = new ResizeObserver(() => {
-      updateSize()
-    })
+    const ro = new ResizeObserver(() => updateSize())
     ro.observe(container)
   }
 
-  // Animation Loop
+  let loadedDrone = null
+
+  const objLoader = typeof THREE.OBJLoader === "function" ? new THREE.OBJLoader() : null
+
+  if (objLoader) {
+    objLoader.load(
+      "assets/drone.obj",
+      (object) => {
+        object.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true
+            child.receiveShadow = true
+            const mat = new THREE.MeshPhysicalMaterial({
+              color: 0x111827,
+              emissive: 0x0f172a,
+              metalness: 0.85,
+              roughness: 0.22,
+              clearcoat: 0.7,
+              clearcoatRoughness: 0.2,
+              side: THREE.DoubleSide
+            })
+            child.material = mat
+          }
+        })
+
+        const box = new THREE.Box3().setFromObject(object)
+        const size = box.getSize(new THREE.Vector3())
+        const maxDim = Math.max(size.x, size.y, size.z) || 1
+        const scale = 10 / maxDim
+
+        object.scale.setScalar(scale)
+        object.rotation.set(0, Math.PI * 0.75, -0.12)
+        object.position.set(0.2, 0.2, 0.15)
+        object.name = "droneModel"
+
+        droneGroup.add(object)
+        loadedDrone = object
+      },
+      undefined,
+      (error) => {
+        console.error("Drone model failed to load:", error)
+      }
+    )
+  } else {
+    console.warn("OBJLoader not available; using fallback drone styling.")
+  }
+
   let clock = new THREE.Clock()
 
   const animate = () => {
     requestAnimationFrame(animate)
-
-    const delta = clock.getDelta()
     const elapsed = clock.getElapsedTime()
 
-    // High-speed propeller rotation
-    propellers.forEach(p => {
-      p.group.rotation.y += p.dir * p.speed
-    })
-
-    // Smooth mouse interpolation
     mouseX += (targetX - mouseX) * 0.06
     mouseY += (targetY - mouseY) * 0.06
 
-    // Realistic Aerodynamic Drone Hovering Physics
-    const hoverY = Math.sin(elapsed * 2.8) * 0.18 + Math.cos(elapsed * 4.4) * 0.04
-    const hoverBank = Math.sin(elapsed * 1.9) * 0.03
-    const hoverPitch = Math.cos(elapsed * 2.3) * 0.03
+    const hoverY = Math.sin(elapsed * 2.5) * 0.2 + Math.cos(elapsed * 4.3) * 0.04
+    const hoverBank = Math.sin(elapsed * 1.8) * 0.04
+    const hoverPitch = Math.cos(elapsed * 2.1) * 0.04
 
-    droneGroup.position.y = hoverY
-    shadowMesh.scale.setScalar(1 - hoverY * 0.1)
+    droneGroup.position.y = hoverY + 0.1
+    shadowMesh.scale.setScalar(1.25 - hoverY * 0.12)
 
-    // Combine manual drag rotation with aerodynamic banking toward mouse
-    const leanRoll = -mouseX * 0.3 + hoverBank
-    const leanPitch = mouseY * 0.22 + hoverPitch
+    const leanRoll = -mouseX * 0.32 + hoverBank
+    const leanPitch = mouseY * 0.2 + hoverPitch
 
-    droneGroup.rotation.y = manualRotY + mouseX * 0.22
+    droneGroup.rotation.y = manualRotY + mouseX * 0.35
     droneGroup.rotation.x = manualRotX + leanPitch
     droneGroup.rotation.z = leanRoll
 
-    // Camera gimbal follows cursor
-    gimbalGroup.rotation.y = mouseX * 0.5
-    gimbalGroup.rotation.x = -mouseY * 0.45
+    if (loadedDrone) {
+      loadedDrone.rotation.y += 0.006
+      loadedDrone.rotation.z = -0.08 + Math.sin(elapsed * 1.5) * 0.06
+    }
 
     renderer.render(scene, camera)
   }
